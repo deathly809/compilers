@@ -1,8 +1,8 @@
 <style>
     body {
-        width: 600px;
+        width: 700px;
         margin-left: auto;
-        margin-right: auto;
+        margin-right: 75px;
     }
 
     ol ol {
@@ -20,8 +20,8 @@
 
     details {
         position:absolute;
-        left: 50px;
-        max-width: 200px;
+        left: 15px;
+        max-width: 215px;
     }
 
 </style>
@@ -49,6 +49,13 @@
 
 -------------------------------------
 
+## Preface
+
+These notes are compiled from multiple sources.  
+
+1.  Modern Compiler Design (Dick Grune, Henri E. Bal, Ceriel J.H. Jacobs, and Koen G. Langendoen)
+2.  Programming Language Processors in Java - Compilers and Interpreters (David A. Watt, Deryck F. Brown)
+3.  Compilers Principles, techniques, and tools (Alfred V. Aho, Monica S. Lam, Ravi Sethi, Jeffrey D. Ullman)
 ### 1.0 - Introduction ###
 
 Programming languages are notations for describing computations to people and to machines.
@@ -59,6 +66,17 @@ languages, machine architecture, language theory, algorithms, and software engin
 
 ### 1.1 - Language Processors ###
 
+<details>
+    <summary>
+        Language Processors
+    </summary>
+    <ul>
+        <li>Editors - Notepad, IDEs, etc.  Allows for program text to be modified</li>
+        <li>Compilers and Translators - Take in a source language and output a target language.</li>
+        <li>Interpreters - Take a source language and evaluate its</li>
+    </ul>
+</details>
+
 A compiler is a program which takes in a program in one language, the *source language*, 
 and translates it into another language, the *target language*.
 If a compiler is given a source program with errors then it should report them.
@@ -66,15 +84,15 @@ An **interpreter** is a special type of language processor.
 This program takes in one language and performs the actions described.
 The target language for an interpreter is a series of actions.
 
-A machine-targer program is in general faster than if it was executed with an interpreter.
+A machine target program is in general faster than if it was executed with an interpreter.
 However, an interpreter can usually give better error messages and has faster turn around 
-for getting feedback aftr making changes to the source program.
+for getting feedback after making changes to the source program.
 
 The Java language processors consist of two parts: a compiler, and interpreter called the
 virtual machine.
 The compiler takes the source language and translates it to byte code while the virtual 
 machines takes the byte code and runs it.
-In addition to interpretering the virtual machine can also compile parts of the code to machine
+In addition to interpreting the virtual machine can also compile parts of the code to machine
 code for performance boosts.
 This is called *just in time* compiling.
 
@@ -89,7 +107,7 @@ Exercises for 1.1
 >   the same.
 >
 >
->   An interpreter takes in a source program, along with any neccessary input, and executes it.
+>   An interpreter takes in a source program, along with any necessary input, and executes it.
 >   An interpreter has to understand how to perform operations, such as addition.
 
 2. What are the advantages of:
@@ -123,9 +141,9 @@ Exercises for 1.1
 >   years and therefore C compilers are highly optimized.  This takes the complex optimization  
 >   problems that you would have had to solve, and gives them to 50 years of optimizations.
 
-5. Describe some of the tasks that an assember needs to perform.
+5. Describe some of the tasks that an assembler needs to perform.
 
->   The main job of an assembler is to take assembly code and convert it into its binary equivalnce
+>   The main job of an assembler is to take assembly code and convert it into its binary equivalence
 >   in machine code for the target machine.
 >   It needs to be able to write the code in a format which the local operating system can load 
 >   for execution.  It also converts the labels for jump instructions into their correct address.
@@ -140,7 +158,7 @@ Exercises for 1.1
 ![Parts of a Compiler](./images/partsOfCompiler.png "Parts of a Compiler")
 
 Inside of a compiler there are two parts: analysis and synthesis.
-The analysis part breaks up the source program into constitent pieces and imposes a grammatical 
+The analysis part breaks up the source program into disjoint pieces and imposes a grammatical 
 structure on them.
 It then uses this structure to generate an *intermediate representation* of the source program.
 If during analysis this structure is found to either be syntactically or semantically incorrect,
@@ -150,7 +168,7 @@ which along with the intermediate representation is passed to the synthesis part
 
 The synthesis portion of the compiler constructs the target program using the symbol table and 
 intermediate representation.  
-The analysis portion is usually called the frontend, while the synthesis portion is called the 
+The analysis portion is usually called the front end, while the synthesis portion is called the 
 backend.
 
 
@@ -159,7 +177,7 @@ backend.
 
 The compilation process is broken into *phases*, each which transforms one representation of the
 source program to another.
-Some phases are joined together in practice, such as the *lexical* and *syntax analyzers*.
+Some phases are joined together in practice, such as the *lexical* and *syntax* analyzers.
 Along with the new intermediate representation, the symbol table is passed along to the next
 phase.
 Some of the phases can be optimization phases which allows for better target programs to be 
@@ -192,7 +210,7 @@ position = initial + rate * 60
     position.
 2. The assignment symbol *=* is a lexeme mapped to the token `<=>`, with the attribute-value 
     removed.  
-3. *intial* is a lexeme that is mapped into the token `<id,2>`
+3. *initial* is a lexeme that is mapped into the token `<id,2>`
 4. *+* is mapped to `<+>`
 5. *rate* is a lexeme mapped to `<id,3>`
 6. *\** is mapped to to `<*>`
@@ -215,6 +233,13 @@ In this phase we take in a stream of tokens and create a new intermediate repres
 is called a *syntax tree*, or *parse tree*.
 This tree represents the syntactic structure of the source program, or token stream.
 The typical representation is that interior nodes are operations, while leaves are values and identifiers.
+
+<details>
+    <summary>Different between CST and AST</summary>
+    A concrete-syntax-tree (CST) holds all tokens from the source code.
+    This allows for a full reconstruction of the program.
+    An abstract-syntax-tree (AST) only holds information needed to compile the program.
+</details>
 
 #### 1.2.3  - Semantic Analysis ####
 
@@ -250,7 +275,7 @@ like instructions with at most three operands per instruction.
 Example:
 
 ```
-t1 = inttofloat(60)
+t1 = intToFloat(60)
 t2 = id3 * t1
 t3 = id2 + t2
 id1 = t3
@@ -369,13 +394,79 @@ apply to which of the following languages:
 
 ### 1.4 -  The Science of a Building a Compiler ###
 
-#### 1.4.1  - The Science of Code Optimization ####
+Compilers are complicated and to ensure their correctness we have to use proven techniques.
+
+### 1.4.1 - Modeling in Compiler Design and Implementation
+
+We model compilers with finite state machines, context-free grammars, and regular expressions.  
+For programs we model them with syntax trees and create them using grammars.  
+
+#### 1.4.2  - The Science of Code Optimization ####
+
+Optimization is when you want to reduce resource usage when resources can be space, time, and other allocatable items.
+Optimization is complex due to architectures becoming more complex.  For example new architectures have SSE 
+instructions, pipelining, cache algorithms which require careful management of resources along with using 
+efficient machine code instructions.  New multicore architectures allow for parallel execution of code.
+
+Tools such as Graphs, matrices, and linear programming can be used to optimize programs during compilation.
+However, many problems in compiler optimization are undecidable.  Optimizations must meet these four requirements:
+
+1.  Correctness
+2.  Improvement
+3.  Reasonable
+4.  Manageable
+
+The most important of these four is correctness. While full correctness might be impossible we strive to make optimizations as correct as possible. 
+
+When we apply an optimization we want to make sure there is an improvement, such as in terms of space or time.  Sometimes when one area is improved so are others, such as time and power usage.
+One aspect of improvement can also be in terms of error reporting.
+
+We need to keep compilation time at a reasonable level.  Applying optimizations takes time and also modifies the output code.
+
+Once an optimization is implemented we need to make sure the code is manageable for future developers.
+
 
 ### 1.5 - Applications of Compiler Technology ###
 
+Many students who have studied compilers have never implemented a compiler.  However, many portions of a compiler are used in other places.
+
 #### 1.5.1 - Implementation of High-Level Programming Languages ####
 
+High level code is easier to write in than low level code.  However, because it is in a higher level of abstraction, usually, it will be more inefficient.  
+Additionally, higher level programming languages usually have much less control over the machine than low level languages.
+For instance, in Java you cannot access random parts of memory, while in C you can (C is a high level programming language but not as high as Java).  The tradeoff between these two languages is that Java manages the memory for the programming while C does not.
+A drawback with low level programming is that usually programs are not cross compatible, for instance you cannot write a program for an x86 machine and then compile it on a SPARC machine. 
+
+The high level programming language C used to try to provide low level access to programmers.
+The *register* keyword was used to denote what variables should stay in a register.
+Because optimization techniques over time became better allowing programmers to manually declare that a variable should stay in a register becomes inefficient.
+Some modern C compilers ignore the register keyword because of this.
+
+Because programming languages allow for composite structures a new type of optimization is used called *data-flow optimizations*.
+Because translating a composite structure directly to machine code might not be efficient we need analyze how these structures are used so that the compiler can determine if a reorganization is needed and if redundant operations can be found. 
+Because more object oriented languages are being used this technique has become more important.
+
+In addition to **data-flow optimzation** for OO-languages compilers must also be able to optimize between methods of a class, procedure inlining, and speed up virtual method dispatches.
+These optimizations is due to **abstraction** and **inheritance**.
+
 #### 1.5.2 - Optimizations for Computer Architecture ####
+
+Different architectures can provide different optimization opportunities.
+Parallel architectures, such as multi-core and multi-processor, allow for optimization through parallelism.
+Some parallel architectures, and all distributed architectures, require memory optimizations due to the multiple levels of memory.
+
+Levels of parallelism:
+
+1.  instruction -   Some instructions can be executed at the same time if they don't use the same circuits. Pipelining falls under this scope.
+2.  processor   -   Multiple threads can be schedule across multiple processors
+3.  machine     -   Jobs can be scheduled among multiple machines and have communication between them.
+
+*Parallelism*
+
+All modern microprocessors exploit instruction level parallelism (*ILP*) (hidden from the programmer).
+Hardware can reorder instructions along with scheduling multiple instructions at the same time.
+The compiler can help through ordering instructions but cannot force the hardware to use ILP. 
+
 
 #### 1.5.3 - Design of New Computer Architectures ####
 
