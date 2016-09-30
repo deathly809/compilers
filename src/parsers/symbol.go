@@ -14,13 +14,17 @@ func (s *symbol) GetProduction() Production {
 }
 
 func (s *symbol) SetProduction(production Production) {
-    s.prod = production
+	s.prod = production
+}
+
+func (s *symbol) String() string {
+	return s.value
 }
 
 // CreateSymbol teakes in a symbol name and boolean value which determines
 // if the new symbol is a terminal or not
 func CreateSymbol(name string) Symbol {
 	return &symbol{
-        value : name,
-    }
+		value: name,
+	}
 }

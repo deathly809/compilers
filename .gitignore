@@ -1,0 +1,7 @@
+.vscode/
+*.swp
+*.pdf
+*.log
+*.aux
+*.obj
+output/

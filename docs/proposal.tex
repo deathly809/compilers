@@ -1,39 +1,342 @@
 \documentclass{article}
 
 \usepackage{fullpage}
+\usepackage{syntax}
+\usepackage{listings}
+\usepackage{listings-golang}
+\usepackage{color}
 
-\title{Proposal: Go-Lite}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ % add your own preferences
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=t,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=top,frame=bottom,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  otherkeywords={*,...},           % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+  literate={+}{{\texttt{+}}}1 {-}{-}1,
+  language=Golang % this is it !
+}
+
+\title{Proposal: Go--}
 \author{Jeffrey A. Robinson}
 
 \begin{document}
 
+\maketitle
+
 \section{Introduction}
 
 Go is a strongly typed programming language focused towards systems programming and concurrency.
+We hope to support a subset of functionality of this language which include records, loops, conditionals, and functions.
+We include a list of programs we want to support along with the grammar we plan on implementing.  
 
 \section{Supported}
 
 In our language we want to support enough operations so that we can construct a select number of algorithms.
-We have broken down the  
 
-\subsection{Will Support}
+\subsection{Expect to Support}
 
-These items 
-
-\begin{itemize}
-    \item primitives - integers, reals, complex, and strings
-    \item functions - basic functions with multiple arguments and a single return value
-    \item structures - support basic GO structures
-\end{itemize} 
-
-\subsection{Possible Support}
+We want to make sure we can support any program an intro programming class covers.
+To ensure this requirment we have a set of programs which must be supported which are located in the appendix.
+We expect to be able to support the first three programs and hopefully the fourth.
 
 \begin{itemize}
-    \item interfaces
-    \item variadic functions
-    \item 
+    \item [High Chance] Basic I/O
+    \item [High Chance] Simple Calculator
+    \item [High Chance] Iterative and Recursive Fibonacci
+    \item [Low Chance] Infix to Prefix conversion
 \end{itemize}
 
-\subsection{Long term goals} 
+These programs require the following programming objects to be available to the programmer
+
+\begin{itemize}
+    \item primitives    - integers, reals, booleans, and strings
+    \item conditionals  - if and else statements along with (possible) switch statements
+    \item loops         - looping structure 
+    \item functions     - non variadic functions with zero or more arguments and zero or one return values
+    \item records       - arrays and structures
+\end{itemize} 
+
+\subsection{Might Support}
+
+If we finish all required items and have enough time to implement the following 
+
+\begin{itemize}
+    \item full support of records   - Allow for grouping of data into single structure
+    \item variadic functions        - Allow for functions allow a variadic number of arguments.
+    \item multiple return values    - Allow for zero, one, or more return values and types
+\end{itemize}
+ 
+We believe that most of these are not difficult to implement but that due to time constraints they migth not be completed.
+
+\subsection{Unlikely Support} 
+
+In this section we talk about a list of items we want to support but will not have the time to support.
+
+\begin{itemize}
+    \item first class functions     - Allow for anonymous and named functions to created within a function.
+    \item struct functions  - Functions for structures allow for implementation of interfaces.  However, we would need to support binding functions to structures and a method to call them.
+    \item Interfaces        - Interfaces in Go use duck typing. This requires verification of structure function signatures  
+    \item Imports           - Being able to handle file inclusion, dependency checks, and name collision. 
+\end{itemize}
+
+\section{Semantics}
+
+Go supports static typing however it allows for untyped variables as in the snippet below
+
+\begin{lstlisting}[title=Untyped value]
+package main
+
+func main() {
+    i := 0
+    println(i)
+}
+\end{lstlisting}
+
+For this code snippet we have not defined the type of $i$ and we do not know if the value 0 is an $int$, $int32$, $int64$, or other numeric value.
+If the value of the right side can be determined then the type of $i$ can be infered.
+Otherwise, to ensure static typing we have the following rules
+
+\begin{itemize}
+    \item   If the expression on the right is an integral literal the type is $int$
+    \item   If the expression on the right is a floating point literal the type is $float$
+    \item   If the expression on the right is a string literal the type is $string$
+    \item   If the expression on the right is an array of values then the type is an array of the least restrictive type as defined above. 
+\end{itemize}
+
+\appendix
+
+\section{Appendix}
+
+\subsection{Required Programs}
+
+\subsection{Basic I/O}
+
+\begin{lstlisting}[title=Basic I/O Program]
+package main
+
+func main() {
+    print("Please enter a number")
+    x := readFloat()
+    print("Please enter another number")
+    y := readFloat()
+    println("The sum of these two numbers is", x + y);
+}
+\end{lstlisting}
+
+\subsection{Basic Calculator}
+
+\begin{lstlisting}[title=Basic Calculator]
+package main
+
+func add(x , y float64) float64 {
+    return x + y
+}
+
+func subtract(x , y float64) float64 {
+    return x - y
+}
+
+func multiply(x , y float64) float64 {
+    return x * y
+}
+
+func divide(x , y float64) float64 {
+    return x / y
+}
+
+func main() {
+    println("Welcome to the calculator")
+    for {
+        
+
+        err := false
+        errMsg := ""
+        x := readFloat()
+        op := readCharacter()
+        y := readFloat()
+        readCharacter() // newline
+
+        switch op {
+            case '+':
+                res = add(res,y)
+            case '-':
+                res = subtract(res,y)
+            case '*':
+                res = multiply(res,y)
+            case '/':
+                if y != 0 {
+                    res = divide(res,y)
+                } else {
+                    err = true
+                    errMsg = "Divide by zero"
+                }
+            default:
+                err = true
+                errMsg = "Invalid operator"
+        }
+        if err {
+            println(errMsg)
+            return
+        } else {
+            println(res)
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection{Iterative and Recursive Fibonacci}
+
+\begin{lstlisting}[title=Iterative and Recursive Fibonacci]
+package main
+
+func recursiveFib(i int) int {
+    if i < 2 {
+        return 1
+    }
+    return fib(i-1)+fib(i-2)
+}
+
+func iterativeFib(i int) int {
+    a := 1
+    b := 1
+    for i > 0 {
+        t := a+b
+        a = b
+        b = t
+        i--
+    }
+    return a
+}
+
+int main() {
+    print(recursiveFib(10));
+    print(iterativeFib(10));
+}
+
+\end{lstlisting}
+
+\subsection{Infix to Prefix}
+
+\begin{lstlisting}[title=Infix to Prefix]
+package main
+
+type stack struct {
+    stk [100]rune
+    pos   int
+}
+
+func (s *stack) Push(v rune) {
+    s.stk[s.pos++] = v
+}
+
+func (s *stack) Pop() rune {
+    s.pos--
+    return s.stk[s.pos]
+}
+
+func (s *stack) Empty() bool {
+    return s.pos == 0
+}
+
+func (s *stack) Peek() rune {
+    return s.stk[s.pos - 1]
+}
+
+// Ruturns true if a has higher precedence
+func precedence(a , b rune) bool {
+    if a == b {
+        return true
+    }
+    if a == '+' || a == '-' {
+        if b == '*' || b == '/' {
+            return false
+        }
+        return true
+    }
+    return !precedence(b,a)
+}
+
+func isDigit(r rune) bool {
+    return '0' <= r && r <= '9'
+} 
+
+func reverse(data []rune) {
+    left := 0
+    right := len(data) - 1
+    for left < right {
+        t := data[left]
+        data[left] = data[right]
+        data[right = t
+        left++
+        right--
+    }
+}
+
+int main() {
+    data := {'1', '+', '2', '*' , '5', '/', '2' , '+' , '4' , '-' , '3' }
+    result := []rune(nil)
+    
+    // Step 1 - Reverse array
+    reverse(data)
+
+    // Step 2 - Convert to postfix
+    stk := &stack{}
+    for i := range data {
+        if isOp(data[i]) {
+            for !stk.Empty() {
+                if precedence(stk.Peek(),data[i]) {
+                    result = append(result,stk.Pop())
+                }else {
+                    break
+                }
+            }else {
+            stk.Push(data[i])
+        } else {
+            result = append(result,data[i])
+        }
+    }
+
+    for !stk.Empty() {
+        result = append(result,stk.Pop())
+    }
+
+    // Step 3 - reverse answer
+    reverse(result)
+
+    // Display answer
+    for i := range result {
+        print(result[i])
+    }
+    println()
+}
+
+\end{lstlisting}
+\section{Grammar}
+
+\input{./grammar/go--/go--.tex}
+
 
 \end{document}

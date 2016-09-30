@@ -46,3 +46,24 @@ func (a Alternative) String() string {
 	}
 	return buffer.String()
 }
+
+// LexemeType represents the types of Lexemes we support
+type LexemeType uint8
+
+// List of default lexeme types
+const (
+	KEYWORD = LexemeType(iota)
+	ID      = LexemeType(iota)
+	REAL    = LexemeType(iota)
+	INTEGER = LexemeType(iota)
+)
+
+type Lexeme interface {
+	Type() LexemeType
+	Value() string
+}
+
+type Lexer interface {
+	Scan() bool
+	Next() Lexeme
+}

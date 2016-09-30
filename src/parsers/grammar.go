@@ -73,8 +73,43 @@ func (g *grammar) Load(in io.Reader) {
 }
 
 // CreateGrammar returns a new grammar data-structure
-func CreateGrammar() Grammar {
+func New() Grammar {
 	return &grammar{
 		productions: make(map[Symbol]Production),
 	}
+}
+
+// Parse a stream to construct a Grammar
+// Expect EBNF
+//
+//	First rule is the entry point
+//		TODO: Make entry with no one pointing to it the entry point
+//
+//	Assume productions are of the form:
+//		<NONTERM> ::= RHS
+//
+//	EBNF operators are the symbols:
+//		[ ] ( ) { } |
+//
+//		[ optional_stuff ]
+//		( group )
+//		{ zero_or_more }
+//		this | that
+//
+//
+//		terminals are surrounded by double quotes
+//
+//
+func Parse(input io.Reader) Grammar {
+	keywords := []string{"|", "[", "]", "(", ")", "{", "}"}
+	result := New()
+	lex := NewLexer(input, keywords)
+	for lex.Scan() {
+		result.AddProduction(readProduction(lex))
+	}
+	return result
+}
+
+func readProduction(lex Lexer) Production {
+	return nil
 }

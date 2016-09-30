@@ -1,0 +1,442 @@
+
+\documentclass{article}
+
+\usepackage{fullpage}
+
+\usepackage{syntax}
+
+\begin{document}
+    
+    \setlength{\grammarparsep}{5pt plus 1pt minus 1pt} % increase separation between rules
+    \setlength{\grammarindent}{12em} % increase separation between LHS/RHS 
+
+    \paragraph{Packages}
+
+    \begin{grammar}
+
+        <MSourceFile>       ::=     <PackageClause> ";" [ <ImportDecl_loop> ] [ <TopLevelDecl_loop> ]
+        
+        <TopLevelDecl_loop> ::=     <TopLevelDecl> ";" [ <TopLevelDecl_loop> ]
+
+        <ImportDecl_loop>   ::=     <ImportDecl> ";" [ <ImportDecl_loop> ]
+
+        <PackageClause>     ::=     "package" <PackageName>
+
+        <PackageName>       ::=     <identifier>
+
+        <ImportDecl>        ::=     "import" ( <ImportSpec> | "(" [ <ImportSpec_loop> ] ")" ) .
+
+        <ImportSpec_loop>   ::=     <ImportSpec> ";" [ <ImportSpec_loop> ]
+
+        <ImportSpec>        ::=     [ "." | <PackageName> ] <ImportPath>
+
+        <ImportPath>        ::=     <string_lit>
+
+
+
+    \end{grammar}
+
+    \begin{grammar}
+
+        <Block>             ::=     "{" <StatementList> "}"
+
+        <StatementList>     ::=     <Statement> ";" [ <StatementList> ]
+
+    \end{grammar}
+
+    \paragraph{Statements}
+
+    \begin{grammar}
+
+        % Statement
+        <Statement>             ::=     <Declaration> | <LabeledStmt> | <SimpleStmt>
+                                \alt    <GoStmt> | <ReturnStmt> | <BreakStmt> | <ContinueStmt> 
+                                \alt    <GotoStmt> | <FallthroughStmt> | <Block> | <IfStmt>
+                                \alt    <SwitchStmt> | <SelectStmt> | <ForStmt> | <DeferStmt>
+
+        <SimpleStmt>            ::=     <EmptyStmt> | <ExpressionStmt> | <SendStmt>
+                                \alt    <IncDecStmt> | <Assignment> | <ShortVarDecl>
+
+        % Empty
+        <EmptyStmt>             ::=     ""
+
+        % Label
+        <LabeledStmt>           ::=     <Label> ":" <Statement>
+
+        <Label>                 ::=     <identifier>
+
+        % Expression
+        <ExpressionStmt>        ::=     <Expression>
+
+        % Channel
+        <SendStmt>              ::=     <Channel> "<-" <Expression>
+
+        <Channel>               ::=     <Expression>
+
+        % Increment
+        <IncDecStmt>            ::=     <Expression> ( "++" | "--" )
+
+        <Assignment>            ::=     <ExpressionList> <assign_op> <ExpressionList>
+
+        <assign_op>             ::=     [ <add_op> | <mul_op> ] "="
+
+        % If
+        <IfStmt>                ::=     "if" [ <SimpleStmt> ";" ] <Expression> <Block> [ "else" ( <IfStmt> | <Block> ) ]
+
+        % Switch
+        <SwitchStmt>            ::=     <ExprSwitchStmt> | <TypeSwitchStmt>
+        
+        <ExprSwitchStmt>        ::=     "switch" [ <SimpleStmt> ";" ] [ <Expression> ] "{" [ <ExprCaseClause_loop> ] "}"
+        
+        <ExprCaseClause_loop>   ::=     <ExprCaseClause> [ <ExprCaseClause_loop> ]
+
+        <ExprCaseClause>        ::=     <ExprSwitchCase> ":" <StatementList>
+
+        <ExprSwitchCase>        ::=     "case" <ExpressionList> | "default"
+
+        % Type Switch
+        <TypeSwitchStmt>        ::=     "switch" [ <SimpleStmt> ";" ] <TypeSwitchGuard> "{" [ <TypeCaseClause_loop> ] "}"
+
+        <TypeCaseClause_loop>   ::=     <TypeCaseClause> [ <TypeCaseClause_loop> ]
+
+        <TypeSwitchGuard>       ::=     [ <identifier> ":=" ] <PrimaryExpr> "." "(" "type" ")"
+
+        <TypeCaseClause>        ::=     <TypeSwitchCase ":" <StatementList>
+
+        <TypeSwitchCase>        ::=     "case" <TypeList> | "default"
+
+        <TypeList>              ::=     <Type> [ "," <TypeList> ]
+
+        % Loops
+        <ForStmt>               ::=     "for" [ <Condition> | <ForClause> | <RangeClause> ] <Block>
+
+        <Condition>             ::=     <Expression>
+
+        <ForClause>             ::=     [ <InitStmt> ] ";" [ <Condition> ] ";" [ <PostStmt> ]
+
+        <InitStmt>              ::=     <SimpleStmt>
+
+        <PostStmt>              ::=     <SimpleStmt>
+
+        <RangeClause>           ::=     [ <ExpressionList> "=" | <IdentifierList> ":=" ] "range" <Expression>
+
+        % Go statement
+        <GoStmt>                ::=     "go" <Expression>
+
+        <SelectStmt>            ::=     "select" "{" [ <CommClause_loop> ] "}"
+
+        <CommClause_loop>       ::=     <CommClause> [ <CommClause_loop> ]
+
+        <CommClause>            ::=     <CommCase> ":" <StatementList>
+
+        <CommCase>              ::=     "case" ( <SendStmt> | <RecvStmt> ) | "default"
+
+        <RecvStmt>              ::=     [ <ExpressionList> "=" | <IdentifierList> ":=" ] <RecvExpr>
+
+        <RecvExpr>              ::=     <Expression>
+
+        <ReturnStmt>            ::=     "return" [ <ExpressionList> ]
+
+        <BreakStmt>             ::=     "break" [ <Label> ]
+
+        <ContinueStmt>          ::=     "continue" [ <Label> ]
+
+        <GotoStmt>              ::=     "goto" <Label>
+
+        <FallthroughStmt>       ::=     "fallthrough"
+
+        <DeferStmt>             ::= "defer" <Expression>
+
+    \end{grammar}
+
+    \paragraph{Expressions}
+
+    \begin{grammar}
+
+        <Operand>           ::= <Literal> | <OperandName> | <MethodExpr> | "(" <Expression> ")"
+
+        <Literal>           ::= <BasicLit> | <CompositeLit> | <FunctionLit>
+
+        <BasicLit>          ::= <int_lit> | <float_lit> | <imaginary_lit> | <rune_lit> | <string_lit>
+
+        <OperandName>       ::= <identifier> | <QualifiedIdent>
+
+        % Qualified
+        <QualifiedIdent>    ::= <PackageName> "." <identifier>
+
+        % Composite
+        <CompositeLit>      ::=     <LiteralType> <LiteralValue>
+
+        <LiteralType>       ::=     <StructType> | <ArrayType> | "[" "..." "]" <ElementType>
+                            \alt    <SliceType> | <MapType> | <TypeName>
+
+        <LiteralValue>      ::=     "{" [ ElementList [ "," ] ] "}"
+
+        <ElementList>       ::=     KeyedElement [ ", " <ElementList> ]
+
+        <KeyedElement>      ::=     [ <Key> ":" ] <Element>
+
+        <Key>               ::=     <FieldName> | <Expression> | <LiteralValue>
+
+        <FieldName>         ::=     <identifier>
+
+        <Element>           ::=     <Expression> | <LiteralValue>
+
+        % Function
+        <FunctionLit> = "func" <Function>
+
+        % Primary Expr
+        <PrimaryExpr>         ::=     <Operand>
+                            \alt    <Conversion>
+                            \alt    <PrimaryExpr> <Selector>
+                            \alt    <PrimaryExpr> <Index>
+                            \alt    <PrimaryExpr> <Slice>
+                            \alt    <PrimaryExpr> <TypeAssertion>
+                            \alt    <PrimaryExpr> <Arguments>
+
+        <Selector>          ::=     "." <identifier>
+
+        <Index>             ::=     "[" <Expression> "]"
+
+        <Slice>             ::=     "[" [ <Expression> ] ":" [ <Expression> ] "]"
+                            \alt    "[" [ Expression ] ":" Expression ":" Expression "]"
+
+        <TypeAssertion>     ::=     "." "(" <Type> ")"
+
+        <Arguments>         ::=     "(" [ ( <ExpressionList> | <Type> [ "," <ExpressionList> ] ) [ "..." ] [ "," ] ] ")"
+
+        % Method
+        <MethodExpr>        ::=     <ReceiverType> "." <MethodName>
+
+        <ReceiverType>      ::=     <TypeName> | "(" "*" <TypeName> ")" | "(" <ReceiverType> ")"
+
+        % Operators
+        <Expression>        ::=     <UnaryExpr> | <Expression> <binary_op> <Expression>
+
+        <UnaryExpr>         ::=     <PrimaryExpr> | <unary_op> <UnaryExpr>
+
+        <binary_op>         ::=     "||" | "&&" | <rel_op> | <add_op> | <mul_op>
+
+        <rel_op>            ::=     "==" | "!=" | "<" | "<=" | "\>" | "\>="
+
+        <add_op>            ::=     "+" | "-" | "|" | "^"
+
+        <mul_op>            ::=     "*" | "/" | "%" | "<<" | ">>" | "&" | "&^"
+        
+        <unary_op>          ::=     "+" | "-" | "!" | "^" | "*" | "&" | "<-"
+
+        <Conversion>        ::=     <Type> "(" <Expression> [ "," ] ")"
+
+    \end{grammar}
+
+    \paragraph{Declarations}
+
+    \begin{grammar}
+
+        %%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%% Declarations %%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%
+
+        <Declaration>       ::=     <ConstDecl> | <TypeDecl> | <VarDecl>
+
+        <TopLevelDecl>      ::=     <Declaration> | <FunctionDecl> | <MethodDecl>
+
+        <ConstDecl>         ::=     "const" ( <ConstSpec> | "(" [ <ConstSpec_loop> ] ")" )
+
+        <ConstSpec_loop>    ::=     <ConstSpec> ";" [ <ConstSpec_loop> ]
+
+        <ConstSpec>         ::=     <IdentifierList> [ [ <Type> ] "=" <ExpressionList> ]
+
+        <IdentifierList>    ::=     <identifier> [ "," <IdentifierList> ]
+
+
+        <ExpressionList>    ::=     <Expression> [ "," <ExpressionList> ]
+
+        % Type
+        <TypeDecl>          ::=     "type" ( <TypeSpec> | "(" [ <TypeSpec_loop> ] ")" )
+
+        <TypeSpec_loop>     ::=     <TypeSpec> ";" [ <TypeSpec_loop> ]
+
+        <TypeSpec>          ::=     <identifier> <Type>
+
+        % Variables
+        <VarDecl>           ::=     "var" ( <VarSpec> | "(" [ <VarSpec_loop> ] ")" )
+
+        <VarSpec_loop>      ::=     <VarSpec> ";" [ <VarSpec_loop> ]
+
+        <VarSpec>           ::=     <IdentifierList> ( <Type> [ "=" <ExpressionList> ] | "=" <ExpressionList> )
+
+        <ShortVarDecl>      ::=     <IdentifierList> ":=" <ExpressionList>
+
+        % Function
+        <FunctionDecl>      ::=     "func" <FunctionName> ( <Function> | <Signature> )
+
+        <FunctionName>      ::=     <identifier>
+
+        <Function>          ::=     <Signature> <FunctionBody>
+
+        <FunctionBody>      ::=     <Block>
+
+        % Method
+        <MethodDecl>          ::=     "func" <Receiver> <MethodName> ( <Function> | <Signature> )
+
+        <Receiver>            ::=     <Parameters>
+
+    \end{grammar}
+
+
+    \paragraph{Types}
+
+    \begin{grammar}
+        %%%%%%%%%%%%%%%%%%%%%%%%
+     %%%%%%%%%%% Types %%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%
+
+        <Type>              ::=     <TypeName> | <TypeLit> | "(" <Type> ")"
+
+        <TypeName>          ::=     <identifier> | <QualifiedIdent>
+
+        <TypeLit>           ::=     <ArrayType> | <StructType> | <PointerType> 
+                            \alt    <FunctionType> | <InterfaceType> | <SliceType>
+                            \alt    <MapType> | <ChannelType> | <NumType>
+        
+        % Interface
+        <InterfaceType>     ::=     "interface" "{" [ <MethodSpec_loop> ] "}"
+
+        <MethodSpec_loop>   ::=     <MethodSpec> ";" [ <MethodSpec_loop> ]
+
+        <MethodSpec>        ::=     <MethodName> <Signature> | <InterfaceTypeName>
+
+        <MethodName>        ::=     <identifier>
+
+        <InterfaceTypeName> ::=     <TypeName>
+
+        % Function
+        <FunctionType>      ::=     "func" <Signature>
+
+        <Signature>         ::=     <Parameters> [ Result ]
+
+        <Result>            ::=     <Parameters> | Type
+
+        <Parameters>        ::=     "(" [ <ParameterList> [ "," ] ] ")"
+
+        <ParameterList>     ::=     <ParameterDecl> [ "," <ParameterList> ]
+        
+        <ParameterDecl>     ::=     [ <IdentifierList> ] [ "..." ] <Type>
+
+        % Pointer
+        <PointerType>       ::=     "*" <BaseType>
+
+        <BaseType>          ::=     <Type>
+
+        % Struct
+        <StructType>        ::=     "struct" "{" [ <FieldDecl_loop> ] "}"
+
+        <FieldDecl_loop>    ::=     <FieldDecl> ";" [ <FieldDecl_loop> ]
+
+        <FieldDecl>         ::=     (<IdentifierList> <Type> | <AnonymousField>) [ <Tag> ]
+
+        <AnonymousField>    ::=     [ "*" ] <TypeName>
+
+        <Tag>               ::=     <string_lit>
+
+        % Slice
+        <SliceType>         ::=     "[" "]" <ElementType>
+
+        % Array
+        <ArrayType>         ::=     "[" <ArrayLength> "]" <ElementType>
+
+        <ArrayLength>       ::=     <Expression>
+
+        <ElementType>       ::=     <Type>
+
+        % Maps
+        <MapType>           ::=     "map" "[" <KeyType> "]" <ElementType>
+
+        <KeyType>           ::=     <Type>
+
+        % Channel
+        <ChannelType>       ::= ( "chan" | "chan" "<-" | "<-" "chan" ) <ElementType> 
+
+        % Numeric types
+        <NumType>           ::=     "bool" | "byte" | "complex64" | "complex128" | "error" | "float32" | "float64"
+	                        \alt    "int" | "int8" | "int16" | "int32" | "int64" | "rune" | "string"
+                            \alt    "uint" | "uint8" | "uint16" | "uint32" | "uint64" | "uintptr"
+
+        % Constant values
+        <constants>         ::=     "true" | "false" | "iota"
+
+        % Constant zero value
+        <zero_val>          ::=     "nil" 
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%% literals %%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%
+
+        <identifier>    ::= <letter> <ident_rem>
+        
+        <ident_rem>     ::= ( <letter> | <unicode_letter> ) [ <ident_rem> ]
+
+
+        % string literals
+        <string_lit>        ::=     <raw_string_lit> | <inter_string_lit>
+
+        <raw_string_lit>    ::=     "`" [ <raw_loop> ] "'"
+
+        <raw_loop>          ::=     ( <unicode_char> | "newline" ) [ <raw_loop> ] 
+
+        <inter_string_lit>  ::=     "\"" [ <inter_loop> ] "\""
+
+        <inter_loop>        ::=     ( <unicode_value> | <byte_value> ) [ <inter_loop> ]
+
+        <imaginary_lit>     ::=     ( <decimals> | <float_lit> ) "i"
+
+        <float_lit>         ::=     <decimals> "." [ <decimals> ] [ <exponent> ]
+                            \alt    <decimals> <exponent>
+                            \alt    "." <decimals> [ <exponent> ]
+        
+        <decimals>          ::=     <decimal_digit> [ <decimals> ]
+
+        <exponent>          ::=     ( "e" | "E" ) [ "+" | "-" ] <decimals>
+
+        <int_lit>           ::=     <decimal_lit> | <octal_lit> | <hex_lit>
+
+        <decimal_lit>       ::=     ( "1" ... "9" ) [ <dec_lit_loop> ]
+
+        <dec_lit_loop>      ::=     <decimal_digit> [ <dec_lit_loop> ]
+
+        <octal_lit>         ::=     "0" [ <oct_lit_loop> ]
+        
+        <oct_lit_loop>      ::=     <octal_digit> [ <oct_lit_loop> ]
+
+        <hex_lit>           ::=     "0" ( "x" | "X" ) <hex_digit> [ <hex_lit_loop> ]
+
+        <hex_lit_loop>      ::=     <hex_digit> [ <hex_lit_loop> ]
+
+        <letter>            ::=     <unicode_letter> | "_"
+
+        <decimal_digit>     ::=     <octal_digit> | "8" | "9"
+
+        <octal_digit>       ::=     "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7"
+
+        <hex_digit>         ::=     <decimal_digit> | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f"
+
+        <rune_lit>          ::=     "`" ( unicode_value | byte_value ) "\""
+
+        <unicode_value>     ::=     <unicode_char> | <little_u_value> | <big_u_value> | <escaped_char>
+
+        <byte_value>        ::=     <octal_byte_value> | <hex_byte_value>
+
+        <octal_byte_value>  ::=     "\\" <octal_digit> <octal_digit> <octal_digit>
+
+        <hex_byte_value>    ::=     "\\" "x" <hex_digit> <hex_digit>
+
+        <little_u_value>    ::=     "\\" "u" <hex_digit> <hex_digit> <hex_digit> <hex_digit>
+
+        <big_u_value>       ::=     "\\" "U" <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit>
+
+        <escaped_char>      ::=     "\\" ( "a" | "b" | "f" | "n" | "r" | "t" | "v" | "\\" | "\'" | "\"" )
+
+    \end{grammar}
+
+\end{document}

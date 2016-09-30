@@ -26,7 +26,7 @@
 
 </style>
 
-# Notes for Chapter 1 #
+# Introduction Notes #
 
 ## Summary ##
 
