@@ -19,8 +19,6 @@ namespace ast {
             throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", unexpected EOF");
         }
 
-        std::cout << "A: " << *c << std::endl;
-        
         switch(c->GetType()) {
             case lexer::VAR:
                 variable = true;
@@ -37,8 +35,6 @@ namespace ast {
         name = new Identifier(lex, table);
 
         c = lex.Next();
-
-        std::cout << "B: " << *c << std::endl;
 
         if(c->GetType() == lexer::C_EQUAL) {
             consumeLexemeType(c, lexer::C_EQUAL);

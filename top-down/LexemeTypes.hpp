@@ -12,7 +12,7 @@ namespace lexer {
                 LT , LTE, GT, GTE, BANG , OR, 
                 AND, MUL, DIV, PLUS, MINUS, MOD, 
                 PERIOD, FUNC, RETURN, COMMA, NE,
-                SEMI, UNDEF, PACKAGE, IMPORT,COLON , TYPE
+                SEMI, UNDEF, PACKAGE, IMPORT,COLON , TYPE, ENDFILE
     };
 
     std::string& LexemeTypeToString(LexemeType t);

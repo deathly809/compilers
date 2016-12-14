@@ -44,7 +44,8 @@ namespace lexer {
         {UNDEF,"UNDEF"},
         {IMPORT,"IMPORT"},
         {PACKAGE,"PACKAGE"},
-        {COLON,"COLON"}
+        {COLON,"COLON"},
+        {ENDFILE,"EOF"}
     };
 
     std::string& LexemeTypeToString(LexemeType t) {

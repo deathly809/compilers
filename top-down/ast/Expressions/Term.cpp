@@ -34,8 +34,12 @@ namespace ast {
             case lexer::REAL:
                 rLit = new RealLiteral(lex,table);
                 break;
-            default:
+            case lexer::ID:
                 fCall = new FunctionCall(lex, table);
+                break;
+            default:
+                /* nothing */
+                break;
         }
     }
 

@@ -14,7 +14,6 @@ EXEC       := $(patsubst %,$(ODIR)/%,$(_EXEC))
 .SUFFIXES: .cpp .o
 
 all:       main $(EXEC) main
-	echo "Hello"
 	mkdir -p $(ODIR)/exec
 	mv $(ODIR)/test* $(ODIR)/exec/
 

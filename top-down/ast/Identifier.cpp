@@ -11,7 +11,6 @@ namespace ast {
         Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table) {
             lexeme = lex.Next();
             checkLexemeType(lexeme,lexer::ID);
-            std::cout << *lexeme << std::endl;
             lex.HasNext();
         }
 

@@ -13,9 +13,12 @@ namespace ast {
     // E := F | F ( "+" | "-" | "|" ) E
     // F := T | T ( "*" | "/" | "%" | "&" ) F
     // T := (E) | ID | LIT | F_CALL
-    Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
+    Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
+        
         lhs = new Factor(lex, table);
         lexer::Lexeme *l = lex.Next();
+        lex.HasNext();
+
         switch(l->GetType()) {
             case lexer::PLUS:
                 op = new Operator(Operator::AdditionOperator);
@@ -31,9 +34,10 @@ namespace ast {
                 lex.PushBack(l);
                 break;
         }
+
         if(op->GetType() != Operator::None) {
-            rhs = new Expression(lex,table);
             delete l;
+            rhs = new Expression(lex,table);
         } else {
             // pushed l back
         }

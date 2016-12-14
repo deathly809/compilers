@@ -22,9 +22,9 @@ namespace ast {
             ValueType ResultType();
 
         private:
-            Term*           lhs;
-            Factor*         rhs;
-            Operator*       op;
+            Term*           lhs = nullptr;
+            Factor*         rhs = nullptr;
+            Operator*       op  = nullptr;
     };
 
 }

@@ -19,7 +19,9 @@ namespace lexer {
         {"func",FUNC},
         {"int",INT},
         {"return",RETURN},
-        {"string",STRING}
+        {"string",STRING},
+        {"true",BOOL},
+        {"false",BOOL},
     };
 
 
@@ -71,7 +73,7 @@ namespace lexer {
         std::string id = ss.str();
         auto ptr = Keywords.find(id);
         if(ptr != Keywords.end()) {
-            return new Lexeme(ptr->second,file,line,column);
+            return new Lexeme(ptr->second,id,file,line,column);
         }
         return new Lexeme(ID,id,file,line,column);
     }
@@ -118,10 +120,10 @@ namespace lexer {
             case '.':
                 result = new Lexeme(PERIOD,file,line,column);
                 break;
-            /*case ':':
-                result = new Lexeme(COLON,file,line,column);
+            case '%':
+                result = new Lexeme(MOD,file,line,column);
                 break;
-            */case '-':
+            case '-':
                 result = new Lexeme(MINUS,file,line,column);
                 break;
             case '+':
@@ -143,6 +145,11 @@ namespace lexer {
         }
         
         char curr = scan->Next();
+
+        if(curr == 0) {
+            return new Lexeme(ENDFILE,file,line,column);
+        }
+
 
         if(curr == ':') {
 
@@ -271,10 +278,6 @@ namespace lexer {
 
         if(std::isdigit(curr)) {
             return readNumber();
-        }
-
-        if(curr == 0) {
-            return nullptr;
         }
 
         throw std::runtime_error(unexpectedCharacter(curr,file,line,column));
