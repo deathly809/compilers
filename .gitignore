@@ -4,4 +4,6 @@
 *.log
 *.aux
 *.obj
+*.o
 output/
+./top-down/output/
