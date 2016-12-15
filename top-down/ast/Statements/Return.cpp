@@ -12,13 +12,13 @@ namespace ast {
         delete result;
     }
 
-    void Return::Validate() {
+    void Return::Validate() const {
         if( result != nullptr) {
             result->Validate();
         }
     }
 
-    void Return::GenerateCode(std::ostream & out) {
+    void Return::GenerateCode(std::ostream & out) const {
 
     }
 }

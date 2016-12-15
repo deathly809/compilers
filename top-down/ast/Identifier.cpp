@@ -18,20 +18,24 @@ namespace ast {
             delete lexeme;
         }
 
-        void Identifier::Validate() {
+        void Identifier::Validate() const {
             /* Nothing to validate */
         }
 
-        void Identifier::GenerateCode(std::ostream & out) {
+        void Identifier::GenerateCode(std::ostream & out) const {
             // Should be nothing to do
         }
 
-        ValueType Identifier::ResultType() {
+        ValueType Identifier::ResultType() const {
             return IntType;
         }
 
-        std::string Identifier::GetName() {
+        std::string Identifier::GetName() const {
             return lexeme->GetValue();
+        }
+
+        std::ostream& operator<<(std::ostream & os, const Identifier & id) {
+            return os << id.GetName();
         }
 
 }

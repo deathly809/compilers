@@ -24,8 +24,8 @@ namespace ast {
             VariableBlock(lexer::Lexer & lex, symtable::SymbolTable * table);
             ~VariableBlock();
 
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
     };
     

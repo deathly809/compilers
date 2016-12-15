@@ -48,7 +48,7 @@ namespace ast {
         vars.clear();
     }
 
-    void Program::Validate() {
+    void Program::Validate() const {
         for( auto&& f : funcs ) {
             f->Validate();
         }
@@ -60,7 +60,7 @@ namespace ast {
         }
     }
 
-    void Program::GenerateCode(std::ostream & out) {
+    void Program::GenerateCode(std::ostream & out) const {
 
     }
 

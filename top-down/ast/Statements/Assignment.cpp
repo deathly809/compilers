@@ -19,12 +19,12 @@ namespace ast {
         delete rhs;
     }
 
-    void Assignment::Validate() {
+    void Assignment::Validate() const {
         lhs->Validate();
         rhs->Validate();
     }
 
-    void Assignment::GenerateCode(std::ostream & out) {
+    void Assignment::GenerateCode(std::ostream & out) const {
 
     }
 

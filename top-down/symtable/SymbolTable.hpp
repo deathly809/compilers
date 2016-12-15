@@ -36,7 +36,7 @@ namespace symtable {
                 /* Empty */
             }
 
-            int GetValue() {
+            int GetValue() const {
                 return value;
             }
     };
@@ -49,7 +49,7 @@ namespace symtable {
                 /* Empty */
             }
 
-            double GetValue() {
+            double GetValue() const {
                 return value;
             }
             
@@ -63,7 +63,7 @@ namespace symtable {
                 /* Empty */
             }
 
-            std::string GetValue() {
+            std::string GetValue() const {
                 return value;
             }
     };
@@ -77,7 +77,7 @@ namespace symtable {
                 /* Empty */
             }
 
-            bool GetValue() {
+            bool GetValue() const {
                 return value;
             }
     };

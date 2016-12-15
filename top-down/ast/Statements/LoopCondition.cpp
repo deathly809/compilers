@@ -29,7 +29,7 @@ namespace ast {
         }
     }
 
-    void LoopCondition::Validate() {
+    void LoopCondition::Validate() const {
         
         if(exp.size() == 1) {
             
@@ -48,7 +48,7 @@ namespace ast {
             
     }
 
-    void LoopCondition::GenerateCode(std::ostream & out) {
+    void LoopCondition::GenerateCode(std::ostream & out) const {
 
     }
 }

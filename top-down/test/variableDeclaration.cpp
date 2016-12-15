@@ -1,5 +1,5 @@
 
-#include "catch.hpp"
+#include <catch.hpp>
 
 #include <ast/Statements/VariableDeclaration.hpp>
 #include <Lexer.hpp>

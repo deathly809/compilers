@@ -32,8 +32,8 @@ namespace ast {
             FunctionDefinition(lexer::Lexer & lex, symtable::SymbolTable* table);
             ~FunctionDefinition();
             
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
     };
 
 }

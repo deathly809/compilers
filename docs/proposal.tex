@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage{appendix}
 \usepackage{fullpage}
 \usepackage{syntax}
 \usepackage{listings}
@@ -39,7 +40,9 @@
   language=Golang % this is it !
 }
 
-\title{Proposal: Go--}
+\title{Slower, weaker, buggier: Go-{}-}
+
+\date{}
 \author{Jeffrey A. Robinson}
 
 \begin{document}
@@ -49,34 +52,39 @@
 \section{Introduction}
 
 Go is a strongly typed programming language focused towards systems programming and concurrency.
-We hope to support a subset of functionality of this language which include records, loops, conditionals, and functions.
-We include a list of programs we want to support along with the grammar we plan on implementing.  
+We hope to support a subset of features from the language such as records, loops, conditionals, and functions.
+To ensure compliance with our expectations we include a list of programs we hope to support along with the grammar we plan on implementing.  
+Our grammar will be based on the Go grammar provided by the Go team located at {\bf golang.org}.   
 
-\section{Supported}
 
-In our language we want to support enough operations so that we can construct a select number of algorithms.
+\section{Support}
+
+In this section we give three levels of expectation on the features we want to support: expect support, might support, and unlikely support.  For those features we 
+``expect to support'' we have high confidence we can incorporate them into our language,
+for those labeled ``might support'' we feel that time constraints and complexity hinder completion,
+and for ``unlikely to support'' we feel that the complexity and time constraints prohibit inclusion.
 
 \subsection{Expect to Support}
 
-We want to make sure we can support any program an intro programming class covers.
-To ensure this requirment we have a set of programs which must be supported which are located in the appendix.
-We expect to be able to support the first three programs and hopefully the fourth.
+We want our language and compiler to be able to support programs that might be given in an introductory programming class.
+For this we have created four programs, which can be found in the appendix, that a freshman could write after taking a programming class.  
+Of the four programs, we expect to be able to compile the first three programs, and if possible, the fourth.
 
 \begin{itemize}
-    \item [High Chance] Basic I/O
-    \item [High Chance] Simple Calculator
-    \item [High Chance] Iterative and Recursive Fibonacci
-    \item [Low Chance] Infix to Prefix conversion
+    \item (High Chance) Basic I/O
+    \item (High Chance) Simple Calculator
+    \item (High Chance) Iterative and Recursive Fibonacci
+    \item (Low Chance)  Infix to Prefix conversion
 \end{itemize}
 
-These programs require the following programming objects to be available to the programmer
+\noindent In order for these example programs to compile we require the following programming constructs
 
 \begin{itemize}
     \item primitives    - integers, reals, booleans, and strings
     \item conditionals  - if and else statements along with (possible) switch statements
-    \item loops         - looping structure 
+    \item loops         - infinite, conditional, and range based
     \item functions     - non variadic functions with zero or more arguments and zero or one return values
-    \item records       - arrays and structures
+    \item structures    - arrays 
 \end{itemize} 
 
 \subsection{Might Support}
@@ -84,12 +92,12 @@ These programs require the following programming objects to be available to the 
 If we finish all required items and have enough time to implement the following 
 
 \begin{itemize}
-    \item full support of records   - Allow for grouping of data into single structure
+    \item full support for structs  - Allow for grouping of data into a single structure
     \item variadic functions        - Allow for functions allow a variadic number of arguments.
     \item multiple return values    - Allow for zero, one, or more return values and types
 \end{itemize}
  
-We believe that most of these are not difficult to implement but that due to time constraints they migth not be completed.
+We believe that most of these are not difficult to implement but that due to time constraints they might not be completed.
 
 \subsection{Unlikely Support} 
 
@@ -102,37 +110,44 @@ In this section we talk about a list of items we want to support but will not ha
     \item Imports           - Being able to handle file inclusion, dependency checks, and name collision. 
 \end{itemize}
 
-\section{Semantics}
+%\section{Semantics}
 
-Go supports static typing however it allows for untyped variables as in the snippet below
+%Go supports static typing however it allows for untyped variables as in the snippet below
+%
+%\begin{lstlisting}[title=Untyped value]
+%package main
+%
+%func main() {
+%    i := 0
+%    println(i)
+%}
+%\end{lstlisting}
+%
+%For this code snippet we have not defined the type of $i$ and we do not know if the value 0 is an $int$, $int32$, $int64$, or other numeric value.
+%If the value of the right side can be determined then the type of $i$ can be infered.
+%Otherwise, to ensure static typing we have the following rules
+%
+%\begin{itemize}
+%   \item   If the expression on the right is an integral literal the type is $int$
+%    \item   If the expression on the right is a floating point literal the type is $float$
+%    \item   If the expression on the right is a string literal the type is $string$
+%    \item   If the expression on the right is an array of values then the type is an array of the least restrictive type as defined above. 
+%\end{itemize}
 
-\begin{lstlisting}[title=Untyped value]
-package main
+%For the semantics of our language we plan on following the Go language specification description.  
+%For instance the ``short variable declaration'' includes no type and therefore must be inferred from the value assigned.
 
-func main() {
-    i := 0
-    println(i)
-}
-\end{lstlisting}
 
-For this code snippet we have not defined the type of $i$ and we do not know if the value 0 is an $int$, $int32$, $int64$, or other numeric value.
-If the value of the right side can be determined then the type of $i$ can be infered.
-Otherwise, to ensure static typing we have the following rules
+\part*{Appendix}
 
-\begin{itemize}
-    \item   If the expression on the right is an integral literal the type is $int$
-    \item   If the expression on the right is a floating point literal the type is $float$
-    \item   If the expression on the right is a string literal the type is $string$
-    \item   If the expression on the right is an array of values then the type is an array of the least restrictive type as defined above. 
-\end{itemize}
+\begin{appendices}
 
-\appendix
-
-\section{Appendix}
-
-\subsection{Required Programs}
+\section{Required Programs}
 
 \subsection{Basic I/O}
+
+The Basic I/O function reads and writes three data types: floats, strings, and integers.
+We read in two floating point numbers and output their sum, we read in the name of the user and output it, finally we read in an integer and output its double.
 
 \begin{lstlisting}[title=Basic I/O Program]
 package main
@@ -143,10 +158,24 @@ func main() {
     print("Please enter another number")
     y := readFloat()
     println("The sum of these two numbers is", x + y);
+
+    print("Please enter your name")
+    name := readString()
+    println("Your name is", name)
+
+    print("Please enter an integer")
+    i := readInt()
+    println("The integer doubled is",i + i)
 }
 \end{lstlisting}
 
 \subsection{Basic Calculator}
+
+Our basic calculator reads in a math expression from the console and evaluates it by reading left to right.
+All operators have identical precendence and is left associative.  This shows that we support the operators: +, -, *, and /. 
+This program runs until either an invalid operator is read or we try to read a real number and fail.
+This function shows that we can handle multiple math operators, functions, and infinite loops. 
+
 
 \begin{lstlisting}[title=Basic Calculator]
 package main
@@ -209,6 +238,9 @@ func main() {
 
 \subsection{Iterative and Recursive Fibonacci}
 
+For this program we implement two functions that compute Fibonacci numbers.  These two 
+programs show that we can handle iteration and recursion, and loops that handle a condition. 
+
 \begin{lstlisting}[title=Iterative and Recursive Fibonacci]
 package main
 
@@ -239,6 +271,10 @@ int main() {
 \end{lstlisting}
 
 \subsection{Infix to Prefix}
+
+This program showcases multiple programming constructs which we believe will be difficult to implement.
+This program takes in an infix mathematical operation and converts it into prefix notation.
+We use four new constructs: structures, structure functions, arrays, and range loops.
 
 \begin{lstlisting}[title=Infix to Prefix]
 package main
@@ -334,9 +370,13 @@ int main() {
 }
 
 \end{lstlisting}
-\section{Grammar}
 
-\input{./grammar/go--/go--.tex}
+%
+%\section{Grammar}
+%
+%\input{./grammar/go--/go--.tex}
+%
 
+\end{appendices}
 
 \end{document}

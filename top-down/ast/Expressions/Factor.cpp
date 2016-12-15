@@ -17,11 +17,15 @@ namespace ast {
     Factor::Factor(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
 
         #ifdef DEBUG
-            std::cout << __PRETTY_FUNCTION__ <<  std::endl;
+            std::cout << "Factor" << std::endl;
         #endif
 
         lhs = new Term(lex, table);        
         lexer::Lexeme *l = lex.Next();
+        
+        #ifdef DEBUG
+            std::cout << "after Term:"  << *l << std::endl;
+        #endif
 
         switch(l->GetType()) {
             case lexer::MUL:
@@ -42,9 +46,10 @@ namespace ast {
                 break;
         }
 
+        // We found an operator, consume it
         if(op->GetType() != Operator::None) {
-            lex.HasNext();
             delete l;
+            lex.HasNext();
             rhs = new Factor(lex,table);
         }
 
@@ -56,7 +61,7 @@ namespace ast {
         delete rhs;
     }
 
-    void Factor::Validate() {
+    void Factor::Validate() const {
         
         ValueType type = lhs->ResultType();
         if( type == NilType) {
@@ -101,12 +106,20 @@ namespace ast {
         }
     }
 
-    void Factor::GenerateCode(std::ostream & out) {
+    void Factor::GenerateCode(std::ostream & out) const {
         // TODO : Generate the code!
     }
 
-    ValueType Factor::ResultType() {
+    ValueType Factor::ResultType() const {
         return lhs->ResultType();
-    } 
+    }
 
+    std::ostream& operator<<(std::ostream & os, const Factor & factor) {
+        if(factor.op->GetType() == Operator::None) {
+            os << *factor.lhs;
+        } else {
+            os << "(" << *factor.lhs <<  *factor.op << *factor.rhs << ")";
+        }
+        return os;
+    }
 }

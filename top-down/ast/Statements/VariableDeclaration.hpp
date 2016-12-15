@@ -16,8 +16,8 @@ namespace ast {
             VariableDeclaration(lexer::Lexer &lex, symtable::SymbolTable * table);
             ~VariableDeclaration();
             
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
         private:
             bool        variable    = true;

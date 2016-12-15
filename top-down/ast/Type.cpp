@@ -44,14 +44,14 @@ namespace ast {
         lex.HasNext();
     }
 
-    void Type::Validate() {
+    void Type::Validate() const {
     }
 
     ValueType Type::GetType() {
         return type;
     }
 
-    void Type::GenerateCode(std::ostream & out) {
+    void Type::GenerateCode(std::ostream & out) const {
 
     }
 }

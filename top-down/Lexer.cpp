@@ -64,11 +64,14 @@ namespace lexer {
     }
 
     Lexeme* Lexer::readIdentifier() {
+
         std::stringstream ss;
         ss << scan->Next();
         while(scan->HasNext() && (scan->Next() == '_' || std::isalnum(scan->Next()))) {
             ss << scan->Next();
         }
+
+        // we read something, push it back 
         scan->PushBack();
         std::string id = ss.str();
         auto ptr = Keywords.find(id);
@@ -84,6 +87,7 @@ namespace lexer {
         while(scan->HasNext() && std::isdigit(scan->Next())) {
             ss << scan->Next();
         }
+        scan->PushBack();
         return new Lexeme(INT,ss.str(),file,line,column);
     }
 
@@ -157,9 +161,10 @@ namespace lexer {
                 throw std::runtime_error("unexpected EOF");
             }
 
-            curr = scan->Next();        
+            curr = scan->Next();
+        
             if(curr != '=') {
-                throw std::runtime_error("expected = but found" + std::string(1, scan->Next()));
+                throw std::runtime_error("expected = but found " + std::string(1, scan->Next()));
             }
             return new Lexeme(C_EQUAL, file, line, column);
         }

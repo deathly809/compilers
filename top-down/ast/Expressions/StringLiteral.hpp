@@ -3,43 +3,27 @@
 #define STRINGLITERAL_HPP_
 
 #include <ast/Ast.hpp>
+#include <ast/Type.hpp>
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
 
 namespace ast {
 
     class StringLiteral : public Ast {
 
         public:
-            StringLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-                lexer::Lexeme * l = lex.Next();
-                lex.HasNext();
-                
-                value = l->GetValue();
+            StringLiteral(lexer::Lexer & lex, symtable::SymbolTable * table);
 
-                consumeLexemeType(l,lexer::STRING);
-            }
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
-            virtual void Validate() {
-                /* Empty */
-            }
-
-            virtual void GenerateCode(std::ostream & out) {
-                /* Empty */
-            }
-
-            virtual ValueType ResultType() {
-                return StringType;
-            }
-
-            std::string GetValue() {
-                return value;
-            }
+            virtual ValueType ResultType() const;
+            std::string GetValue() const;
 
         private:
             std::string value;
     };
+
+    std::ostream& operator<<(std::ostream & os, const StringLiteral & sLit);
 
 }
 

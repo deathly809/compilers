@@ -1,3 +1,0 @@
-
-all:
-	pdflatex go.tex

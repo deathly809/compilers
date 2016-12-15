@@ -19,15 +19,19 @@ namespace ast {
             Expression(lexer::Lexer & lex, symtable::SymbolTable * table);
             ~Expression();
 
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
-            ValueType ResultType();
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
+            ValueType ResultType() const;
 
         private:
-            Factor*     lhs;
-            Expression* rhs;
-            Operator*   op;
+            Factor*     lhs = nullptr;
+            Expression* rhs = nullptr;
+            Operator*   op  = nullptr;
+
+            friend std::ostream & operator<<(std::ostream & os, const Expression & expr);
     };
+
+    std::ostream & operator<<(std::ostream & os, const Expression & expr);
 
 }
 

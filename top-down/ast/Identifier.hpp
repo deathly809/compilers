@@ -17,12 +17,16 @@ namespace ast {
             Identifier(lexer::Lexer& lex, symtable::SymbolTable * table);
             ~Identifier();
             
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
-            ValueType ResultType();
-            std::string GetName();
+            ValueType ResultType() const;
+            std::string GetName() const;
+
+            friend std::ostream& operator<<(std::ostream & os, const Identifier & id);
     };
+
+    std::ostream& operator<<(std::ostream & os, const Identifier & id);
 
 }
 

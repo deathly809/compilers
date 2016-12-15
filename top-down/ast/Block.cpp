@@ -49,13 +49,13 @@ namespace ast {
         stmts.clear();
     }
 
-    void Block::Block::Validate() {
+    void Block::Block::Validate() const {
         for(auto && s : stmts) {
             s->Validate();
         }
     }
 
-    void Block::GenerateCode(std::ostream & out) {
+    void Block::GenerateCode(std::ostream & out) const {
 
     }
 

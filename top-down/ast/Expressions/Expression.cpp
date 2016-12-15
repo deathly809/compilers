@@ -8,16 +8,61 @@
 #include <Lexeme.hpp>
 #include <LexemeTypes.hpp>
 
+#include <map>
+#include <vector>
+
+#include <algorithm>
+
 namespace ast {
+
+
+    std::map<ValueType,std::vector<Operator::OperatorType>> acceptableTables = 
+    {
+        {
+            IntType, 
+            {
+                Operator::AdditionOperator,
+                Operator::SubtractionOperator, 
+                Operator::ModulusOperator
+            }
+        },
+        {
+            RealType, 
+            {
+                Operator::AdditionOperator,
+                Operator::SubtractionOperator
+            }
+        },
+        {
+            StringType,
+            {
+                Operator::AdditionOperator
+            }
+        },
+        {
+            BoolType,
+            {
+                Operator::OrOperator
+            }
+        }
+    };
 
     // E := F | F ( "+" | "-" | "|" ) E
     // F := T | T ( "*" | "/" | "%" | "&" ) F
     // T := (E) | ID | LIT | F_CALL
     Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
         
+        #ifdef DEBUG
+            std::cout << "Expression" << std::endl;
+        #endif
+        
         lhs = new Factor(lex, table);
+
         lexer::Lexeme *l = lex.Next();
-        lex.HasNext();
+        
+        #ifdef DEBUG
+            std::cout << "after Factor:"  << *l << std::endl;
+        #endif
 
         switch(l->GetType()) {
             case lexer::PLUS:
@@ -30,13 +75,14 @@ namespace ast {
                 op = new Operator(Operator::OrOperator);
                 break;
             default:
-                op = new Operator(Operator::None);
                 lex.PushBack(l);
+                op = new Operator(Operator::None);
                 break;
         }
 
         if(op->GetType() != Operator::None) {
             delete l;
+            lex.HasNext();
             rhs = new Expression(lex,table);
         } else {
             // pushed l back
@@ -49,42 +95,37 @@ namespace ast {
         delete rhs;
     }
 
-    void Expression::Validate() {
+    void Expression::Validate() const {
         if(rhs != nullptr) {
+
             if(lhs->ResultType() != rhs->ResultType()) {
                 throw std::runtime_error("mismatched types: " + std::to_string(__LINE__) + " " + std::string(__FILE__));
             }
-            switch(lhs->ResultType()) {
-                case StringType:
-                    if(op->GetType() != Operator::AdditionOperator) {
-                        throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
-                    }
-                    break;
-                case RealType:
-                    if(op->GetType() == Operator::ModulusOperator) {
-                        throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
-                    }
-                    break;
-                case BoolType:
-                    if(op->GetType() != Operator::OrOperator) {
-                        throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
-                    }
-                    break;
-                case NilType:
-                        throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
-                        break;
-                default:
-                    throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
+
+            const auto & options = acceptableTables[lhs->ResultType()];
+            const auto & ptr = std::find(options.begin(), options.end(), op->GetType()); 
+            if(ptr == options.end()) {
+                throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
             }
+
         }
     }
 
-    void Expression::GenerateCode(std::ostream & out) {
+    void Expression::GenerateCode(std::ostream & out) const {
         // TODO : Generate the code!
     }
 
-    ValueType Expression::ResultType() {
+    ValueType Expression::ResultType() const {
         return lhs->ResultType();
     } 
+
+    std::ostream & operator<<(std::ostream & os, const Expression & expr) {
+        if(expr.op->GetType() == Operator::None) {
+            os << *expr.lhs;
+        } else {
+            os << "(" << *expr.lhs << *(expr.op) << *expr.rhs << ")";
+        }
+        return os;
+    }
 
 }

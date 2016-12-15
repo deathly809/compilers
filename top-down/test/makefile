@@ -6,14 +6,25 @@ CFLAGS	= -Wall ${STD} -g
 CMP		= ${GCC} ${CFLAGS} ${INCLUDE}
 ODIR 	= ../output
 
-main: *.cpp lib.o
-	${CMP} *.cpp $(ODIR)/*.o -o main
-	./main
+SOURCES    := ${wildcard *.cpp}
+OBJECTS    := ${SOURCES:.cpp=.o}
+OBJS       := $(patsubst %,%,$(OBJECTS))
+
+main: ${OBJS} lib.o
+	${CMP} $(ODIR)/*.o ./*.o -o main
+
+
+%.o: %.cpp
+	${CMP} -c $< 
+
+debug:
+	${CMP} -DDEBUG *.cpp $(ODIR)/*.o -o main
 
 lib.o:
-	make -C ../ast
-
+	make -C ../
 	
 
 clean:
 	rm -f main
+	rm *.o
+	make -C ../ clean

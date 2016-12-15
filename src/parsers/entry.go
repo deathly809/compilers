@@ -27,6 +27,8 @@ type Production interface {
 type Grammar interface {
 	GetStart() Symbol
 	SetStart(Symbol)
+	GetProductions() []Production
+	GetTerminals() []string
 	GetProduction(Symbol) Production
 	AddProduction(Production)
 	String() string

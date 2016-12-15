@@ -34,6 +34,9 @@ namespace ast {
             }
 
             std::string GetOperator() const {
+                if(bop == nullptr) {
+                    throw std::runtime_error("binary operator is null in InvalidTypeCombination");
+                }
                 return bop->ToString();
             }
 

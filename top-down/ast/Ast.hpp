@@ -9,6 +9,7 @@
 
 #include <symtable/SymbolTable.hpp>
 
+// #define DEBUG
 
 #ifdef DEBUG 
     #include <iostream>
@@ -20,10 +21,10 @@ namespace ast {
     class Ast {
         public:
             /* Validate that we are correct */
-            virtual void Validate() = 0;
+            virtual void Validate() const = 0;
 
             /* Given an output stream we write the code generated */
-            virtual void GenerateCode(std::ostream & out) = 0;
+            virtual void GenerateCode(std::ostream & out) const = 0;
             
         protected:
 

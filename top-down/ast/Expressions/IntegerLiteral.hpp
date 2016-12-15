@@ -3,42 +3,27 @@
 #define INTEGERLITERAL_HPP_
 
 #include <ast/Ast.hpp>
-
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <ast/Type.hpp>
 
 namespace ast {
 
     class IntegerLiteral : public Ast {
         public:
-            IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-                lexer::Lexeme * l = lex.Next();
-                lex.HasNext();
-                std::string val = l->GetValue();
-                consumeLexemeType(l,lexer::INT);
-                value = Convert<int>(val);
-            }
+            IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table);
 
-            virtual void Validate() {
-                /* Empty */
-            }
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
-            virtual void GenerateCode(std::ostream & out) {
-                /* Empty */
-            }
-
-            ValueType ResultType() {
-                return IntType;
-            }
-
-            int  GetValue() {
-                return value;
-            }
+            ValueType ResultType() const;
+            int  GetValue() const;
 
         private:
             int value;
 
     };
+
+    std::ostream& operator<<(std::ostream & os, const IntegerLiteral & iLit);
+    
 }
 
 #endif

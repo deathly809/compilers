@@ -52,16 +52,13 @@ namespace ast {
         delete type;
     }
 
-    void VariableDeclaration::Validate() {
-        
-        if(!validated && value != nullptr) {
+    void VariableDeclaration::Validate() const {
+        if(value != nullptr) {
             value->Validate();
         }
-
-        validated = true;
     }
 
-    void VariableDeclaration::GenerateCode(std::ostream & out) {
+    void VariableDeclaration::GenerateCode(std::ostream & out) const {
 
     }
 

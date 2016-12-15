@@ -14,8 +14,8 @@ namespace ast {
             IfStatement(lexer::Lexer & lex, symtable::SymbolTable * table);
             ~IfStatement();
             
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
 
         private:
             Expression* cond        = nullptr;

@@ -34,14 +34,14 @@ namespace ast {
         vars.clear();
     }
 
-    void ConstantBlock::Validate() {
+    void ConstantBlock::Validate() const {
         for( auto&& v : vars ) {
             v.lhs->Validate();
             v.rhs->Validate();
         }
     }
 
-    void ConstantBlock::GenerateCode(std::ostream & out) {
+    void ConstantBlock::GenerateCode(std::ostream & out) const {
     }
 
 }

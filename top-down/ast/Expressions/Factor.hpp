@@ -17,15 +17,19 @@ namespace ast {
             Factor(lexer::Lexer & lex,symtable::SymbolTable * table);
             ~Factor();
 
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
-            ValueType ResultType();
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
+            ValueType ResultType() const;
 
         private:
             Term*           lhs = nullptr;
             Factor*         rhs = nullptr;
             Operator*       op  = nullptr;
+
+            friend std::ostream& operator<<(std::ostream & os, const Factor & factor);
     };
+
+    std::ostream& operator<<(std::ostream & os, const Factor & factor);
 
 }
 

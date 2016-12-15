@@ -1,288 +1,263 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{syntax}
+
+\begin{document}
+
+    \begin{grammar}
+
+        % First = { "package" }
+        % Follow = {}
+        <MSourceFile>       ::=     "package" <identifier> ";" <TopLevelDecl_loop>
+        
+        % First = { \epsilon, "package" }
+        % Follow = {}
+        <TopLevelDecl_loop> ::=     <TopLevelDecl> ";" <TopLevelDecl_loop> | $\epsilon$
+
+        %   First   = {[}
+        %   Follow  = {}
+        <TopLevelDecl>      ::=     <Declaration> | <FunctionDecl> | <MethodDecl>
+
+        %   First   = {[}
+        %   Follow  = {}
+        <Declaration>       ::=     <ConstDecl> | <TypeDecl> | <VarDecl>
+
+        %   First   = {[}
+        %   Follow  = {}
+        <FunctionDecl>      ::=     "func" <identifier> ( <Function> | <Signature> )
+
+        %   First   = {[}
+        %   Follow  = {}
+        <MethodDecl>        ::=     "func" <Parameters> <identifier> ( <Function> | <Signature> )
+
+        %   First   = {[}
+        %   Follow  = {}
+        <Function>          ::=     <Signature> <Block>
 
-\begin{grammar}
+        %   First   = {[}
+        %   Follow  = {}
+        <Signature>         ::=     <Parameters> [ <Result> ]
 
-    <MSourceFile>       ::=     <PackageClause> ";" [ <TopLevelDecl_loop> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <Result>            ::=     <Parameters> | <Type>
 
-    <TopLevelDecl_loop> ::=     <TopLevelDecl> ";" [ <TopLevelDecl_loop> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <Block>             ::=     "{" <StatementList> "}"
 
-    <PackageClause>     ::=     "package" <PackageName>
+        %   First   = {[}
+        %   Follow  = {}
+        <StatementList>     ::=     <Statement> ";" <StatementList> | $\epsilon$
 
-    <PackageName>       ::=     <identifier>
+        %   First   = {[}
+        %   Follow  = {}
+        <Statement>         ::=     <Declaration> | <SimpleStmt> | <ForStmt> | <ReturnStmt> | <Block> | <IfStmt>
 
-    <Block>             ::=     "{" <StatementList> "}"
+        %   First   = {[}
+        %   Follow  = {}
+        <IfStmt>            ::=     "if" [ <SimpleStmt> ";" ] <Expression> <Block> [ "else" ( <IfStmt> | <Block> ) ]
 
-    <StatementList>     ::=     <Statement> ";" [ <StatementList> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <Assignment>        ::=     <ExpressionList> <assign_op> <ExpressionList>
 
-    <Statement>             ::=     <Declaration> | <LabeledStmt> | <SimpleStmt>
-                            |    <ReturnStmt> | <BreakStmt> | <ContinueStmt> 
-                            |    <GotoStmt> | <FallthroughStmt> | <Block> | <IfStmt>
-                            |    <SwitchStmt> | <ForStmt> 
+        %   First   = {[}
+        %   Follow  = {}
+        <assign_op>         ::=     [ <add_op> | <mul_op> ] "="
 
-    <SimpleStmt>            ::=     <EmptyStmt> | <ExpressionStmt> | <SendStmt>
-                            |    <IncDecStmt> | <Assignment> | <ShortVarDecl>
+        %   First   = {[}
+        %   Follow  = {}
+        <ForStmt>           ::=     "for" [ <Expression> | <ForClause> | <RangeClause> ] <Block>
 
-    <EmptyStmt>             ::=     ""
+        %   First   = {[}
+        %   Follow  = {}
+        <ForClause>         ::=     [ <SimpleStmt> ] ";" [ <Expression> ] ";" [ <SimpleStmt> ]
 
-    <LabeledStmt>           ::=     <Label> ":" <Statement>
+        %   First   = {[}
+        %   Follow  = {}
+        <SimpleStmt>        ::=     $\epsilon$ | <Expression> [ "++"| "--"] | <Assignment> | <ShortVarDecl>
 
-    <Label>                 ::=     <identifier>
+        %   First   = {[}
+        %   Follow  = {}
+        <ReturnStmt>        ::=     "return" [ <Expression> ]
+        
+        %   First   = {[}
+        %   Follow  = {}
+        <LiteralType>       ::=     <ArrayType> | "[" "..." "]" <Type> | <SliceType> | <identifier>
 
-    <ExpressionStmt>        ::=     <Expression>
+        %   First   = {[}
+        %   Follow  = {}
+        <LiteralValue>      ::=     "{" [ <ElementList> [ "," ] ] "}"
 
-    <IncDecStmt>            ::=     <Expression> ( "++" | "--" )
+        %   First   = {[}
+        %   Follow  = {}
+        <ElementList>       ::=     <KeyedElement> [ ", " <ElementList> ]
 
-    <Assignment>            ::=     <ExpressionList> <assign_op> <ExpressionList>
+        %   First   = {[}
+        %   Follow  = {}
+        <KeyedElement>      ::=     [ <Key> ":" ] <Expression> | <LiteralValue>
 
-    <assign_op>             ::=     [ <add_op> | <mul_op> ] "="
+        %   First   = {[}
+        %   Follow  = {}
+        <Key>               ::=     <identifier> | <Expression> | <LiteralValue>
 
-    <IfStmt>                ::=     "if" [ <SimpleStmt> ";" ] <Expression> <Block> [ "else" ( <IfStmt> | <Block> ) ]
+        %   First   = {[}
+        %   Follow  = {}
+        <PrimaryExpr>       ::=     <Operand> <PrimaryRem>
 
-    <SwitchStmt>            ::=     <ExprSwitchStmt>
-    <ExprSwitchStmt>        ::=     "switch" [ <SimpleStmt> ";" ] [ <Expression> ] "{" [ <ExprCaseClause_loop> ] "}"
+        %   First   = {[}
+        %   Follow  = {}
+        <PrimaryRem>        ::=     <PrimaryOp> <PrimaryRem> | $\epsilon$
 
-    <ExprCaseClause_loop>   ::=     <ExprCaseClause> [ <ExprCaseClause_loop> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <PrimaryOp>         ::=     "." <identifier> | "[" <Expression> "]" | "(" [ <ExpressionList> ] ")"
 
-    <ExprCaseClause>        ::=     <ExprSwitchCase> ":" <StatementList>
+        %   First   = {[}
+        %   Follow  = {}
+        <MethodExpr>        ::=     <ReceiverType> "." <identifier>
 
-    <ExprSwitchCase>        ::=     "case" <ExpressionList> | "default"
+        %   First   = {[}
+        %   Follow  = {}
+        <ReceiverType>      ::=     <identifier> | "(" "*" <identifier> ")" | "(" <ReceiverType> ")"
 
-    <ForStmt>               ::=     "for" [ <Condition> | <ForClause> | <RangeClause> ] <Block>
+        %   First   = {[}
+        %   Follow  = {}
+        <Expression>        ::=     <UnaryExpr> [ <binary_op> <Expression> ]
 
-    <Condition>             ::=     <Expression>
+        %   First   = {[}
+        %   Follow  = {}
+        <UnaryExpr>         ::=     <PrimaryExpr> | <unary_op> <UnaryExpr>
 
-    <ForClause>             ::=     [ <InitStmt> ] ";" [ <Condition> ] ";" [ <PostStmt> ]
+% Declarations        
 
-    <InitStmt>              ::=     <SimpleStmt>
+        %   First   = {[}
+        %   Follow  = {}
+        <VarDecl>           ::=     "var" ( <VarSpec> | "(" [ <VarSpec_loop> ] ")" )
 
-    <PostStmt>              ::=     <SimpleStmt>
+        %   First   = {[}
+        %   Follow  = {}
+        <VarSpec_loop>      ::=     <VarSpec> ";" [ <VarSpec_loop> ]
 
-    <RangeClause>           ::=     [ <ExpressionList> "=" | <IdentifierList> ":=" ] "range" <Expression>
+        %   First   = {[}
+        %   Follow  = {}
+        <VarSpec>           ::=     <IdentifierList> ( <Type> [ "=" <ExpressionList> ] | "=" <ExpressionList> )       
 
-    <ReturnStmt>            ::=     "return" [ <ExpressionList> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <ConstDecl>         ::=     "const" ( <ConstSpec> | "(" [ <ConstSpec_loop> ] ")" )
 
-    <BreakStmt>             ::=     "break" [ <Label> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <ConstSpec_loop>    ::=     <ConstSpec> ";" [ <ConstSpec_loop> ]
 
-    <ContinueStmt>          ::=     "continue" [ <Label> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <ConstSpec>         ::=     <IdentifierList> [ [ <Type> ] "=" <ExpressionList> ]
 
-    <GotoStmt>              ::=     "goto" <Label>
+        %   First   = {[}
+        %   Follow  = {}
+        <TypeDecl>          ::=     "type" ( <TypeSpec> | "(" [ <TypeSpec_loop> ] ")" )
 
-    <FallthroughStmt>       ::=     "fallthrough"
+        %   First   = {[}
+        %   Follow  = {}
+        <TypeSpec_loop>     ::=     <TypeSpec> ";" [ <TypeSpec_loop> ]
 
-    <Operand>           ::= <Literal> | <OperandName> | <MethodExpr> | "(" <Expression> ")"
+        %   First   = {[}
+        %   Follow  = {}
+        <TypeSpec>          ::=     <identifier> <Type>
 
-    <Literal>           ::= <BasicLit> | <CompositeLit> | <FunctionLit>
+        %   First   = {[}
+        %   Follow  = {}
+        <IdentifierList>    ::=     <identifier> "," <IdentifierList> | <identifier>
 
-    <BasicLit>          ::= <int_lit> | <float_lit> | <imaginary_lit> | <rune_lit> | <string_lit>
+        %   First   = {[}
+        %   Follow  = {}
+        <ExpressionList>    ::=     <Expression> "," <ExpressionList> | <Expression>
 
-    <OperandName>       ::= <identifier>
+        %   First   = {[}
+        %   Follow  = {}
+        <ShortVarDecl>      ::=     <IdentifierList> ":=" <ExpressionList>
 
-    <CompositeLit>      ::=     <LiteralType> <LiteralValue>
+        %   First   = {[}
+        %   Follow  = {}
+        <Operand>           ::=     <Literal> | <identifier> | <MethodExpr> | "(" <Expression> ")"
 
-    <LiteralType>       ::=     <StructType> | <ArrayType> | "[" "..." "]" <ElementType>
-                        |    <SliceType> | <TypeName>
+        %   First   = {[}
+        %   Follow  = {}
+        <Literal>           ::=     <BasicLit> | <CompositeLit> | "func" <Function>
 
-    <LiteralValue>      ::=     "{" [ <ElementList> [ "," ] ] "}"
+        %   First   = {[}
+        %   Follow  = {}
+        <BasicLit>          ::=     <int_lit> | <rune_lit> | <string_lit>
 
-    <ElementList>       ::=     <KeyedElement> [ ", " <ElementList> ]
+        %   First   = {[}
+        %   Follow  = {}
+        <CompositeLit>      ::=     <LiteralType> <LiteralValue>
 
-    <KeyedElement>      ::=     [ <Key> ":" ] <Element>
+        %   First   = {ID, [, bool,int, string, rune, func, (}
+        %   Follow  = {}
+        <Type>              ::=     <identifier> | <TypeLit> | "(" <Type> ")" 
 
-    <Key>               ::=     <FieldName> | <Expression> | <LiteralValue>
+        %   First   = {[, bool,int, string, rune, func}
+        %   Follow  = {}
+        <TypeLit>           ::=     <ArrayType> | <BuiltinType> | "func" <Signature> | <SliceType>
 
-    <FieldName>         ::=     <identifier>
+        %   First   = {(}
+        %   Follow  = {}
+        <Parameters>        ::=     "(" [ <ParameterList> [ "," ] ] ")"
 
-    <Element>           ::=     <Expression> | <LiteralValue>
+        %   First   = {ID}
+        %   Follow  = {}
+        <ParameterList>     ::=     <ParameterDecl> [ "," <ParameterList> ]
 
-    <FunctionLit>       ::= "func" <Function>
+        %   First   = {ID}
+        %   Follow  = {}
+        <ParameterDecl>     ::=     <IdentifierList> <Type>
 
-    <PrimaryExpr>       ::=     <Operand>
-                        |       <Conversion>
-                        |       <PrimaryExpr> <Selector>
-                        |       <PrimaryExpr> <Index>
-                        |       <PrimaryExpr> <Slice>
-                        |       <PrimaryExpr> <TypeAssertion>
-                        |       <PrimaryExpr> <Arguments>
+        %   First   = {[}
+        %   Follow  = {}
+        <SliceType>         ::=     "[" "]" <Type>
 
-    <Selector>          ::=     "." <identifier>
+        %   First   = {[}
+        %   Follow  = {}
+        <ArrayType>         ::=     "[" <Expression> "]" <Type>
 
-    <Index>             ::=     "[" <Expression> "]"
+        % Terminals
 
-    <Slice>             ::=     "[" [ <Expression> ] ":" [ <Expression> ] "]"
-                        |       "[" [ <Expression> ] ":" <Expression> ":" <Expression> "]"
+        %   First   = {bool, int, string, rune}
+        %   Follow  = {}
+        <BuiltinType>       ::=     "bool" | "int" | "string" | "rune"
 
-    <TypeAssertion>     ::=     "." "(" <Type> ")"
+        %   First   = {true, false}
+        %   Follow  = {}
+        <constants>         ::=     "true" | "false"
 
-    <Arguments>         ::=     "(" [ ( <ExpressionList> | <Type> [ "," <ExpressionList> ] ) [ "..." ] [ "," ] ] ")"
+        %   First   = {nil}
+        %   Follow  = {}
+        <zero_val>          ::=     "nil" 
 
-    <MethodExpr>        ::=     <ReceiverType> "." <MethodName>
+        %   First   = {||, &&, ==, !=, <, <=, >, >=, +, -, |, ^, *, /, %}
+        <binary_op>         ::=     "||" | "&&" | <rel_op> | <add_op> | <mul_op>
 
-    <ReceiverType>      ::=     <TypeName> | "(" "*" <TypeName> ")" | "(" <ReceiverType> ")"
+        %   First   = {==, !=, <, <=, >, >=}
+        %   Follow  = {}
+        <rel_op>            ::=     "==" | "!=" | "<" | "<=" | ">" | "\>="
 
-    <Expression>        ::=     <UnaryExpr> | <Expression> <binary_op> <Expression>
+        % First     = {+, -, |, ^}
+        % Follow    = {}
+        <add_op>            ::=     "+" | "-" | "|" | "^"
 
-    <UnaryExpr>         ::=     <PrimaryExpr> | <unary_op> <UnaryExpr>
+        %   First   = {*, /, %}
+        %   Follow  = {}
+        <mul_op>            ::=     "*" | "/" | "%" 
 
-    <binary_op>         ::=     "||" | "&&" | <rel_op> | <add_op> | <mul_op>
+        %   First   = {"+", "-", "!", "^"}
+        %   Follow  = {}
+        <unary_op>          ::=     "+" | "-" | "!" | "^"   
 
-    <rel_op>            ::=     "==" | "!=" | "<" | "<=" | "\>" | "\>="
+    \end{grammar}
 
-    <add_op>            ::=     "+" | "-" | "|" | "^"
-
-    <mul_op>            ::=     "*" | "/" | "%" | "<<" | ">>" | "&" | "&^"
-
-    <unary_op>          ::=     "+" | "-" | "!" | "^" | "*" | "&" | "<-"
-
-    <Conversion>        ::=     <Type> "(" <Expression> [ "," ] ")"
-
-
-    <Declaration>       ::=     <ConstDecl> | <TypeDecl> | <VarDecl>
-
-    <TopLevelDecl>      ::=     <Declaration> | <FunctionDecl> | <MethodDecl>
-
-    <ConstDecl>         ::=     "const" ( <ConstSpec> | "(" [ <ConstSpec_loop> ] ")" )
-
-    <ConstSpec_loop>    ::=     <ConstSpec> ";" [ <ConstSpec_loop> ]
-
-    <ConstSpec>         ::=     <IdentifierList> [ [ <Type> ] "=" <ExpressionList> ]
-
-    <IdentifierList>    ::=     <identifier> [ "," <IdentifierList> ]
-
-
-    <ExpressionList>    ::=     <Expression> [ "," <ExpressionList> ]
-
-    <TypeDecl>          ::=     "type" ( <TypeSpec> | "(" [ <TypeSpec_loop> ] ")" )
-
-    <TypeSpec_loop>     ::=     <TypeSpec> ";" [ <TypeSpec_loop> ]
-
-    <TypeSpec>          ::=     <identifier> <Type>
-
-    <VarDecl>           ::=     "var" ( <VarSpec> | "(" [ <VarSpec_loop> ] ")" )
-
-    <VarSpec_loop>      ::=     <VarSpec> ";" [ <VarSpec_loop> ]
-
-    <VarSpec>           ::=     <IdentifierList> ( <Type> [ "=" <ExpressionList> ] | "=" <ExpressionList> )
-
-    <ShortVarDecl>      ::=     <IdentifierList> ":=" <ExpressionList>
-
-    <FunctionDecl>      ::=     "func" <FunctionName> ( <Function> | <Signature> )
-
-    <FunctionName>      ::=     <identifier>
-
-    <Function>          ::=     <Signature> <FunctionBody>
-
-    <FunctionBody>      ::=     <Block>
-
-    <MethodDecl>          ::=     "func" <Receiver> <MethodName> ( <Function> | <Signature> )
-
-    <Receiver>            ::=     <Parameters>
-
-
-    <Type>              ::=     <TypeName> | <TypeLit> | "(" <Type> ")"
-
-    <TypeName>          ::=     <identifier> 
-
-    <TypeLit>           ::=     <ArrayType> | <StructType> 
-                        |    <FunctionType> | <SliceType>
-                        |    <BuiltinType>
-
-    <MethodName>        ::=     <identifier>
-
-    <FunctionType>      ::=     "func" <Signature>
-
-    <Signature>         ::=     <Parameters> [ <Result> ]
-
-    <Result>            ::=     <Parameters> | <Type>
-
-    <Parameters>        ::=     "(" [ <ParameterList> [ "," ] ] ")"
-
-    <ParameterList>     ::=     <ParameterDecl> [ "," <ParameterList> ]
-
-    <ParameterDecl>     ::=     [ <IdentifierList> ] [ "..." ] <Type>
-
-    <StructType>        ::=     "struct" "{" [ <FieldDecl_loop> ] "}"
-
-    <FieldDecl_loop>    ::=     <FieldDecl> ";" [ <FieldDecl_loop> ]
-
-    <FieldDecl>         ::=     (<IdentifierList> <Type> | <AnonymousField>) [ <Tag> ]
-
-    <AnonymousField>    ::=     [ "*" ] <TypeName>
-
-    <Tag>               ::=     <string_lit>
-
-    <SliceType>         ::=     "[" "]" <ElementType>
-
-    <ArrayType>         ::=     "[" <ArrayLength> "]" <ElementType>
-
-    <ArrayLength>       ::=     <Expression>
-
-    <ElementType>       ::=     <Type>
-
-    <BuiltinType>           ::=     "bool" | "int" | "float32" | "string" | "rune"
-
-    <constants>         ::=     "true" | "false" | "iota"
-
-    <zero_val>          ::=     "nil" 
-
-    <identifier>    ::= <letter> <ident_rem>
-
-    <ident_rem>     ::= ( <letter> | <unicode_letter> ) [ <ident_rem> ]
-
-    <string_lit>        ::=     <raw_string_lit> | <inter_string_lit>
-
-    <raw_string_lit>    ::=     "`" [ <raw_loop> ] "'"
-
-    <raw_loop>          ::=     ( <unicode_char> | "newline" ) [ <raw_loop> ] 
-
-    <inter_string_lit>  ::=     "\"" [ <inter_loop> ] "\""
-
-    <inter_loop>        ::=     ( <unicode_value> | <byte_value> ) [ <inter_loop> ]
-
-    <imaginary_lit>     ::=     ( <decimals> | <float_lit> ) "i"
-
-    <float_lit>         ::=     <decimals> "." [ <decimals> ] [ <exponent> ]
-                        |    <decimals> <exponent>
-                        |    "." <decimals> [ <exponent> ]
-
-    <decimals>          ::=     <decimal_digit> [ <decimals> ]
-
-    <exponent>          ::=     ( "e" | "E" ) [ "+" | "-" ] <decimals>
-
-    <int_lit>           ::=     <decimal_lit> | <octal_lit> | <hex_lit>
-
-    <decimal_lit>       ::=     ( "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ) [ <dec_lit_loop> ]
-
-    <dec_lit_loop>      ::=     <decimal_digit> [ <dec_lit_loop> ]
-
-    <octal_lit>         ::=     "0" [ <oct_lit_loop> ]
-
-    <oct_lit_loop>      ::=     <octal_digit> [ <oct_lit_loop> ]
-
-    <hex_lit>           ::=     "0" ( "x" | "X" ) <hex_digit> [ <hex_lit_loop> ]
-
-    <hex_lit_loop>      ::=     <hex_digit> [ <hex_lit_loop> ]
-
-    <letter>            ::=     <unicode_letter> | "_"
-
-    <decimal_digit>     ::=     <octal_digit> | "8" | "9"
-
-    <octal_digit>       ::=     "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7"
-
-    <hex_digit>         ::=     <decimal_digit> | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f"
-
-    <rune_lit>          ::=     "`" ( <unicode_value> | <byte_value> ) "\""
-
-    <unicode_value>     ::=     <unicode_char> | <little_u_value> | <big_u_value> | <escaped_char>
-
-    <byte_value>        ::=     <octal_byte_value> | <hex_byte_value>
-
-    <octal_byte_value>  ::=     "\\" <octal_digit> <octal_digit> <octal_digit>
-
-    <hex_byte_value>    ::=     "\\" "x" <hex_digit> <hex_digit>
-
-    <little_u_value>    ::=     "\\" "u" <hex_digit> <hex_digit> <hex_digit> <hex_digit>
-
-    <big_u_value>       ::=     "\\" "U" <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit> <hex_digit>
-
-    <escaped_char>      ::=     "\\" ( "a" | "b" | "f" | "n" | "r" | "t" | "v" | "\\" | "\'" | "\"" )
-
-\end{grammar}
+\end{document}

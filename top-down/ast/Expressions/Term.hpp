@@ -21,9 +21,9 @@ namespace ast {
             Term(lexer::Lexer & lex,symtable::SymbolTable * table);
             ~Term();
 
-            virtual void Validate();
-            virtual void GenerateCode(std::ostream & out);
-            ValueType ResultType();
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & out) const;
+            ValueType ResultType() const;
 
         private:
             Expression*     expr = nullptr;
@@ -35,7 +35,11 @@ namespace ast {
 
             FunctionCall*   fCall = nullptr;
 
+            friend std::ostream & operator<<(std::ostream & os, const Term & term);
+
     };
+
+    std::ostream & operator<<(std::ostream & os, const Term & term);
 
 }
 

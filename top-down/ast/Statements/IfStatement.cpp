@@ -25,7 +25,7 @@ namespace ast {
         delete falseBlock;
     }
 
-    void IfStatement::Validate() {
+    void IfStatement::Validate() const {
         cond->Validate();
         trueBlock->Validate();
         if(falseBlock != nullptr) {
@@ -33,7 +33,7 @@ namespace ast {
         }
     }
 
-    void IfStatement::GenerateCode(std::ostream & out) {
+    void IfStatement::GenerateCode(std::ostream & out) const {
 
     }
 

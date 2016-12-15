@@ -62,7 +62,7 @@ namespace ast {
         optParams.clear();
     }
 
-    void FunctionDefinition::Validate() {
+    void FunctionDefinition::Validate() const {
         functionName->Validate();
         for(auto && opt : optParams) {
             opt.ident->Validate();
@@ -74,7 +74,7 @@ namespace ast {
         block->Validate();
     }
 
-    void FunctionDefinition::GenerateCode(std::ostream & out) {
+    void FunctionDefinition::GenerateCode(std::ostream & out) const {
         
     }
 

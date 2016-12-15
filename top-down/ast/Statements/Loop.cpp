@@ -22,12 +22,12 @@ namespace ast {
         delete block;
     }
 
-    void Loop::Validate() {
+    void Loop::Validate() const {
         cond->Validate();
         block->Validate();
     }
 
-    void Loop::GenerateCode(std::ostream & out) {
+    void Loop::GenerateCode(std::ostream & out) const {
         
     }
 

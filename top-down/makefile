@@ -27,7 +27,6 @@ $(ODIR)/testScanner:
 	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/testScanner.o -o $(ODIR)/testScanner
 
 main:      $(OBJS)
-	echo "main"
 	$(MAKE) -C ast 
 
 $(ODIR)/%.o: %.cpp

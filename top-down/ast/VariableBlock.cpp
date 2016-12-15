@@ -32,14 +32,14 @@ namespace ast {
         vars.clear();
     }
 
-    void VariableBlock::Validate() {
+    void VariableBlock::Validate() const {
         for( auto&& v : vars ) {
             v.lhs->Validate();
             v.rhs->Validate();
         }
     }
 
-    void VariableBlock::GenerateCode(std::ostream & out) {
+    void VariableBlock::GenerateCode(std::ostream & out) const {
 
     }
 
