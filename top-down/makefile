@@ -31,6 +31,7 @@ $(ODIR)/exec/testScanner:
 
 main:      $(OBJS)
 	$(MAKE) -C ast 
+	$(MAKE) -C symtable 
 
 $(ODIR)/%.o: %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
