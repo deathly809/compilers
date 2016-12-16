@@ -7,14 +7,10 @@
 namespace ast {
 
     RealLiteral::RealLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme> l = lex.Next();
+        auto l = lex.Next();
         lex.HasNext();
 
-        std::string val = l->GetValue();
-        value = Convert<double>(val);
-
-        consumeLexemeType(l,lexer::REAL);
-
+        value = Convert<double>(l->GetValue());
     }
 
     void RealLiteral::Validate() const {

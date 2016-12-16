@@ -33,13 +33,11 @@ namespace ast {
             if(threeParts) {
                 init = new InitStatement(lex, table);
                 
-                consumeLexemeType(lex.Next(),lexer::SEMI);
-                lex.HasNext();
+                consumeLexemeType(lex,lexer::SEMI);
 
                 cond = new Expression(lex, table);
 
-                consumeLexemeType(lex.Next(),lexer::SEMI);
-                lex.HasNext();
+                consumeLexemeType(lex,lexer::SEMI);
                 
                 incr = new Assignment(lex, table);
             } else {

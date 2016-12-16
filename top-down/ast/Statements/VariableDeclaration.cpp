@@ -15,25 +15,21 @@ namespace ast {
     VariableDeclaration::VariableDeclaration(lexer::Lexer &lex, symtable::SymbolTable * table) : Statement(table) {
         switch(NextType(lex)) {
             case lexer::VAR:
+                consumeLexemeType(lex,lexer::VAR);
                 variable = true;
                 break;
             case lexer::CONST:
+                consumeLexemeType(lex,lexer::CONST);
                 variable = false;
                 break;
             default:
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
 
-        lex.Next();
-        lex.HasNext();
-
         name = new Identifier(lex, table);
 
-        if(NextType(lex) == lexer::C_EQUAL) {
-            
-            consumeLexemeType(lex.Next(),lexer::C_EQUAL);
-            lex.HasNext();
-
+        if(NextType(lex) == lexer::EQUAL) {
+            consumeLexemeType(lex,lexer::EQUAL);
             value = new Expression(lex, table);
         } else {
             type = new Type(lex, table);
@@ -66,7 +62,7 @@ namespace ast {
         os << *name << " ";
 
         if(type == nullptr) {
-            os << ":= " << *value;
+            os << "= " << *value;
         } else {
             os << *type;
         }

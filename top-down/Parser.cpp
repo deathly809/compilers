@@ -272,7 +272,7 @@ namespace parser {
         return result;
     }
 
-    // parseStmt = IFStmt | LoopStmt | ID ( ( ":=" | "=" ) EXPR | "(" [ EXPR { "," EXPR } ] ")" )
+    // parseStmt = IFStmt | LoopStmt | ID ( ( "=" | "=" ) EXPR | "(" [ EXPR { "," EXPR } ] ")" )
     Node* Parser::parseStatement() {
         Node* stmt;
         if(loopPending()) {
@@ -281,14 +281,14 @@ namespace parser {
             stmt = parseIfStmt();
         } else if(returnPending()) {
             stmt = parseReturn();
-        } else if(check(lexer::ID)) {  // ID := EXPR | ID = EXPR | ID([EXPR {, EXPR}])
+        } else if(check(lexer::ID)) {  // ID = EXPR | ID = EXPR | ID([EXPR {, EXPR}])
             stmt = new Node(current);
             match(lexer::ID);
             if(check(lexer::EQUAL)) {              // assigment
                 consume();
                 stmt->SetType(nAssign);
                 stmt->SetRight(parseExpression());
-            } else if(check(lexer::C_EQUAL)) {     // var declaration
+            } else if(check(lexer::EQUAL)) {     // var declaration
                 consume();
                 stmt->SetType(nVarDecl);
                 stmt->SetRight(parseExpression());

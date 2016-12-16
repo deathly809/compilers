@@ -8,13 +8,11 @@
 namespace ast {
 
     BooleanLiteral::BooleanLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme> l = lex.Next();
+        auto l = lex.Next();
         lex.HasNext();
         
         std::string val = l->GetValue();
         
-        consumeLexemeType(l,lexer::BOOL);
-
         if(val == "true") {
             value = true;
         } else if( val == "false") {

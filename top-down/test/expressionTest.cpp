@@ -6,15 +6,15 @@
 #include <ast/Expressions/Expression.hpp>
 
 TEST_CASE( "Test single integer" , "[Expression]" ) {
-    run<ast::Expression>("5",true);
-    run<ast::Expression>("50",true);
-    run<ast::Expression>("2342652423",true);
-    run<ast::Expression>("1023",true);
-    run<ast::Expression>("-1",true);
+    run<ast::Expression>("5");
+    run<ast::Expression>("50");
+    run<ast::Expression>("2342652423");
+    run<ast::Expression>("1023");
+    run<ast::Expression>("-1");
 }
 TEST_CASE( "Test single boolean" , "[Expression]" ) {
-    run<ast::Expression>("true",true);
-    run<ast::Expression>("false",true);
+    run<ast::Expression>("true");
+    run<ast::Expression>("false");
 }
 
 TEST_CASE( "integer addition" , "[Expression]" ) {
@@ -78,5 +78,12 @@ TEST_CASE("very very long identifiers" , "[Expression]") {
 
     SECTION("identifier") {
         run<ast::Expression>("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    }
+}
+
+TEST_CASE("Expression: arrays") {
+    SECTION("simple") {
+        run<ast::Expression>("asd[5]", true);
+        run<ast::Expression>("asd[a]", true);
     }
 }

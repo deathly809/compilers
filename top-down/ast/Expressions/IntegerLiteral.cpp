@@ -8,11 +8,11 @@
 namespace ast {
 
     IntegerLiteral::IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
-        std::string val = l->GetValue();
-        consumeLexemeType(l,lexer::INT);
-        value = Convert<int>(val);
+        auto l = lex.Next();
         lex.HasNext();
+        
+        value = Convert<int>(l->GetValue());
+        
     }
 
     void IntegerLiteral::Validate() const {

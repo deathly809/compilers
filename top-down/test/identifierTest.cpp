@@ -16,7 +16,7 @@ TEST_CASE( "single character" , "[Identifier]" ) {
 TEST_CASE( "multiple characters" , "[Identifier]" ) {
     run<ast::Identifier>("aa");
     run<ast::Identifier>("asdfasdf");
-    run<ast::Identifier>("_asdfafas141434" , true );
-    run<ast::Identifier>("___25lskjg_23243KjlJIJkL" , true );
+    run<ast::Identifier>("_asdfafas141434");
+    run<ast::Identifier>("___25lskjg_23243KjlJIJkL");
 }
 

@@ -9,7 +9,7 @@ namespace lexer {
         /* Empty */
     }
 
-    Lexeme::Lexeme(LexemeType type, std::string file, int line, int column ) : type(type), line(line),column(column), file(file) {
+    Lexeme::Lexeme(LexemeType type, std::string file, int line, int column ) : type(type), value("keyword"), line(line),column(column), file(file) {
         /* Empty */
     }
 
@@ -35,8 +35,7 @@ namespace lexer {
 
 
     std::ostream& operator<<(std::ostream& os, const Lexeme& lex) {
-        os << "<" << LexemeTypeToString(lex.GetType()) << ":" << lex.GetValue() << ">";
-        return os;
+        return os << "<" << LexemeTypeToString(lex.GetType()) << ":" << lex.GetValue() << ">";
     }
 
 }

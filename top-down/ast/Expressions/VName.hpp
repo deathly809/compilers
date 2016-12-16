@@ -8,6 +8,7 @@
 
 namespace ast {
 
+    class ArrayExpression;
     class Expression;
     class BooleanLiteral;
     class IntegerLiteral;
@@ -29,19 +30,19 @@ namespace ast {
             ValueType ResultType() const;
 
         private:
+            Expression*         expr = nullptr;
 
-            Expression*     expr = nullptr;
+            BooleanLiteral*     bLit = nullptr;
+            IntegerLiteral*     iLit = nullptr;
+            RealLiteral*        rLit = nullptr;
+            StringLiteral*      sLit = nullptr;
 
-            BooleanLiteral* bLit = nullptr;
-            IntegerLiteral* iLit = nullptr;
-            RealLiteral*    rLit = nullptr;
-            StringLiteral*  sLit = nullptr;
+            FunctionCall*       fCall = nullptr;
 
-            FunctionCall*   fCall = nullptr;
+            ArrayExpression*    array = nullptr;
+            Identifier*         ident = nullptr;
 
-            Identifier*     ident = nullptr;
-
-            bool            negate = false;
+            bool                negate = false;
 
             
     };

@@ -19,9 +19,7 @@ namespace ast {
     Block::Block(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         std::unique_ptr<lexer::Lexeme> tmp = nullptr;
 
-        consumeLexemeType(lex.Next(),lexer::O_BRACE);
-        lex.HasNext();
-
+        consumeLexemeType(lex,lexer::O_BRACE);
         while(NextType(lex) != lexer::C_BRACE) {
             switch(NextType(lex)) {
                 case lexer::VAR:
@@ -29,14 +27,14 @@ namespace ast {
                     stmts.push_back(new VariableDeclaration(lex,table));
                     break;
                 case lexer::ID:
-                    tmp = lex.Next();
+                    tmp = std::move(lex.Next());
                     lex.HasNext();
-                    if(NextType(lex) == lexer::EQUAL) {
-                        lex.PushBack(tmp);
-                        stmts.push_back(new Assignment(lex,table));
-                    } else {
+                    if(NextType(lex) == lexer::O_PAREN) {
                         lex.PushBack(tmp);
                         stmts.push_back(new FunctionCall(lex,table));
+                    } else {
+                        lex.PushBack(tmp);
+                        stmts.push_back(new Assignment(lex,table));
                     }
                     break;
                 case lexer::RETURN:
@@ -52,8 +50,7 @@ namespace ast {
                     throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         }
-        consumeLexemeType(lex.Next(),lexer::C_BRACE);
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::C_BRACE);
     }
 
     Block::~Block() {

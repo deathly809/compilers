@@ -9,7 +9,7 @@
 
 namespace ast {
 
-    // T := (E) | ID | LIT | F_CALL
+    // T = (E) | ID | LIT | F_CALL
     Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), op(nullptr), rhs(nullptr) {
         lhs = new VName(lex,table);
 

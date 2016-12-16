@@ -10,14 +10,12 @@
 namespace ast {
 
     IfStatement::IfStatement(lexer::Lexer & lex, symtable::SymbolTable * table) : Statement(table) {
-        consumeLexemeType(lex.Next(), lexer::IF);
-        lex.HasNext();
+        consumeLexemeType(lex, lexer::IF);
 
         cond = new Expression(lex, table);
         trueBlock = new Block(lex, table);
         if(NextType(lex) == lexer::ELSE) {
-            consumeLexemeType(lex.Next(), lexer::ELSE);
-            lex.HasNext();
+            consumeLexemeType(lex, lexer::ELSE);
             falseBlock = new Block(lex, table);
         }
     }

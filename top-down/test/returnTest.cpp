@@ -9,5 +9,9 @@ TEST_CASE("Return: empty","[Return]") {
 }
 
 TEST_CASE("Return: expression","[Return]") {
-    run<ast::Return>("return 5 + 2 / 2", true);
+    run<ast::Return>("return 5 + 2 / 2");
+}
+
+TEST_CASE("Return: function","[Return]") {
+    run<ast::Return>("return bSearch(val,list,mid + 1,right)");
 }

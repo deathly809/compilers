@@ -15,7 +15,6 @@
 namespace ast {
 
     Program::Program(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme> tmp = nullptr;
         do{
             switch(NextType(lex)) {
                 case lexer::FUNC:
@@ -27,16 +26,17 @@ namespace ast {
                 case lexer::VAR:
                     vars.push_back(new VariableBlock(lex, table));
                     break;
+                case lexer::ENDFILE:
+                    return;
                 default:
-                    tmp = lex.Next();
-                    std::cout << *tmp << std::endl;
-                    throw UnexpectedToken(tmp, __FILE__, __LINE__);
+                    throw UnexpectedToken(lex.Next(), __FILE__, __LINE__);
             }
-        } while(lex.HasNext());
+        } while(true);
     }
 
     Program::Program(lexer::Lexer & lex) : Ast(new symtable::SymbolTable()) {
-        while(lex.HasNext()) {
+        lex.HasNext();
+        while(true) {
             switch(NextType(lex)) {
                 case lexer::FUNC:
                     funcs.push_back(new FunctionDefinition(lex, table));
@@ -47,6 +47,8 @@ namespace ast {
                 case lexer::VAR:
                     vars.push_back(new VariableBlock(lex, table));
                     break;
+                case lexer::ENDFILE:
+                    return;
                 default:
                     throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }

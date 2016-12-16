@@ -1,8 +1,7 @@
 
 #include <ast/ConstantBlock.hpp>
 
-#include <ast/Expressions/Expression.hpp>
-#include <ast/Identifier.hpp>
+#include <ast/Statements/Assignment.hpp>
 
 #include <Lexeme.hpp>
 #include <LexemeTypes.hpp>
@@ -11,33 +10,25 @@ namespace ast {
 
     ConstantBlock::ConstantBlock(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         
-        consumeLexemeType(lex.Next(),lexer::VAR);
-        consumeLexemeType(lex.Next(),lexer::O_PAREN);
+        consumeLexemeType(lex,lexer::CONST);
+        consumeLexemeType(lex,lexer::O_PAREN);
 
-        std::unique_ptr<lexer::Lexeme> c = lex.Next();
-        while(c->GetType() != lexer::C_PAREN) {
-            vars.push_back(
-                {
-                    new Identifier(lex, table),
-                    new Expression(lex, table)
-                });
-            c = lex.Next();
+        while(NextType(lex) != lexer::C_PAREN) {
+            vars.push_back(new Assignment(lex, table));
         }
-        consumeLexemeType(lex.Next(),lexer::C_PAREN);
+        consumeLexemeType(lex,lexer::C_PAREN);
     }
 
     ConstantBlock::~ConstantBlock() {
         for( auto&& v : vars ) {
-            delete v.lhs;
-            delete v.rhs;
+            delete v;
         }
         vars.clear();
     }
 
     void ConstantBlock::Validate() const {
         for( auto&& v : vars ) {
-            v.lhs->Validate();
-            v.rhs->Validate();
+            v->Validate();
         }
     }
 
@@ -47,7 +38,7 @@ namespace ast {
     std::ostream& ConstantBlock::Write(std::ostream & os) const {
         os << "const (" << std::endl;
         for(const auto & v : vars) {
-            os << *v.lhs << " = " << *v.rhs << std::endl;
+            os << *v << std::endl;
         }
         return os << ")";
     }

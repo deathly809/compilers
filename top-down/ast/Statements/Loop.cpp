@@ -10,8 +10,7 @@
 namespace ast {
 
     Loop::Loop(lexer::Lexer& lex, symtable::SymbolTable * table) : Statement(table) {
-        consumeLexemeType(lex.Next(),lexer::LOOP);
-        lex.HasNext();
+        consumeLexemeType(lex, lexer::LOOP);
         
         if(NextType(lex) != lexer::O_BRACE ) {
             cond = new LoopCondition(lex, table);

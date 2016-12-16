@@ -12,23 +12,17 @@ namespace ast {
     FunctionCall::FunctionCall(lexer::Lexer& lex, symtable::SymbolTable * table ) : Ast(table), functionName(nullptr) {
 
         functionName = new Identifier(lex, table);
-        
-        std::unique_ptr<lexer::Lexeme> l = lex.Next();
-        consumeLexemeType(l,lexer::O_PAREN);
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::O_PAREN);
         
         // arguments
         if(NextType(lex) != lexer::C_PAREN) {
             arguments.push_back(new Expression(lex, table));
             while(NextType(lex) == lexer::COMMA) {
-                consumeLexemeType(lex.Next(),lexer::COMMA);
-
-                lex.HasNext();
+                consumeLexemeType(lex,lexer::COMMA);
                 arguments.push_back(new Expression(lex, table));
             }
         }
-        consumeLexemeType(lex.Next(),lexer::C_PAREN);
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::C_PAREN);
     }
 
     FunctionCall::~FunctionCall() {

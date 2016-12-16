@@ -12,13 +12,11 @@ namespace ast {
 
     // func ID ( OPT_PARAMS ) OPT_RET_TYPE BLOCK
     FunctionDefinition::FunctionDefinition(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        consumeLexemeType(lex.Next(),lexer::FUNC);
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::FUNC);
 
         functionName = new Identifier(lex, table);
 
-        consumeLexemeType(lex.Next(), lexer::O_PAREN);
-        lex.HasNext();
+        consumeLexemeType(lex, lexer::O_PAREN);
         
         if(NextType(lex) != lexer::C_PAREN) {
             optParams.push_back(
@@ -28,16 +26,16 @@ namespace ast {
                 });
 
             while(NextType(lex) == lexer::COMMA) {
+                consumeLexemeType(lex,lexer::COMMA);
                 optParams.push_back(
                     {
                         new Identifier(lex, table),
                         new Type(lex, table)
-                    });            
+                    });
+                
             }
         }
-
-        consumeLexemeType(lex.Next(),lexer::C_PAREN);
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::C_PAREN);
 
         if(NextType(lex) != lexer::O_BRACE) {
             optRetType = new Type(lex, table);

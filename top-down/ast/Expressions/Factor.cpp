@@ -11,9 +11,9 @@
 
 namespace ast {
 
-    // E := F | F ( "+" | "-" | "|" ) E
-    // F := T | T ( "*" | "/" | "%" | "&" ) F
-    // T := (E) | ID | LIT | F_CALL
+    // E = F | F ( "+" | "-" | "|" ) E
+    // F = T | T ( "*" | "/" | "%" | "&" ) F
+    // T = (E) | ID | LIT | F_CALL
     Factor::Factor(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
 
         #ifdef DEBUG

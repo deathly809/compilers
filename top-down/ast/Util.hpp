@@ -46,7 +46,8 @@ namespace ast {
 
     // Validate the lexeme type and then free it
     #define consumeLexemeType(l,expectedType) do {          \
-        checkLexemeType(l,expectedType);                    \
+        checkLexemeType(l.Next(),expectedType);             \
+        l.HasNext();                                        \
     } while(0);
     
     // convert from string to expected type

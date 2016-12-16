@@ -20,8 +20,8 @@ namespace lexer {
         {ELSE, "ELSE"},
         {VAR, "VAR"},
         {CONST, "CONST"},
-        {C_EQUAL , "C_EQUAL"},
-        {EQUAL ,"EQUAL" },
+        {EQUAL , "EQUAL"},
+        {C_EQUAL ,"C_EQUAL" },
         {D_EQUAL,"D_EQUAL"},
         {LT , "LT"},
         {LTE, "LTE"},
@@ -48,8 +48,14 @@ namespace lexer {
         {ENDFILE,"EOF"}
     };
 
+    static std::string undefined("undefined type");
+
     std::string& LexemeTypeToString(lexer::LexemeType t) {
-        return typeMappings.find(t)->second;
+        auto ptr = typeMappings.find(t);
+        if(ptr == typeMappings.end()) {
+            return undefined;
+        }
+        return ptr->second;
     }
     
 

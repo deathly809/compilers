@@ -10,8 +10,7 @@
 
 namespace ast {
     Return::Return(lexer::Lexer& lex, symtable::SymbolTable * table) : Statement(table) {
-        consumeLexemeType(lex.Next(),lexer::RETURN)
-        lex.HasNext();
+        consumeLexemeType(lex,lexer::RETURN)
         if(NextType(lex) != lexer::C_BRACE && NextType(lex) != lexer::ENDFILE) {
             result = new Expression(lex,table);
         }

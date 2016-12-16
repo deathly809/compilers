@@ -10,18 +10,24 @@ namespace ast {
 
     Assignment::Assignment(lexer::Lexer & lex, symtable::SymbolTable* table) : Statement(table) {
         lhs = new Identifier(lex, table);
-        consumeLexemeType(lex.Next(),lexer::EQUAL);
-        lex.HasNext();
+        if(NextType(lex) == lexer::O_BRACKET) {
+            consumeLexemeType(lex,lexer::O_BRACKET);
+            index = new Expression(lex, table);
+            consumeLexemeType(lex,lexer::C_BRACKET);
+        }
+        consumeLexemeType(lex,lexer::EQUAL);
         rhs = new Expression(lex, table);
     }
 
     Assignment::~Assignment() {
         delete lhs;
+        delete index;
         delete rhs;
     }
 
     void Assignment::Validate() const {
         lhs->Validate();
+        if(index != nullptr) index->Validate();
         rhs->Validate();
     }
 
@@ -30,7 +36,11 @@ namespace ast {
     }
 
     std::ostream& Assignment::Write(std::ostream & os) const {
-        return os << *lhs << " = " << *rhs;
+        if(index != nullptr) {
+            return os << *lhs << "[" << *index << "] = " << *rhs;
+        } else {
+            return os << *lhs << " = " << *rhs;
+        }
     }
 
 }

@@ -3,22 +3,16 @@
 #define CONSTANTBLOCK_HPP_
 
 #include <ast/Ast.hpp>
-
 #include <vector>
 
 namespace ast {
 
-    class Expression;
-    class Identifier;
+    class Assignment;
 
     class ConstantBlock : public Ast {
         
-        struct VarPair {
-            Identifier* lhs;
-            Expression* rhs;
-        };
-        
-        std::vector<VarPair> vars;
+        private:
+            std::vector<Assignment*> vars;
 
         public:
             ConstantBlock(lexer::Lexer & lex, symtable::SymbolTable* table);

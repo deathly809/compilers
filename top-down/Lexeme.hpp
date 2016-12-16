@@ -13,6 +13,10 @@ namespace lexer {
             Lexeme(LexemeType type, std::string val, std::string file, int line, int column );
             Lexeme(LexemeType type, std::string file, int line, int column );
 
+            Lexeme(const Lexeme & other) = delete;
+            Lexeme(const Lexeme && other) = delete;
+            Lexeme& operator=(const Lexeme & other) = delete;
+
             const std::string& GetFileName() const;
             
             LexemeType GetType() const;
@@ -26,9 +30,9 @@ namespace lexer {
         private:
             
             const LexemeType type;
-            const std::string value;
+            const std::string value = "";
             const int line,column;
-            const std::string file; 
+            const std::string file = ""; 
 
     };
 

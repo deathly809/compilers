@@ -10,9 +10,6 @@ namespace ast {
     class Expression;
 
     class Assignment : public Statement {
-        private:
-            Identifier*     lhs;
-            Expression*     rhs;
             
         public:
             Assignment(lexer::Lexer & lex, symtable::SymbolTable* table);
@@ -22,6 +19,10 @@ namespace ast {
             virtual void GenerateCode(std::ostream & out) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
+        private:
+            Identifier*     lhs = nullptr;
+            Expression*     rhs = nullptr;
+            Expression*     index = nullptr;
     };
 
 

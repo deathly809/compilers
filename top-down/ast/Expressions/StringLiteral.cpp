@@ -7,12 +7,10 @@
 namespace ast {
 
     StringLiteral::StringLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
+        auto l = lex.Next();
         lex.HasNext();
         
         value = l->GetValue();
-
-        consumeLexemeType(l,lexer::STRING);
     }
 
     void StringLiteral::Validate() const {

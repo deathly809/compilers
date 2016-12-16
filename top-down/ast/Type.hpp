@@ -10,10 +10,13 @@ namespace ast {
 
     std::string & ValueTypeToString(ValueType type);
 
+    class IntegerLiteral;
+
     class Type : public Ast {
 
         private:
             ValueType type;
+            IntegerLiteral* arrayLength = nullptr;
 
         public:
             Type(lexer::Lexer & lex, symtable::SymbolTable * table);

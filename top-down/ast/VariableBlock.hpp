@@ -7,18 +7,12 @@
 
 namespace ast {
 
-    class Expression;
-    class Identifier;
+    class Assignment;
     
     class VariableBlock : public Ast {
 
-        struct VarPair {
-            Identifier* lhs;
-            Expression* rhs;
-        };
-
         private:
-            std::vector<VarPair> vars;
+            std::vector<Assignment*> vars;
 
         public:
             VariableBlock(lexer::Lexer & lex, symtable::SymbolTable * table);

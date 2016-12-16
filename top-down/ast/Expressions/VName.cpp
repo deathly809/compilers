@@ -10,6 +10,8 @@
 
 #include <ast/Expressions/FunctionCall.hpp>
 
+#include <ast/Expressions/ArrayExpression.hpp>
+
 #include <ast/Identifier.hpp>
 
 #include <Lexeme.hpp>
@@ -17,7 +19,7 @@
 
 namespace ast {
 
-    // T := (E) | ID | LIT | F_CALL
+    // T = (E) | ID | LIT | F_CALL
     VName::VName(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), expr(nullptr), bLit(nullptr), iLit(nullptr), rLit(nullptr), sLit(nullptr), fCall(nullptr) , ident(nullptr) {
 
         std::unique_ptr<lexer::Lexeme> curr = nullptr;
@@ -37,11 +39,9 @@ namespace ast {
 
         switch(NextType(lex)) {
             case lexer::O_PAREN:
-                consumeLexemeType(lex.Next(),lexer::O_PAREN);
-                lex.HasNext();
+                consumeLexemeType(lex,lexer::O_PAREN);
                 expr = new Expression(lex,table);
-                consumeLexemeType(lex.Next(),lexer::C_PAREN);
-                lex.HasNext();
+                consumeLexemeType(lex,lexer::C_PAREN);
                 break;
             case lexer::STRING:
                 sLit = new StringLiteral(lex,table);
@@ -59,10 +59,12 @@ namespace ast {
                 type = NextType(lex);
                 
                 lex.PushBack(curr);
-                if(type != lexer::O_PAREN) {
-                    ident = new Identifier(lex,table);
-                } else {
+                if(type == lexer::O_PAREN) {
                     fCall = new FunctionCall(lex, table);
+                } else if(type == lexer::O_BRACKET) {
+                    array = new ArrayExpression(lex, table);
+                } else {
+                    ident = new Identifier(lex,table);
                 }
 
                 break;
@@ -117,6 +119,8 @@ namespace ast {
 
         if(ident != nullptr) return ident->ResultType();
 
+        if(array != nullptr) return array->ResultType();
+
         throw std::runtime_error("something went wrong");
     }
 
@@ -129,6 +133,7 @@ namespace ast {
         else if(sLit != nullptr) os << *sLit;
         else if(fCall != nullptr) os << *fCall;
         else if(ident != nullptr) os << *ident;
+        else if(array != nullptr) os << *array;
         return os;
     }
 
