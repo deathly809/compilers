@@ -6,7 +6,9 @@
 
 namespace ast {
 
+    class InitStatement;
     class Expression;
+    class Assignment;
 
     class LoopCondition : public Ast {
         public:
@@ -18,7 +20,9 @@ namespace ast {
             virtual std::ostream& Write(std::ostream & os) const;
             
         private:
-            std::vector<Expression*> exp;
+            InitStatement*  init = nullptr;
+            Expression*     cond = nullptr;
+            Assignment*     incr = nullptr;
         
     };
 

@@ -1,7 +1,10 @@
 
 #include <ast/Statements/LoopCondition.hpp>
 
+#include <ast/Statements/InitStatement.hpp>
 #include <ast/Expressions/Expression.hpp>
+#include <ast/Statements/Assignment.hpp>
+
 #include <ast/Type.hpp>
 
 #include <Lexeme.hpp>
@@ -9,43 +12,52 @@
 
 namespace ast {
 
-    LoopCondition::LoopCondition(lexer::Lexer& lex, symtable::SymbolTable * table ) : Ast(table) {
-        std::unique_ptr<lexer::Lexeme> c = lex.Next();
-        if(c->GetType() != lexer::O_BRACE) {  
-            exp.push_back(new Expression(lex, table));
-            c = lex.Next();
-            if (c->GetType() == lexer::SEMI) {
-                exp.push_back(new Expression(lex, table));
-                consumeLexemeType(lex.Next(),lexer::SEMI);
-                exp.push_back(new Expression(lex, table));
-                consumeLexemeType(lex.Next(),lexer::SEMI);
+    // for {}
+    // for cond {}
+    // for init; cond; incr {}
+    // problem: init can be assignment or variable definition
+    // condition has to be exression
+    LoopCondition::LoopCondition(lexer::Lexer& lex, symtable::SymbolTable * table ) : Ast(table), init(nullptr), cond(nullptr), incr(nullptr) {
+        if(NextType(lex) != lexer::O_BRACE) {
+            bool threeParts = false;
+
+            if(NextType(lex) == lexer::VAR) {
+                threeParts = true;
+            } else {
+                auto tmp = lex.Next();
+                lex.HasNext();
+                threeParts = NextType(lex) == lexer::EQUAL;
+                lex.PushBack(tmp);
             }
-        }
+
+            if(threeParts) {
+                init = new InitStatement(lex, table);
+                
+                consumeLexemeType(lex.Next(),lexer::SEMI);
+                lex.HasNext();
+
+                cond = new Expression(lex, table);
+
+                consumeLexemeType(lex.Next(),lexer::SEMI);
+                lex.HasNext();
+                
+                incr = new Assignment(lex, table);
+            } else {
+                cond = new Expression(lex,table);
+            }
+        } 
     }
 
     LoopCondition::~LoopCondition() {
-        for( auto && e : exp ) {
-            delete e;
-        }
+        delete init;
+        delete cond;
+        delete incr;
     }
 
-    void LoopCondition::Validate() const {
-        
-        if(exp.size() == 1) {
-            
-            if( exp[0]->ResultType() != BoolType) {
-                throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected boolean expression");
-            }
-            exp[0]->Validate();
-
-        } else if(exp.size() == 3) {
-            
-            if(exp[1]->ResultType() != BoolType) {
-                throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected boolean expression");
-            }
-            exp[1]->Validate();
-        }
-            
+    void LoopCondition::Validate() const {        
+        if(init != nullptr) init->Validate();
+        if(cond != nullptr) cond->Validate();
+        if(incr != nullptr) incr->Validate();
     }
 
     void LoopCondition::GenerateCode(std::ostream & out) const {
@@ -53,18 +65,9 @@ namespace ast {
     }
 
     std::ostream& LoopCondition::Write(std::ostream & os) const {
-        switch(exp.size()) {
-            case 0:
-                break;
-            case 1:
-                os << *exp[0];
-                break;
-            case 3:
-                os << *exp[0] << "; " << *exp[1] << "; " << *exp[2];
-                break;
-            default:
-                throw std::runtime_error("loop condition requires 0, 1, or 3 parts, found " + std::to_string(exp.size()));
-        }
+        if(init != nullptr) init->Write(os);
+        if(cond != nullptr) os << "; " << *cond;
+        if(incr != nullptr) os << "; " << *incr;
         return os;
     }
 

@@ -50,4 +50,10 @@ TEST_CASE( "IfStatement: conditionals w/ non-empty blocks" , "[IfStatement]" ) {
     run<ast::IfStatement>("if 5 > (2 + 3) { var x int x =  5 + 3} else { y = 5 + 5 }");
 }
 
+TEST_CASE( "IfStatement: Nested", "[IfStatement]") {
+    run<ast::IfStatement>("if i < 10  { if i < 9 {} else {} } else { }");
+    run<ast::IfStatement>("if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { }}}}}}}}}}}}}}}");
+    run<ast::IfStatement>("if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { }}}}}}}}} else {}}}}}}}");
+    run<ast::IfStatement>("if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { if true { }}}}}}}}} else { if false { for true {} } }}}}}}}");    
+}
 

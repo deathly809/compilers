@@ -11,7 +11,9 @@ namespace ast {
 
     Loop::Loop(lexer::Lexer& lex, symtable::SymbolTable * table) : Statement(table) {
         consumeLexemeType(lex.Next(),lexer::LOOP);
-        if(lex.Next()->GetType() != lexer::O_BRACE ) {
+        lex.HasNext();
+        
+        if(NextType(lex) != lexer::O_BRACE ) {
             cond = new LoopCondition(lex, table);
         }
         block = new Block(lex, table);
