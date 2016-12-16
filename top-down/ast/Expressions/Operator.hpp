@@ -14,8 +14,9 @@ namespace ast {
 
             enum OperatorType {
                 AdditionOperator, SubtractionOperator, OrOperator,
-                MultiplicationOperator , DivisionOperator , ModulusOperator,
-                AndOperator , None  
+                MultiplicationOperator , DivisionOperator , ModulusOperator, AndOperator,
+                LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual, EqualTo, NotEqual,
+                None  
             };
 
             Operator(OperatorType type);

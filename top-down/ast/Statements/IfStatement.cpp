@@ -11,10 +11,13 @@ namespace ast {
 
     IfStatement::IfStatement(lexer::Lexer & lex, symtable::SymbolTable * table) : Statement(table) {
         consumeLexemeType(lex.Next(), lexer::IF);
+        lex.HasNext();
+
         cond = new Expression(lex, table);
         trueBlock = new Block(lex, table);
-        if(lex.Next()->GetType() == lexer::ELSE) {
+        if(NextType(lex) == lexer::ELSE) {
             consumeLexemeType(lex.Next(), lexer::ELSE);
+            lex.HasNext();
             falseBlock = new Block(lex, table);
         }
     }
@@ -38,7 +41,7 @@ namespace ast {
     }
 
     std::ostream& IfStatement::Write(std::ostream & os) const {
-        os << "if " << *cond << " " << trueBlock;
+        os << "if " << *cond << " " << *trueBlock;
         if(falseBlock != nullptr) {
             os << " else " << *falseBlock;
         }

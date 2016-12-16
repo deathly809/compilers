@@ -1,16 +1,8 @@
 
 #include <ast/Expressions/Term.hpp>
 
-#include <ast/Expressions/Expression.hpp>
-
-#include <ast/Expressions/BooleanLiteral.hpp>
-#include <ast/Expressions/IntegerLiteral.hpp>
-#include <ast/Expressions/RealLiteral.hpp>
-#include <ast/Expressions/StringLiteral.hpp>
-
-#include <ast/Expressions/FunctionCall.hpp>
-
-#include <ast/Identifier.hpp>
+#include <ast/Expressions/VName.hpp>
+#include <ast/Expressions/Operator.hpp>
 
 #include <Lexeme.hpp>
 #include <LexemeTypes.hpp>
@@ -18,67 +10,47 @@
 namespace ast {
 
     // T := (E) | ID | LIT | F_CALL
-    Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), expr(nullptr), bLit(nullptr), iLit(nullptr), rLit(nullptr), sLit(nullptr), fCall(nullptr) , ident(nullptr) {
+    Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), op(nullptr), rhs(nullptr) {
+        lhs = new VName(lex,table);
 
-        std::unique_ptr<lexer::Lexeme> curr = nullptr;
-        lexer::LexemeType type;
-        
         switch(NextType(lex)) {
-            case lexer::O_PAREN:
-                consumeLexemeType(lex.Next(),lexer::O_PAREN);
-                lex.HasNext();
-                expr = new Expression(lex,table);
-                consumeLexemeType(lex.Next(),lexer::C_PAREN);
-                lex.HasNext();
+            case lexer::LT:
+                op = new Operator(Operator::LessThan);
                 break;
-            case lexer::STRING:
-                sLit = new StringLiteral(lex,table);
+            case lexer::LTE:
+                op = new Operator(Operator::LessThanOrEqual);
                 break;
-            case lexer::INT:
-                iLit = new IntegerLiteral(lex,table);
+            case lexer::GT:
+                op = new Operator(Operator::GreaterThan);
                 break;
-            case lexer::REAL:
-                rLit = new RealLiteral(lex,table);
+            case lexer::GTE:
+                op = new Operator(Operator::GreaterThanOrEqual);
                 break;
-            case lexer::ID:
-                curr = lex.Next();
-                lex.HasNext();
-                
-                type = NextType(lex);
-                
-                lex.PushBack(curr);
-                if(type != lexer::O_PAREN) {
-                    ident = new Identifier(lex,table);
-                } else {
-                    fCall = new FunctionCall(lex, table);
-                }
-
+            case lexer::NE:
+                op = new Operator(Operator::NotEqual);
                 break;
-            case lexer::BOOL:
-                bLit = new BooleanLiteral(lex,table);
+            case lexer::D_EQUAL:
+                op = new Operator(Operator::EqualTo);
                 break;
             default:
-                throw std::runtime_error("should we really be here");
-                /* nothing */
+                op = new Operator(Operator::None);
                 break;
+        }
+
+        if(op->GetType() != Operator::None) {
+            lex.Next();
+            lex.HasNext();
+            rhs = new Term(lex, table);
         }
     }
 
     Term::~Term() {
-        delete expr;
-
-        delete bLit;
-        delete iLit;
-        delete rLit;
-        delete sLit;
-
-        delete fCall;
-
-        delete ident;
+        delete lhs;
+        delete op;
+        delete rhs;
     }
 
     void Term::Validate() const {
-        if(expr != nullptr) expr->Validate();
     }
 
     void Term::GenerateCode(std::ostream & out) const {
@@ -86,28 +58,15 @@ namespace ast {
     }
 
     ValueType Term::ResultType() const {
-        if(expr != nullptr) return expr->ResultType();
-        
-        if(bLit != nullptr) return bLit->ResultType();
-        if(iLit != nullptr) return iLit->ResultType();
-        if(rLit != nullptr) return rLit->ResultType();
-        if(sLit != nullptr) return sLit->ResultType();
-
-        if(fCall != nullptr) return fCall->ResultType();
-
-        if(ident != nullptr) return ident->ResultType();
-
-        throw std::runtime_error("something went wrong");
+        return lhs->ResultType();
     }
 
     std::ostream & Term::Write(std::ostream & os) const {
-        if(expr != nullptr) os << *expr;
-        else if(bLit != nullptr) os << *bLit;
-        else if(iLit != nullptr) os << *iLit;
-        else if(rLit != nullptr) os << *rLit;
-        else if(sLit != nullptr) os << *sLit;
-        else if(fCall != nullptr) os << *fCall;
-        else if(ident != nullptr) os << *ident;
+        if(op->GetType() == Operator::None) {
+            os << *lhs;
+        } else {
+            os << "(" << *lhs << *op << *rhs << ")";
+        }
         return os;
     }
 

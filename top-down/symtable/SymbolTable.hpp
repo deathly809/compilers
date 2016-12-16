@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include <memory>
+
 namespace symtable {
 
     enum AttributeType {IntAttributeType, RealAttributeType, StringAttributeType, BooleanAttributeType, NilAttributeType, VariableAttributeType };
@@ -22,6 +24,9 @@ namespace symtable {
             }
             
         public:
+            Attribute() {};
+            Attribute(const Attribute &) = delete;
+            Attribute& operator=(const Attribute &) = delete;
             virtual ~Attribute(){};
             std::string GetName() { return name; };
             AttributeType GetType() { return type; };
@@ -112,7 +117,7 @@ namespace symtable {
     // SymbolTable holds information about symbols
     class SymbolTable {
         // Really only needed inside the class
-        typedef std::map<std::string,Attribute*> Scope;
+        typedef std::map<std::string, Attribute* > Scope;
 
         private:
             std::vector<Scope> scopes;
@@ -126,9 +131,10 @@ namespace symtable {
 
             ~SymbolTable() {
                 for(auto && s : scopes) {
-                    for(auto && elems : s) {
-                        delete elems.second;
+                    for( auto && b  : s) {
+                        delete b.second;
                     }
+                    s.clear();
                 }
                 scopes.clear();
             }
@@ -143,24 +149,32 @@ namespace symtable {
                 if(scopes.size() == 1) {
                     throw std::runtime_error("Cannot remove global scope.");
                 }
+
+                auto back = scopes.back();
+                for( auto && b  : back) {
+                    delete b.second;
+                }
                 scopes.pop_back();
             }
 
             // Locate an identifer
-            Attribute* Locate(std::string name) {
+            std::shared_ptr<Attribute> Locate(std::string name) {
+                std::shared_ptr<Attribute> result = nullptr;
                 for( int pos = scopes.size() - 1; pos > -1; pos-- ) {
                     Scope& s = scopes[pos];
                     auto finger = s.find(name);
                     if(finger != s.end()) {
-                        return (finger->second);
+                        result.reset(finger->second);
                     }
                 }
-                return &nil;
+                return result;
             }
 
             // Insert an attribute into the symbol table.  The symbol table takes ownership.
-            void Insert(Attribute* attr) {
-                scopes[scopes.size() - 1].insert({attr->GetName(),attr});
+            void Insert(std::unique_ptr<Attribute> & attr) {
+                Attribute* a = attr.get();
+                attr.release();
+                scopes[scopes.size() - 1].insert({ a->GetName(),a});
             }
 
     };

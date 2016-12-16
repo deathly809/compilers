@@ -48,8 +48,13 @@ namespace lexer {
         {ENDFILE,"EOF"}
     };
 
-    std::string& LexemeTypeToString(LexemeType t) {
+    std::string& LexemeTypeToString(lexer::LexemeType t) {
         return typeMappings.find(t)->second;
     }
     
+
+}
+
+std::ostream& operator<<(std::ostream & os, const lexer::LexemeType & type) {
+    return os << LexemeTypeToString(type);
 }

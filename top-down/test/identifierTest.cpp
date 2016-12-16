@@ -1,18 +1,22 @@
 
 
 #include <catch.hpp>
+#include <runner.hpp>
 
 #include <ast/Identifier.hpp>
-#include <Lexer.hpp>
 
-#include <sstream>
-
-TEST_CASE( "single alphabet character" , "[Identifier]" ) {
-    std::stringstream ss;
-    ss << "a";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Identifier id(lex, &table);
+TEST_CASE( "single character" , "[Identifier]" ) {
+    SECTION("alphabet") {
+        run<ast::Identifier>("a");
+        run<ast::Identifier>("b");
+        run<ast::Identifier>("c");
+        run<ast::Identifier>("d");
+    }
+}
+TEST_CASE( "multiple characters" , "[Identifier]" ) {
+    run<ast::Identifier>("aa");
+    run<ast::Identifier>("asdfasdf");
+    run<ast::Identifier>("_asdfafas141434" , true );
+    run<ast::Identifier>("___25lskjg_23243KjlJIJkL" , true );
 }
 

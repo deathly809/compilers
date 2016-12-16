@@ -8,13 +8,8 @@
 
 namespace ast {
 
-    class Expression;
-    class BooleanLiteral;
-    class IntegerLiteral;
-    class RealLiteral;
-    class StringLiteral;
-    class FunctionCall;
-    class Identifier;
+    class Operator;
+    class VName;
 
     class Term : public Ast {
 
@@ -29,17 +24,10 @@ namespace ast {
             ValueType ResultType() const;
 
         private:
-            Expression*     expr = nullptr;
-
-            BooleanLiteral* bLit = nullptr;
-            IntegerLiteral* iLit = nullptr;
-            RealLiteral*    rLit = nullptr;
-            StringLiteral*  sLit = nullptr;
-
-            FunctionCall*   fCall = nullptr;
-
-            Identifier*     ident = nullptr;
-
+            VName*      lhs = nullptr;
+            Operator*   op  = nullptr;
+            Term*       rhs = nullptr;
+            
     };
 
 }

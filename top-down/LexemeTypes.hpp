@@ -19,4 +19,6 @@ namespace lexer {
     
 }
 
+std::ostream& operator<<(std::ostream & os, const lexer::LexemeType & type);
+
 #endif

@@ -19,6 +19,12 @@ namespace ast {
         {Operator::ModulusOperator, "%"},
         {Operator::OrOperator, "|"},
         {Operator::AndOperator, "&"},
+        {Operator::LessThan, "<"},
+        {Operator::LessThanOrEqual, "<="},
+        {Operator::GreaterThan, ">"},
+        {Operator::GreaterThanOrEqual, ">="},
+        {Operator::EqualTo, "=="},
+        {Operator::NotEqual, "!="},
     };
 
     Operator::Operator(OperatorType type) : Ast(nullptr), op(type) {

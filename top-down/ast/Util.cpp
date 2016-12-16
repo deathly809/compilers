@@ -15,11 +15,11 @@ namespace ast {
         }
     }
 
-        lexer::LexemeType NextType(lexer::Lexer & lex) {
-            std::unique_ptr<lexer::Lexeme> l = lex.Next();
-            lexer::LexemeType type = l->GetType();
-            lex.PushBack(l);
-            return type;
-        }
+    lexer::LexemeType NextType(lexer::Lexer & lex) {
+        std::unique_ptr<lexer::Lexeme> l = lex.Next();
+        lexer::LexemeType type = l->GetType();
+        lex.PushBack(l);
+        return type;
+    }
     
 }

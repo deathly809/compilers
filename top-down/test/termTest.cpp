@@ -1,156 +1,280 @@
 
 
 #include <catch.hpp>
+#include <runner.hpp>
 
 #include <ast/Expressions/Term.hpp>
-#include <Lexer.hpp>
-
-#include <sstream>
 
 TEST_CASE( "Test integer" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "5";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    run<ast::Term>("5");
 }
 
 TEST_CASE( "Test bool" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "false";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    run<ast::Term>("false");
 }
 
 TEST_CASE( "Test string" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "\"test string\"";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    run<ast::Term>("\"test string\"");
 }
 
 TEST_CASE( "Test integer sub-expression" , "[Term]" ) {
     SECTION("singled nested") {
-        std::stringstream ss;
-        ss << "(5)";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(5)");
     }
     SECTION("double nested") {
-        std::stringstream ss;
-        ss << "((5))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("((5))");
     }
     SECTION("triple nested") {
-        std::stringstream ss;
-        ss << "(((5)))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(((5)))");
     }
 
 }
 
 TEST_CASE( "Test string sub-expression" , "[Term]" ) {
     SECTION("single nested") {
-        std::stringstream ss;
-        ss << "(\"parens everywhere\")";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(\"parens everywhere\")");
     }
     SECTION("double nested") {
-        std::stringstream ss;
-        ss << "((\"parens everywhere\"))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("((\"parens everywhere\"))");
     }
     SECTION("triple nested") {
-        std::stringstream ss;
-        ss << "(((\"parens everywhere\")))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(((\"parens everywhere\")))");
     }
 }
 
 TEST_CASE( "Test bool sub-expression" , "[Term]" ) {
     SECTION("single nested") {
-        std::stringstream ss;
-        ss << "(true)";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(true)");
     }
     SECTION("double nested") {
-        std::stringstream ss;
-        ss << "((true))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("((true))");
     }
     SECTION("triple nested") {
-        std::stringstream ss;
-        ss << "(((true)))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
+        run<ast::Term>("(((true)))");
     }
 }
 
 TEST_CASE("dumb number nested parens" , "[Term]") {
     SECTION("integer") {
-        std::stringstream ss;
-        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((5)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
-        std::cout << term << std::endl;
+        run<ast::Term>("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((5)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))");
     }
     SECTION("bool") {
-        std::stringstream ss;
-        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((false)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
-        std::cout << term << std::endl;
+        run<ast::Term>("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((false)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))");
     }
     SECTION("string") {
-        std::stringstream ss;
-        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((\"this is the string\")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
-        std::cout << term << std::endl;
+        run<ast::Term>("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((\"this is the string\")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))");
     }
     SECTION("function") {
-        std::stringstream ss;
-        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
-        lexer::Lexer lex(new Scanner(ss));
-        lex.HasNext();
-        symtable::SymbolTable table;
-        ast::Term term(lex, &table);
-        std::cout << term << std::endl;
+        run<ast::Term>("(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))");
+    }
+}
+
+TEST_CASE("Term: less than", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 < 3");
+        run<ast::Term>("50 < 3");
+        run<ast::Term>("5 < 30");
+        run<ast::Term>("-100 < 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" < \"asdf\"");
+        run<ast::Term>("\"a\" < \"a\"");
+        run<ast::Term>("\"b\" < \"a\"");
+        run<ast::Term>("\"\" < \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true < true");
+        run<ast::Term>("true < false");
+        run<ast::Term>("false < true");
+        run<ast::Term>("false < false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a < b");
+        run<ast::Term>("b < a");
+        run<ast::Term>("_asdf < name");
+        run<ast::Term>("star69 < number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true < asdf");
+        run<ast::Term>("true < 5");
+        run<ast::Term>("5 < false");
+        run<ast::Term>("5 < true");
+        run<ast::Term>("5 < true");
+        run<ast::Term>("false < 5");
+    }
+}
+
+TEST_CASE("Term: less than or equal", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 <= 3");
+        run<ast::Term>("50 <= 3");
+        run<ast::Term>("5 <= 30");
+        run<ast::Term>("-100 <= 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" <= \"asdf\"");
+        run<ast::Term>("\"a\" <= \"a\"");
+        run<ast::Term>("\"b\" <= \"a\"");
+        run<ast::Term>("\"\" <= \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true <= true");
+        run<ast::Term>("true <= false");
+        run<ast::Term>("false <= true");
+        run<ast::Term>("false <= false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a <= b");
+        run<ast::Term>("b <= a");
+        run<ast::Term>("_asdf <= name");
+        run<ast::Term>("star69 <= number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true <= asdf");
+        run<ast::Term>("true <= 5");
+        run<ast::Term>("5 <= false");
+        run<ast::Term>("5 <= true");
+        run<ast::Term>("5 <= true");
+        run<ast::Term>("false <= 5");
+    }
+}
+
+TEST_CASE("Term: greater than", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 > 3");
+        run<ast::Term>("50 > 3");
+        run<ast::Term>("5 > 30");
+        run<ast::Term>("-100 > 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" > \"asdf\"");
+        run<ast::Term>("\"a\" > \"a\"");
+        run<ast::Term>("\"b\" > \"a\"");
+        run<ast::Term>("\"\" > \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true > true");
+        run<ast::Term>("true > false");
+        run<ast::Term>("false > true");
+        run<ast::Term>("false > false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a > b");
+        run<ast::Term>("b > a");
+        run<ast::Term>("_asdf > name");
+        run<ast::Term>("star69 > number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true > asdf");
+        run<ast::Term>("true > 5");
+        run<ast::Term>("5 > false");
+        run<ast::Term>("5 > true");
+        run<ast::Term>("5 > true");
+        run<ast::Term>("false > 5");
+    }
+}
+
+TEST_CASE("Term: greater than or equal", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 >= 3");
+        run<ast::Term>("50 >= 3");
+        run<ast::Term>("5 >= 30");
+        run<ast::Term>("-100 >= 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" >= \"asdf\"");
+        run<ast::Term>("\"a\" >= \"a\"");
+        run<ast::Term>("\"b\" >= \"a\"");
+        run<ast::Term>("\"\" >= \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true >= true");
+        run<ast::Term>("true >= false");
+        run<ast::Term>("false >= true");
+        run<ast::Term>("false >= false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a >= b");
+        run<ast::Term>("b >= a");
+        run<ast::Term>("_asdf >= name");
+        run<ast::Term>("star69 >= number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true >= asdf");
+        run<ast::Term>("true >= 5");
+        run<ast::Term>("5 >= false");
+        run<ast::Term>("5 >= true");
+        run<ast::Term>("5 >= true");
+        run<ast::Term>("false >= 5");
+    }
+}
+
+TEST_CASE("Term: equal to", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 == 3");
+        run<ast::Term>("50 == 3");
+        run<ast::Term>("5 == 30");
+        run<ast::Term>("-100 == 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" == \"asdf\"");
+        run<ast::Term>("\"a\" == \"a\"");
+        run<ast::Term>("\"b\" == \"a\"");
+        run<ast::Term>("\"\" == \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true == true");
+        run<ast::Term>("true == false");
+        run<ast::Term>("false == true");
+        run<ast::Term>("false == false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a == b");
+        run<ast::Term>("b == a");
+        run<ast::Term>("_asdf == name");
+        run<ast::Term>("star69 == number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true == asdf");
+        run<ast::Term>("true == 5");
+        run<ast::Term>("5 == false");
+        run<ast::Term>("5 == true");
+        run<ast::Term>("5 == true");
+        run<ast::Term>("false == 5");
+    }
+}
+
+TEST_CASE("Term: not equal to", "[Term]") {
+    SECTION("integer") {
+        run<ast::Term>("5 != 3");
+        run<ast::Term>("50 != 3");
+        run<ast::Term>("5 != 30");
+        run<ast::Term>("-100 != 3");
+    }
+    SECTION("string") {
+        run<ast::Term>("\"asdf\" != \"asdf\"");
+        run<ast::Term>("\"a\" != \"a\"");
+        run<ast::Term>("\"b\" != \"a\"");
+        run<ast::Term>("\"\" != \"asdf\"");
+    }
+    SECTION("bool") {
+        run<ast::Term>("true != true");
+        run<ast::Term>("true != false");
+        run<ast::Term>("false != true");
+        run<ast::Term>("false != false");
+    }
+    SECTION("identifiers") {
+        run<ast::Term>("a != b");
+        run<ast::Term>("b != a");
+        run<ast::Term>("_asdf != name");
+        run<ast::Term>("star69 != number_of_stars");
+    }
+    SECTION("mixed") {
+        run<ast::Term>("true != asdf");
+        run<ast::Term>("true != 5");
+        run<ast::Term>("5 != false");
+        run<ast::Term>("5 != true");
+        run<ast::Term>("5 != true");
+        run<ast::Term>("false != 5");
     }
 }

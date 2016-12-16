@@ -14,7 +14,7 @@ main: ${OBJS} lib.o
 	${CMP} $(ODIR)/*.o objs/*.o -o main
 
 
-objs/%.o: %.cpp
+objs/%.o: %.cpp runner.hpp
 	${CMP} -c $< -o $@
 
 debug:

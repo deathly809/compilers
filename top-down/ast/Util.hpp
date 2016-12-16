@@ -22,20 +22,25 @@ namespace ast {
 
     // validate the lexeme 
     #define checkLexemeType(l,expectedType) do {            \
-        if(l == nullptr) {                                  \
+        auto && D = l;                                      \
+        if(D == nullptr) {                                  \
             throw std::runtime_error(std::string(__FILE__)  \
                         + ":" + std::to_string(__LINE__)    \
                         + ", unexpected EOF");              \
         }                                                   \
                                                             \
-        if(l->GetType() != expectedType) {                  \
+        if(D->GetType() != expectedType) {                  \
+            std::stringstream ss;                           \
+            ss << *D;                                       \
             throw std::runtime_error(                       \
                 std::string(__FILE__)                       \
                 + ":" + std::to_string(__LINE__)            \
                 + ", expected "                             \
                 + LexemeTypeToString(expectedType)          \
                 + " but found "                             \
-                + LexemeTypeToString(l->GetType()));        \
+                + LexemeTypeToString(D->GetType())          \
+                + "\n"                                      \
+                + ss.str());                                \
         }                                                   \
     } while(0);
 

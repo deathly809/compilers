@@ -25,6 +25,7 @@ namespace ast {
                     break;
                 case lexer::ID:
                     stmts.push_back(new Assignment(lex,table));
+                    break;
                 case lexer::RETURN:
                     stmts.push_back(new Return(lex,table));
                     break;
@@ -35,7 +36,8 @@ namespace ast {
                     stmts.push_back(new Loop(lex,table));
                     break;
                 default:
-                    throw std::runtime_error("error: " + std::to_string(__LINE__) + std::string(__FILE__));
+                    std::cout << *lex.Next() << std::endl;
+                    throw std::runtime_error("error: " + std::to_string(__LINE__) + " " + std::string(__FILE__));
             }
         }
         consumeLexemeType(lex.Next(),lexer::C_BRACE);
@@ -62,8 +64,11 @@ namespace ast {
         os << "{" << std::endl; 
         for(auto && s : stmts) {
             os << *s << std::endl;
+        } 
+        if(stmts.size() == 0 ) {
+            os << std::endl;
         }
-        return os << std::endl << "}";
+        return os << "}";
     }
 
 }

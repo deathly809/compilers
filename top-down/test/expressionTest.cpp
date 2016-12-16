@@ -6,10 +6,15 @@
 #include <ast/Expressions/Expression.hpp>
 
 TEST_CASE( "Test single integer" , "[Expression]" ) {
-    run<ast::Expression>("5");
+    run<ast::Expression>("5",true);
+    run<ast::Expression>("50",true);
+    run<ast::Expression>("2342652423",true);
+    run<ast::Expression>("1023",true);
+    run<ast::Expression>("-1",true);
 }
 TEST_CASE( "Test single boolean" , "[Expression]" ) {
-    run<ast::Expression>("true");
+    run<ast::Expression>("true",true);
+    run<ast::Expression>("false",true);
 }
 
 TEST_CASE( "integer addition" , "[Expression]" ) {

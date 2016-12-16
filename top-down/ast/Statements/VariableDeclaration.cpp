@@ -13,12 +13,7 @@
 namespace ast {
 
     VariableDeclaration::VariableDeclaration(lexer::Lexer &lex, symtable::SymbolTable * table) : Statement(table) {
-        std::unique_ptr<lexer::Lexeme> c = lex.Next();
-        if(c == nullptr) {
-            throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", unexpected EOF");
-        }
-        
-        switch(c->GetType()) {
+        switch(NextType(lex)) {
             case lexer::VAR:
                 variable = true;
                 break;
@@ -28,6 +23,7 @@ namespace ast {
             default:
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
+        lex.Next();
         lex.HasNext();
 
         name = new Identifier(lex, table);
@@ -39,7 +35,6 @@ namespace ast {
         } else {
             type = new Type(lex, table);
         }
-        lex.HasNext();
     }
 
     VariableDeclaration::~VariableDeclaration() {
