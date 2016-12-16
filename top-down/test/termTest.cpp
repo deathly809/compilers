@@ -35,31 +35,122 @@ TEST_CASE( "Test string" , "[Term]" ) {
 }
 
 TEST_CASE( "Test integer sub-expression" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "(5)";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    SECTION("singled nested") {
+        std::stringstream ss;
+        ss << "(5)";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("double nested") {
+        std::stringstream ss;
+        ss << "((5))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("triple nested") {
+        std::stringstream ss;
+        ss << "(((5)))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+
 }
-/*
 
 TEST_CASE( "Test string sub-expression" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "(\"parens everywhere\")";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    SECTION("single nested") {
+        std::stringstream ss;
+        ss << "(\"parens everywhere\")";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("double nested") {
+        std::stringstream ss;
+        ss << "((\"parens everywhere\"))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("triple nested") {
+        std::stringstream ss;
+        ss << "(((\"parens everywhere\")))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
 }
 
 TEST_CASE( "Test bool sub-expression" , "[Term]" ) {
-    std::stringstream ss;
-    ss << "(true)";
-    lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
-    symtable::SymbolTable table;
-    ast::Term term(lex, &table);
+    SECTION("single nested") {
+        std::stringstream ss;
+        ss << "(true)";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("double nested") {
+        std::stringstream ss;
+        ss << "((true))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
+    SECTION("triple nested") {
+        std::stringstream ss;
+        ss << "(((true)))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+    }
 }
 
-*/
+TEST_CASE("dumb number nested parens" , "[Term]") {
+    SECTION("integer") {
+        std::stringstream ss;
+        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((5)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+        std::cout << term << std::endl;
+    }
+    SECTION("bool") {
+        std::stringstream ss;
+        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((false)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+        std::cout << term << std::endl;
+    }
+    SECTION("string") {
+        std::stringstream ss;
+        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((\"this is the string\")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+        std::cout << term << std::endl;
+    }
+    SECTION("function") {
+        std::stringstream ss;
+        ss << "(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f())))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))";
+        lexer::Lexer lex(new Scanner(ss));
+        lex.HasNext();
+        symtable::SymbolTable table;
+        ast::Term term(lex, &table);
+        std::cout << term << std::endl;
+    }
+}

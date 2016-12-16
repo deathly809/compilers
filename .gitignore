@@ -7,3 +7,4 @@
 *.o
 output/
 ./top-down/output/
+main

@@ -21,13 +21,12 @@ namespace ast {
         #endif
 
         lhs = new Term(lex, table);        
-        lexer::Lexeme *l = lex.Next();
         
         #ifdef DEBUG
             std::cout << "after Term:"  << *l << std::endl;
         #endif
 
-        switch(l->GetType()) {
+        switch(NextType(lex)) {
             case lexer::MUL:
                 op = new Operator(Operator::MultiplicationOperator);
                 break;
@@ -42,13 +41,12 @@ namespace ast {
                 break;
             default:
                 op = new Operator(Operator::None);
-                lex.PushBack(l);
                 break;
         }
 
         // We found an operator, consume it
         if(op->GetType() != Operator::None) {
-            delete l;
+            lex.Next();
             lex.HasNext();
             rhs = new Factor(lex,table);
         }

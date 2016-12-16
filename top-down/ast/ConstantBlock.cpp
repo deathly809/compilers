@@ -14,7 +14,7 @@ namespace ast {
         consumeLexemeType(lex.Next(),lexer::VAR);
         consumeLexemeType(lex.Next(),lexer::O_PAREN);
 
-        lexer::Lexeme* c = lex.Next();
+        std::unique_ptr<lexer::Lexeme> c = lex.Next();
         while(c->GetType() != lexer::C_PAREN) {
             vars.push_back(
                 {

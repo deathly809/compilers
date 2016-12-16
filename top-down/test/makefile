@@ -8,14 +8,14 @@ ODIR 	= ../output
 
 SOURCES    := ${wildcard *.cpp}
 OBJECTS    := ${SOURCES:.cpp=.o}
-OBJS       := $(patsubst %,%,$(OBJECTS))
+OBJS       := $(patsubst %,objs/%,$(OBJECTS))
 
 main: ${OBJS} lib.o
-	${CMP} $(ODIR)/*.o ./*.o -o main
+	${CMP} $(ODIR)/*.o objs/*.o -o main
 
 
-%.o: %.cpp
-	${CMP} -c $< 
+objs/%.o: %.cpp
+	${CMP} -c $< -o $@
 
 debug:
 	${CMP} -DDEBUG *.cpp $(ODIR)/*.o -o main
@@ -26,5 +26,5 @@ lib.o:
 
 clean:
 	rm -f main
-	rm *.o
+	rm -f objs/*.o
 	make -C ../ clean

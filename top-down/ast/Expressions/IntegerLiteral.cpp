@@ -8,7 +8,7 @@
 namespace ast {
 
     IntegerLiteral::IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        lexer::Lexeme * l = lex.Next();
+        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
         std::string val = l->GetValue();
         consumeLexemeType(l,lexer::INT);
         value = Convert<int>(val);

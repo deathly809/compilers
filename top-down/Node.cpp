@@ -39,7 +39,7 @@ namespace parser {
             /* EMPTY */ 
         }
         
-        Node::Node(lexer::Lexeme* lexeme) : type(nUndef), lexeme(lexeme), left(nullptr), right(nullptr) {
+        Node::Node(std::unique_ptr<lexer::Lexeme> & lexeme) : type(nUndef), lexeme(std::move(lexeme)), left(nullptr), right(nullptr) {
             /* EMPTY */ 
         }
 
@@ -47,7 +47,7 @@ namespace parser {
             /* EMPTY */ 
         }
 
-        Node::Node(lexer::Lexeme* lexeme, NodeType type) : type(type), lexeme(lexeme), left(nullptr), right(nullptr) {
+        Node::Node(std::unique_ptr<lexer::Lexeme> & lexeme, NodeType type) : type(type), lexeme(std::move(lexeme)), left(nullptr), right(nullptr) {
             /* EMPTY */ 
         }
 
@@ -55,7 +55,11 @@ namespace parser {
             /* EMPTY */ 
         }
 
-        Node::Node(Node* left, Node* right, lexer::Lexeme *lexeme, NodeType type) : type(type) ,lexeme(lexeme), left(left), right(right) {
+        Node::Node(Node* left, Node* right, NodeType type) : type(type) ,lexeme(nullptr), left(left), right(right) {
+            /* EMPTY */ 
+        }
+
+        Node::Node(Node* left, Node* right, std::unique_ptr<lexer::Lexeme> & lexeme, NodeType type) : type(type) ,lexeme(std::move(lexeme)), left(left), right(right) {
             /* EMPTY */ 
         }
 
@@ -72,7 +76,6 @@ namespace parser {
             }
 
             if(lexeme != nullptr) {
-                delete lexeme;
                 lexeme = nullptr;
             }
         }
@@ -91,7 +94,7 @@ namespace parser {
             return type;
         }
 
-        const lexer::Lexeme* Node::GetLexeme() const {
+        const std::unique_ptr<lexer::Lexeme>& Node::GetLexeme() const {
             return lexeme;
         }
 
@@ -109,8 +112,8 @@ namespace parser {
             type = newType;
         }
 
-        void Node::SetLexeme(lexer::Lexeme* newLexeme) {
-            lexeme = newLexeme;
+        void Node::SetLexeme(std::unique_ptr<lexer::Lexeme> & newLexeme) {
+            lexeme = std::move(newLexeme);
         }
 
         std::ostream& operator<<(std::ostream & out , const Node & n) {

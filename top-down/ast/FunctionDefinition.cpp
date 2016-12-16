@@ -16,7 +16,7 @@ namespace ast {
         functionName = new Identifier(lex, table);
         consumeLexemeType(lex.Next(), lexer::O_PAREN);
         
-        lexer::Lexeme * l = lex.Next();
+        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
         if(l->GetType() != lexer::C_PAREN) {
 
             lex.PushBack(l);

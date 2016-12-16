@@ -3,6 +3,7 @@
 #define NODE_HPP_
 
 #include <string>
+#include <memory>
 
 namespace lexer {
     class Lexeme;
@@ -23,26 +24,27 @@ namespace parser {
 
         public:
             Node();
-            Node(lexer::Lexeme* lexeme);
+            Node(std::unique_ptr<lexer::Lexeme> & lexeme);
             Node(NodeType type);
-            Node(lexer::Lexeme* lexeme, NodeType type);
-            Node(Node* left, Node* right, lexer::Lexeme *lexeme, NodeType type);
+            Node(std::unique_ptr<lexer::Lexeme> & lexeme, NodeType type);
+            Node(Node* left, Node* right, std::unique_ptr<lexer::Lexeme> & lexeme, NodeType type);
+            Node(Node* left, Node* right, NodeType type);
             Node(Node* left, Node* right);
             ~Node();
 
             NodeType GetType() const;
             Node* GetLeft() const;
             Node* GetRight() const;
-            const lexer::Lexeme* GetLexeme() const;
+            const std::unique_ptr<lexer::Lexeme>& GetLexeme() const;
 
             void SetLeft(Node* node);
             void SetRight(Node* node);
             void SetType(NodeType type);
-            void SetLexeme(lexer::Lexeme* l);
+            void SetLexeme(std::unique_ptr<lexer::Lexeme> & l);
 
         private:
             NodeType type;
-            lexer::Lexeme *lexeme;
+            std::unique_ptr<lexer::Lexeme> lexeme;
             Node* left, *right;
 
     };

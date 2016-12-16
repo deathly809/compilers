@@ -12,7 +12,7 @@ namespace ast {
     VariableBlock::VariableBlock(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         consumeLexemeType(lex.Next(),lexer::VAR);
         consumeLexemeType(lex.Next(),lexer::O_PAREN);
-        lexer::Lexeme* l = lex.Next();
+        std::unique_ptr<lexer::Lexeme> l = lex.Next();
         while(l->GetType() != lexer::C_PAREN) {
             vars.push_back(
                 {

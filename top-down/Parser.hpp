@@ -1,8 +1,9 @@
 
+#include <LexemeTypes.hpp>
+
 #include <string>
 #include <fstream>
-
-#include <LexemeTypes.hpp>
+#include <memory>
 
 namespace lexer {
     class Lexer;
@@ -64,7 +65,7 @@ namespace parser {
             Node* parseTerm();
             Node* parseUnary();
 
-            lexer::Lexeme*  current;
+            std::unique_ptr<lexer::Lexeme>  current;
             lexer::Lexer*   lex;
 
     };

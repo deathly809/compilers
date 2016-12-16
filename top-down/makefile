@@ -6,25 +6,28 @@ SOURCES    := ${wildcard *.cpp}
 OBJECTS    := ${SOURCES:.cpp=.o}
 OBJS       := $(patsubst %,$(ODIR)/%,$(OBJECTS))
 
-_EXEC      := testScanner testLexer
-EXEC       := $(patsubst %,$(ODIR)/%,$(_EXEC))
+_EXEC      := testScanner testLexer testParser 
+EXEC       := $(patsubst %,$(ODIR)/exec/%,$(_EXEC))
 
 .PHONY:    all clean
 
 .SUFFIXES: .cpp .o
 
-all:       main $(EXEC) main
+all:       main $(EXEC)
+	rm $(ODIR)/test*.o
 	mkdir -p $(ODIR)/exec
-	mv $(ODIR)/test* $(ODIR)/exec/
 
-$(ODIR)/testParser:
-	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexer.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/testParser.o $(OUTDIR)/Parser.o -o $(ODIR)/testParser
+$(ODIR)/exec/testParser:
+	mv $(ODIR)/testParser.o $(ODIR)/exec
+	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexer.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/exec/testParser.o $(OUTDIR)/Parser.o -o $(ODIR)/exec/testParser
 
-$(ODIR)/testLexer:
-	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexer.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/testLexer.o -o $(ODIR)/testLexer
+$(ODIR)/exec/testLexer:
+	mv $(ODIR)/testLexer.o $(ODIR)/exec
+	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexer.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/exec/testLexer.o -o $(ODIR)/exec/testLexer
 
-$(ODIR)/testScanner:
-	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/testScanner.o -o $(ODIR)/testScanner
+$(ODIR)/exec/testScanner:
+	mv $(ODIR)/testScanner.o $(ODIR)/exec
+	g++ -std=c++11 $(ODIR)/Scanner.o $(ODIR)/Lexeme.o $(ODIR)/LexemeTypes.o $(ODIR)/exec/testScanner.o -o $(ODIR)/exec/testScanner
 
 main:      $(OBJS)
 	$(MAKE) -C ast 

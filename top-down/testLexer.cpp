@@ -15,9 +15,8 @@ int main(int argc, char* argv[]) {
         lexer::Lexer lex(inputFile);
 
         while(lex.HasNext()) {
-            lexer::Lexeme* l = lex.Next();
+            std::unique_ptr<lexer::Lexeme> l = lex.Next();
             std::cout << *l << std::endl;
-            delete l;
         }
         
     } catch(const std::exception& err) {

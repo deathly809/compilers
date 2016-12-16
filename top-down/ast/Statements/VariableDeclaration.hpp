@@ -25,8 +25,11 @@ namespace ast {
             Identifier* name        = nullptr;
             Expression* value       = nullptr; 
 
+            friend std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef);
+
     };
 
+    std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef);
 }
 
 #endif

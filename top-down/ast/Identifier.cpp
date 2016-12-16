@@ -15,7 +15,6 @@ namespace ast {
         }
 
         Identifier::~Identifier() {
-            delete lexeme;
         }
 
         void Identifier::Validate() const {

@@ -15,10 +15,10 @@ namespace ast {
 
     Block::Block(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         consumeLexemeType(lex.Next(),lexer::O_BRACE);
+        lex.HasNext();
 
-        lexer::Lexeme* c = lex.Next();
-        while(c->GetType() != lexer::C_BRACE) {
-            switch(c->GetType()) {
+        while(NextType(lex) != lexer::C_BRACE) {
+            switch(NextType(lex)) {
                 case lexer::VAR:
                 case lexer::CONST:
                     stmts.push_back(new VariableDeclaration(lex,table));
@@ -37,7 +37,6 @@ namespace ast {
                 default:
                     throw std::runtime_error("error: " + std::to_string(__LINE__) + std::string(__FILE__));
             }
-            c = lex.Next();
         }
         consumeLexemeType(lex.Next(),lexer::C_BRACE);
     }

@@ -7,7 +7,7 @@
 namespace ast {
 
     StringLiteral::StringLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        lexer::Lexeme * l = lex.Next();
+        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
         lex.HasNext();
         
         value = l->GetValue();

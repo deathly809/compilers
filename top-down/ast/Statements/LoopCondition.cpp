@@ -10,7 +10,7 @@
 namespace ast {
 
     LoopCondition::LoopCondition(lexer::Lexer& lex, symtable::SymbolTable * table ) : Ast(table) {
-        lexer::Lexeme* c = lex.Next();
+        std::unique_ptr<lexer::Lexeme> c = lex.Next();
         if(c->GetType() != lexer::O_BRACE) {  
             exp.push_back(new Expression(lex, table));
             c = lex.Next();

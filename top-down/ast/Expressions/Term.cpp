@@ -10,22 +10,20 @@
 
 #include <ast/Expressions/FunctionCall.hpp>
 
+#include <ast/Identifier.hpp>
+
 #include <Lexeme.hpp>
 #include <LexemeTypes.hpp>
 
 namespace ast {
 
     // T := (E) | ID | LIT | F_CALL
-    Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), expr(nullptr), bLit(nullptr), iLit(nullptr), rLit(nullptr), sLit(nullptr), fCall(nullptr) {
+    Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), expr(nullptr), bLit(nullptr), iLit(nullptr), rLit(nullptr), sLit(nullptr), fCall(nullptr) , ident(nullptr) {
 
-        lexer::Lexeme *l = lex.Next();
-        lex.PushBack(l);
-
-        #ifdef DEBUG
-            std::cout << "Term:" << *l << std::endl;
-        #endif
-
-        switch(l->GetType()) {
+        std::unique_ptr<lexer::Lexeme> curr = nullptr;
+        lexer::LexemeType type;
+        
+        switch(NextType(lex)) {
             case lexer::O_PAREN:
                 consumeLexemeType(lex.Next(),lexer::O_PAREN);
                 lex.HasNext();
@@ -43,7 +41,18 @@ namespace ast {
                 rLit = new RealLiteral(lex,table);
                 break;
             case lexer::ID:
-                fCall = new FunctionCall(lex, table);
+                curr = lex.Next();
+                lex.HasNext();
+                
+                type = NextType(lex);
+                
+                lex.PushBack(curr);
+                if(type != lexer::O_PAREN) {
+                    ident = new Identifier(lex,table);
+                } else {
+                    fCall = new FunctionCall(lex, table);
+                }
+
                 break;
             case lexer::BOOL:
                 bLit = new BooleanLiteral(lex,table);
@@ -64,6 +73,8 @@ namespace ast {
         delete sLit;
 
         delete fCall;
+
+        delete ident;
     }
 
     void Term::Validate() const {
@@ -84,6 +95,8 @@ namespace ast {
 
         if(fCall != nullptr) return fCall->ResultType();
 
+        if(ident != nullptr) return ident->ResultType();
+
         throw std::runtime_error("something went wrong");
     }
 
@@ -94,6 +107,7 @@ namespace ast {
         else if(term.rLit != nullptr) os << *term.rLit;
         else if(term.sLit != nullptr) os << *term.sLit;
         else if(term.fCall != nullptr) os << *term.fCall;
+        else if(term.ident != nullptr) os << *term.ident;
         return os;
     }
 

@@ -5,6 +5,8 @@
 #include <ast/Ast.hpp>
 #include <ast/Type.hpp>
 
+#include <memory>
+
 namespace lexer {
     class Lexeme;
 }
@@ -12,7 +14,6 @@ namespace lexer {
 namespace ast {
 
     class Identifier : public Ast {
-        lexer::Lexeme* lexeme;
         public:
             Identifier(lexer::Lexer& lex, symtable::SymbolTable * table);
             ~Identifier();
@@ -24,6 +25,10 @@ namespace ast {
             std::string GetName() const;
 
             friend std::ostream& operator<<(std::ostream & os, const Identifier & id);
+
+        private:
+            std::unique_ptr<lexer::Lexeme> lexeme;
+
     };
 
     std::ostream& operator<<(std::ostream & os, const Identifier & id);

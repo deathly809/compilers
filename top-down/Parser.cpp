@@ -49,7 +49,7 @@ namespace parser {
     void Parser::match(lexer::LexemeType t) { 
         if(!check(t)) {
             if(current == nullptr) {
-                current = new lexer::Lexeme(lexer::UNDEF,"NULLPTR","",0,0);
+                current = std::move(std::unique_ptr<lexer::Lexeme>(new lexer::Lexeme(lexer::UNDEF,"NULLPTR","",0,0)));
             }
             std::stringstream ss;
             ss << "in file ";
@@ -68,7 +68,7 @@ namespace parser {
     }
 
 
-    std::string unexpectedToken(lexer::Lexeme* current) {
+    std::string unexpectedToken(std::unique_ptr<lexer::Lexeme> & current) {
         std::stringstream ss;
         ss << "in file" << current->GetFileName() << " on line " << current->GetLine() << " column " << current->GetColumn();
         ss << " unexpected token: ";
@@ -117,11 +117,12 @@ namespace parser {
         consume();
         
         Node* left = parsePackage();
-        Node* right = new Node(parseImports(),nullptr,nullptr,nGlue);
+        Node* right = new Node(parseImports(), nullptr ,nGlue);
         
-        Node* result = new Node(left,right,nullptr,nGlue);
+        Node* result = new Node(left,right,nGlue);
 
         Node* curr = right;
+
         while(current != nullptr) {
             
             curr->SetRight(new Node(nGlue));
@@ -207,7 +208,7 @@ namespace parser {
         Node* right = new Node(nullptr,nullptr,current,nGlue);
         matchType();
 
-        return new Node(left,right, nullptr, nGlue);
+        return new Node(left,right, nGlue);
     }
 
 
@@ -216,7 +217,7 @@ namespace parser {
     Node* Parser::parseFuncDef() {
         match(lexer::FUNC);
 
-        lexer::Lexeme* resultType = nullptr;
+        std::unique_ptr<lexer::Lexeme> resultType = nullptr;
         
         // name of function
         Node* name = new Node(current);
@@ -227,7 +228,7 @@ namespace parser {
         
         // return type
         if(typePending()) {
-            resultType = current;
+            resultType = std::move(current);
             matchType();
         }
 
@@ -358,11 +359,11 @@ namespace parser {
         Node* initTestUpdate = new Node(init, new Node(test, update));
         Node* block = parseBlock();
 
-        return new Node(initTestUpdate, block,nullptr,nLoop);
+        return new Node(initTestUpdate, block,nLoop);
     }
     Node* Parser::parseReturn() {
         match(lexer::RETURN);
-        return new Node(parseExpression(),nullptr,nullptr,nReturn);
+        return new Node(parseExpression(),nullptr,nReturn);
     }
 
     // EXPR = LTWO ( + | - )  

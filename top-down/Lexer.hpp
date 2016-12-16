@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <memory>
+
 namespace lexer {
 
     class Lexeme;
@@ -20,18 +22,19 @@ namespace lexer {
             Lexer(Scanner*);
             ~Lexer();
             bool HasNext();
-            void PushBack(Lexeme* lex);
-            Lexeme* Next();
+            void PushBack(std::unique_ptr<Lexeme> & lex);
+            std::unique_ptr<Lexeme> Next();
 
         private:
             int line,column;
             std::string file;
             Scanner* scan;
 
-            std::vector<Lexeme*> pushedBack;
+            std::vector<std::unique_ptr<Lexeme>> pushedBack;
 
-            Lexeme* readIdentifier();
-            Lexeme* readNumber();
+            std::unique_ptr<Lexeme> readIdentifier();
+            std::unique_ptr<Lexeme> readNumber();
+            std::unique_ptr<Lexeme> readString();
             
     };
 

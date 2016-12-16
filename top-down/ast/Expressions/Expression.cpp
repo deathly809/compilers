@@ -58,13 +58,7 @@ namespace ast {
         
         lhs = new Factor(lex, table);
 
-        lexer::Lexeme *l = lex.Next();
-        
-        #ifdef DEBUG
-            std::cout << "after Factor:"  << *l << std::endl;
-        #endif
-
-        switch(l->GetType()) {
+        switch(NextType(lex)) {
             case lexer::PLUS:
                 op = new Operator(Operator::AdditionOperator);
                 break;
@@ -75,13 +69,12 @@ namespace ast {
                 op = new Operator(Operator::OrOperator);
                 break;
             default:
-                lex.PushBack(l);
                 op = new Operator(Operator::None);
                 break;
         }
 
         if(op->GetType() != Operator::None) {
-            delete l;
+            lex.Next();
             lex.HasNext();
             rhs = new Expression(lex,table);
         } else {

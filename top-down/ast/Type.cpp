@@ -23,35 +23,35 @@ namespace ast {
     }
 
     Type::Type(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        lexer::Lexeme* c = lex.Next();
-        switch(c->GetType()) {
-            case lexer::INT:
-                type = IntType;
-                break;
-            case lexer::REAL:
-                type = RealType;
-                break;
-            case lexer::STRING:
-                type = StringType;
-                break;
-            case lexer::BOOL:
-                type = BoolType;
-                break;
-            default:
-                throw std::runtime_error("expected a type, found " + c->GetValue() + " with type " + LexemeTypeToString(c->GetType()));
-        }
-        delete c;
+        std::unique_ptr<lexer::Lexeme> l = lex.Next();
         lex.HasNext();
+
+        if(l->GetValue() == "int") {
+            type = IntType;
+        } else if(l->GetValue() == "real") {
+            type = RealType;
+        } else if(l->GetValue() == "string") {
+            type = StringType;
+        } else if(l->GetValue() == "bool") {
+            type = BoolType;
+        } else { 
+            throw std::runtime_error("expected a type: " + LexemeTypeToString(NextType(lex)));
+        }
     }
 
     void Type::Validate() const {
     }
 
-    ValueType Type::GetType() {
+    ValueType Type::GetType() const {
         return type;
     }
 
     void Type::GenerateCode(std::ostream & out) const {
 
+    }
+
+
+    std::ostream& operator<<(std::ostream & os, const Type & type) {
+        return os << ValueTypeToString(type.GetType());
     }
 }

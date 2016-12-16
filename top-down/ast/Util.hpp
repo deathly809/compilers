@@ -11,9 +11,11 @@
 
 namespace lexer {
     class Lexeme;
+    class Lexer;
 }
 
 namespace ast {
+
 
     // handles EOF checks
     void checkEOF(bool more);
@@ -40,7 +42,6 @@ namespace ast {
     // Validate the lexeme type and then free it
     #define consumeLexemeType(l,expectedType) do {          \
         checkLexemeType(l,expectedType);                    \
-        delete l;                                           \
     } while(0);
     
     // convert from string to expected type
@@ -52,6 +53,8 @@ namespace ast {
         ss >> result;
         return result;
     }
+
+    lexer::LexemeType NextType(lexer::Lexer & lex);
 }
 
 #endif

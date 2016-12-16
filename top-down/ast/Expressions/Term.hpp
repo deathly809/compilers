@@ -14,6 +14,7 @@ namespace ast {
     class RealLiteral;
     class StringLiteral;
     class FunctionCall;
+    class Identifier;
 
     class Term : public Ast {
 
@@ -34,6 +35,8 @@ namespace ast {
             StringLiteral*  sLit = nullptr;
 
             FunctionCall*   fCall = nullptr;
+
+            Identifier*     ident = nullptr;
 
             friend std::ostream & operator<<(std::ostream & os, const Term & term);
 

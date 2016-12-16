@@ -17,11 +17,14 @@ namespace ast {
 
         public:
             Type(lexer::Lexer & lex, symtable::SymbolTable * table);
-            ValueType GetType();
+            ValueType GetType() const;
             
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+
     };
+
+    std::ostream& operator<<(std::ostream & os, const Type & type);
 }
 
 #endif

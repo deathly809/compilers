@@ -13,12 +13,11 @@
 namespace ast {
 
     VariableDeclaration::VariableDeclaration(lexer::Lexer &lex, symtable::SymbolTable * table) : Statement(table) {
-        lexer::Lexeme* c = lex.Next();
-        lex.HasNext();
+        std::unique_ptr<lexer::Lexeme> c = lex.Next();
         if(c == nullptr) {
             throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", unexpected EOF");
         }
-
+        
         switch(c->GetType()) {
             case lexer::VAR:
                 variable = true;
@@ -29,15 +28,12 @@ namespace ast {
             default:
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
-
-        consumeLexemeType(c,lexer::VAR);
+        lex.HasNext();
 
         name = new Identifier(lex, table);
 
-        c = lex.Next();
-
-        if(c->GetType() == lexer::C_EQUAL) {
-            consumeLexemeType(c, lexer::C_EQUAL);
+        if(NextType(lex) == lexer::C_EQUAL) {
+            lex.Next();
             lex.HasNext();
             value = new Expression(lex, table);
         } else {
@@ -60,6 +56,23 @@ namespace ast {
 
     void VariableDeclaration::GenerateCode(std::ostream & out) const {
 
+    }
+
+    std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef) {
+        if(varDef.variable) {
+            os << "var ";
+        } else {
+            os << "const ";
+        }
+
+        os << *varDef.name << " ";
+
+        if(varDef.type == nullptr) {
+            os << ":= " << *varDef.value;
+        } else {
+            os << *varDef.type;
+        }
+        return os;
     }
 
 }

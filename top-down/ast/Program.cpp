@@ -15,7 +15,7 @@ namespace ast {
     Program::Program(lexer::Lexer & lex) : Ast(new symtable::SymbolTable()) {
         
         while(lex.HasNext()) {
-            lexer::Lexeme* l = lex.Next();
+            std::unique_ptr<lexer::Lexeme> l = lex.Next();
             switch(l->GetType()) {
                 case lexer::FUNC:
                     funcs.push_back(new FunctionDefinition(lex, table));

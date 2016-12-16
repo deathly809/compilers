@@ -8,7 +8,7 @@
 namespace ast {
 
     BooleanLiteral::BooleanLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        lexer::Lexeme* l = lex.Next();
+        std::unique_ptr<lexer::Lexeme> l = lex.Next();
         lex.HasNext();
         
         std::string val = l->GetValue();
@@ -42,7 +42,10 @@ namespace ast {
     }
 
     std::ostream& operator<<(std::ostream& os, const BooleanLiteral & bLit) {
-        return os << bLit.GetValue();
+        if(bLit.GetValue()) {
+            return os << "true";
+        }
+        return os << "false";
     }
 
 }
