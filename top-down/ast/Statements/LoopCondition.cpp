@@ -51,4 +51,21 @@ namespace ast {
     void LoopCondition::GenerateCode(std::ostream & out) const {
 
     }
+
+    std::ostream& LoopCondition::Write(std::ostream & os) const {
+        switch(exp.size()) {
+            case 0:
+                break;
+            case 1:
+                os << *exp[0];
+                break;
+            case 3:
+                os << *exp[0] << "; " << *exp[1] << "; " << *exp[2];
+                break;
+            default:
+                throw std::runtime_error("loop condition requires 0, 1, or 3 parts, found " + std::to_string(exp.size()));
+        }
+        return os;
+    }
+
 }

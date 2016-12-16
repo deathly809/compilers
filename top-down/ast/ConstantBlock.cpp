@@ -44,4 +44,12 @@ namespace ast {
     void ConstantBlock::GenerateCode(std::ostream & out) const {
     }
 
+    std::ostream& ConstantBlock::Write(std::ostream & os) const {
+        os << "const (" << std::endl;
+        for(const auto & v : vars) {
+            os << *v.lhs << " = " << *v.rhs << std::endl;
+        }
+        return os << ")";
+    }
+
 }

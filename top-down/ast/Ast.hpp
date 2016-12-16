@@ -25,7 +25,9 @@ namespace ast {
 
             /* Given an output stream we write the code generated */
             virtual void GenerateCode(std::ostream & out) const = 0;
-            
+
+            virtual std::ostream& Write(std::ostream & os) const = 0;
+
         protected:
 
             bool                    validated;
@@ -35,6 +37,8 @@ namespace ast {
             virtual ~Ast();
 
     };
+
+    std::ostream& operator<<(std::ostream & os, const Ast & ast);
 
 }
 

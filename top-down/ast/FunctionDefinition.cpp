@@ -78,4 +78,21 @@ namespace ast {
         
     }
 
+    std::ostream& FunctionDefinition::Write(std::ostream & os) const {
+        os << "func " << *functionName << "(";
+        
+        if(optParams.size() > 0) {
+            os << *optParams[0].ident << " " << *optParams[0].type;
+            for(unsigned int i = 1; i < optParams.size(); ++i) {
+                os << ", " << *optParams[i].ident << " " << *optParams[i].type;    
+            }
+        }
+        os << ") ";
+
+        if( optRetType != nullptr) {
+            os << *optRetType << " ";
+        }
+        return os << *block;
+    }
+
 }

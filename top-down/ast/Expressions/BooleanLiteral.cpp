@@ -41,8 +41,8 @@ namespace ast {
         return value;
     }
 
-    std::ostream& operator<<(std::ostream& os, const BooleanLiteral & bLit) {
-        if(bLit.GetValue()) {
+    std::ostream& BooleanLiteral::Write(std::ostream& os) const {
+        if(GetValue()) {
             return os << "true";
         }
         return os << "false";

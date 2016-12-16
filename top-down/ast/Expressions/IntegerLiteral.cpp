@@ -31,7 +31,7 @@ namespace ast {
         return value;
     }
 
-    std::ostream& operator<<(std::ostream & os, const IntegerLiteral & iLit) {
-        return os << iLit.GetValue();
+    std::ostream& IntegerLiteral::Write(std::ostream & os) const {
+        return os << GetValue();
     }
 }

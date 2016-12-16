@@ -10,7 +10,8 @@ namespace ast {
 
     Assignment::Assignment(lexer::Lexer & lex, symtable::SymbolTable* table) : Statement(table) {
         lhs = new Identifier(lex, table);
-        consumeLexemeType(lex.Next(),lexer::C_EQUAL);
+        consumeLexemeType(lex.Next(),lexer::EQUAL);
+        lex.HasNext();
         rhs = new Expression(lex, table);
     }
 
@@ -26,6 +27,10 @@ namespace ast {
 
     void Assignment::GenerateCode(std::ostream & out) const {
 
+    }
+
+    std::ostream& Assignment::Write(std::ostream & os) const {
+        return os << *lhs << " = " << *rhs;
     }
 
 }

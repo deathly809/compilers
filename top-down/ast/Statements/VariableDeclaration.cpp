@@ -58,19 +58,19 @@ namespace ast {
 
     }
 
-    std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef) {
-        if(varDef.variable) {
+    std::ostream& VariableDeclaration::Write(std::ostream & os) const {
+        if(variable) {
             os << "var ";
         } else {
             os << "const ";
         }
 
-        os << *varDef.name << " ";
+        os << *name << " ";
 
-        if(varDef.type == nullptr) {
-            os << ":= " << *varDef.value;
+        if(type == nullptr) {
+            os << ":= " << *value;
         } else {
-            os << *varDef.type;
+            os << *type;
         }
         return os;
     }

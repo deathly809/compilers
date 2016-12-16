@@ -16,11 +16,13 @@ namespace ast {
             
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
 
         private:
             Expression* cond        = nullptr;
             Block*      trueBlock   = nullptr;
             Block*      falseBlock  = nullptr;
+
     };
 
 }

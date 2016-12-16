@@ -21,15 +21,15 @@ namespace ast {
         {Operator::AndOperator, "&"},
     };
 
-    Operator::Operator(OperatorType type) : from(1), op(type) {
+    Operator::Operator(OperatorType type) : Ast(nullptr), op(type) {
         /* Empty */
     }
 
-    Operator::Operator(const Operator & other) : from(2), op(other.op) {
+    Operator::Operator(const Operator & other) : Ast(nullptr), op(other.op) {
         /* Empty */
     }
 
-    Operator::Operator(const Operator && other) : from(3), op(other.op) {
+    Operator::Operator(const Operator && other) : Ast(nullptr), op(other.op) {
         /* Empty */
     }
 
@@ -45,8 +45,16 @@ namespace ast {
         return ptr->second;
     }
 
-    std::ostream& operator<<(std::ostream& os,const Operator & op) {
-        return os << op.ToString();
+    void Operator::Validate() const {
+        /* empty */
+    }
+
+    void Operator::GenerateCode(std::ostream & os) const {
+        /* empty */
+    }
+
+    std::ostream& Operator::Write(std::ostream& os) const {
+        return os << ToString();
     }
 
 }

@@ -112,11 +112,11 @@ namespace ast {
         return lhs->ResultType();
     } 
 
-    std::ostream & operator<<(std::ostream & os, const Expression & expr) {
-        if(expr.op->GetType() == Operator::None) {
-            os << *expr.lhs;
+    std::ostream & Expression::Write(std::ostream & os) const {
+        if(op->GetType() == Operator::None) {
+            os << *lhs;
         } else {
-            os << "(" << *expr.lhs << *(expr.op) << *expr.rhs << ")";
+            os << "(" << *lhs << *op << *rhs << ")";
         }
         return os;
     }

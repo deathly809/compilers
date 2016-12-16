@@ -31,4 +31,8 @@ namespace ast {
         
     }
 
+    std::ostream& Loop::Write(std::ostream & os) const { 
+        return os << "for " << *cond << *block;
+    }
+
 }

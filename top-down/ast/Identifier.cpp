@@ -33,8 +33,8 @@ namespace ast {
             return lexeme->GetValue();
         }
 
-        std::ostream& operator<<(std::ostream & os, const Identifier & id) {
-            return os << id.GetName();
+        std::ostream& Identifier::Write(std::ostream & os) const {
+            return os << GetName();
         }
 
 }

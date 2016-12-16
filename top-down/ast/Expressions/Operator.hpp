@@ -2,11 +2,13 @@
 #ifndef OPERATOR_HPP_
 #define OPERATOR_HPP_
 
+#include <ast/Ast.hpp>
+
 #include <string>
 
 namespace ast {
 
-    class Operator {
+    class Operator : public Ast {
 
         public:
 
@@ -20,19 +22,18 @@ namespace ast {
             Operator(const Operator & other);
             Operator(const Operator && other);
 
+            virtual void Validate() const;
+            virtual void GenerateCode(std::ostream & os) const;
+            virtual std::ostream& Write(std::ostream & os) const;
+
             OperatorType GetType() const;
             std::string ToString() const;
 
         private:
             Operator() = delete;
-            int from = -1;
             Operator::OperatorType op = Operator::None;
 
-            friend std::ostream& operator<<(std::ostream& os,const Operator & op);
-
     };
-
-    std::ostream& operator<<(std::ostream& os,const Operator & op);
 }
 
 #endif

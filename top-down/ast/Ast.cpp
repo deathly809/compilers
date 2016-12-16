@@ -10,4 +10,9 @@ namespace ast {
     Ast::~Ast() {
         /* Empty */
     }
+
+    std::ostream& operator<<(std::ostream & os, const Ast & ast) {
+        return ast.Write(os);
+    }
+
 }

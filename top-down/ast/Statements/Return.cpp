@@ -21,4 +21,13 @@ namespace ast {
     void Return::GenerateCode(std::ostream & out) const {
 
     }
+
+    std::ostream& Return::Write(std::ostream & os) const {
+        os << "return";
+        if(result != nullptr) {
+            os << " " << *result;
+        }
+        return os;
+    }
+
 }

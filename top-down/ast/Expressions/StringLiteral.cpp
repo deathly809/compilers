@@ -31,8 +31,8 @@ namespace ast {
         return value;
     }
 
-    std::ostream& operator<<(std::ostream & os, const StringLiteral & sLit) {
-        return os << sLit.GetValue();
+    std::ostream& StringLiteral::Write(std::ostream & os) const {
+        return os << "\"" << GetValue() << "\"";
     }
 
 }

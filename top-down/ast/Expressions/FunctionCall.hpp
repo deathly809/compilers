@@ -20,6 +20,7 @@ namespace ast {
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;
 
@@ -28,10 +29,7 @@ namespace ast {
             std::vector<Expression*>    arguments;
             ValueType                   returnType;
 
-            friend std::ostream& operator<<(std::ostream & os, const FunctionCall & fCall);
     };
-
-    std::ostream& operator<<(std::ostream & os, const FunctionCall & fCall);
 }
 
 #endif

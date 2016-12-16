@@ -51,7 +51,7 @@ namespace ast {
     }
 
 
-    std::ostream& operator<<(std::ostream & os, const Type & type) {
-        return os << ValueTypeToString(type.GetType());
+    std::ostream& Type::Write(std::ostream & os) const {
+        return os << ValueTypeToString(GetType());
     }
 }

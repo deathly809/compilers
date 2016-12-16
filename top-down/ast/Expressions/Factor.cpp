@@ -112,11 +112,11 @@ namespace ast {
         return lhs->ResultType();
     }
 
-    std::ostream& operator<<(std::ostream & os, const Factor & factor) {
-        if(factor.op->GetType() == Operator::None) {
-            os << *factor.lhs;
+    std::ostream& Factor::Write(std::ostream & os) const {
+        if(op->GetType() == Operator::None) {
+            os << *lhs;
         } else {
-            os << "(" << *factor.lhs <<  *factor.op << *factor.rhs << ")";
+            os << "(" << *lhs <<  *op << *rhs << ")";
         }
         return os;
     }

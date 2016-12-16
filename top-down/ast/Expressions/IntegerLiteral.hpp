@@ -13,6 +13,7 @@ namespace ast {
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;
             int  GetValue() const;
@@ -21,8 +22,6 @@ namespace ast {
             int value;
 
     };
-
-    std::ostream& operator<<(std::ostream & os, const IntegerLiteral & iLit);
     
 }
 

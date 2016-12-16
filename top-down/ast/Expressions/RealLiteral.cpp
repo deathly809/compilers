@@ -33,8 +33,8 @@ namespace ast {
         return value;
     }
 
-    std::ostream& operator<<(std::ostream & os, const RealLiteral & rLit) {
-        return os << rLit.GetValue();
+    std::ostream& RealLiteral::Write(std::ostream & os) const {
+        return os << GetValue();
     }
     
 

@@ -15,6 +15,7 @@ namespace ast {
             
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
             
         private:
             std::vector<Expression*> exp;

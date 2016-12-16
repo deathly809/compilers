@@ -18,6 +18,7 @@ namespace ast {
             
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream&) const;
 
         private:
             bool        variable    = true;
@@ -25,11 +26,7 @@ namespace ast {
             Identifier* name        = nullptr;
             Expression* value       = nullptr; 
 
-            friend std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef);
-
     };
-
-    std::ostream& operator<<(std::ostream & os, const VariableDeclaration & varDef);
 }
 
 #endif

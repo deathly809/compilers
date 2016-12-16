@@ -37,4 +37,12 @@ namespace ast {
 
     }
 
+    std::ostream& IfStatement::Write(std::ostream & os) const {
+        os << "if " << *cond << " " << trueBlock;
+        if(falseBlock != nullptr) {
+            os << " else " << *falseBlock;
+        }
+        return os;
+    }
+
 }

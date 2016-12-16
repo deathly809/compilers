@@ -100,14 +100,14 @@ namespace ast {
         throw std::runtime_error("something went wrong");
     }
 
-    std::ostream & operator<<(std::ostream & os, const Term & term) {
-        if(term.expr != nullptr) os << *term.expr;
-        else if(term.bLit != nullptr) os << *term.bLit;
-        else if(term.iLit != nullptr) os << *term.iLit;
-        else if(term.rLit != nullptr) os << *term.rLit;
-        else if(term.sLit != nullptr) os << *term.sLit;
-        else if(term.fCall != nullptr) os << *term.fCall;
-        else if(term.ident != nullptr) os << *term.ident;
+    std::ostream & Term::Write(std::ostream & os) const {
+        if(expr != nullptr) os << *expr;
+        else if(bLit != nullptr) os << *bLit;
+        else if(iLit != nullptr) os << *iLit;
+        else if(rLit != nullptr) os << *rLit;
+        else if(sLit != nullptr) os << *sLit;
+        else if(fCall != nullptr) os << *fCall;
+        else if(ident != nullptr) os << *ident;
         return os;
     }
 

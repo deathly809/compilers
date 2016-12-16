@@ -14,6 +14,7 @@ namespace ast {
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;
             bool  GetValue() const;
@@ -22,8 +23,6 @@ namespace ast {
             bool value;
 
     };
-
-        std::ostream& operator<<(std::ostream& os, const BooleanLiteral & bLit);
 }
 
 #endif

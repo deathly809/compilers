@@ -58,4 +58,12 @@ namespace ast {
 
     }
 
+    std::ostream& Block::Write(std::ostream & os) const {
+        os << "{" << std::endl; 
+        for(auto && s : stmts) {
+            os << *s << std::endl;
+        }
+        return os << std::endl << "}";
+    }
+
 }

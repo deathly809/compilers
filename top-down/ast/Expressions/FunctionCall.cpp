@@ -51,12 +51,12 @@ namespace ast {
         return functionName->ResultType();
     }
 
-    std::ostream& operator<<(std::ostream & os, const FunctionCall & fCall) {
-        os << *fCall.functionName << "(";
-        if(fCall.arguments.size() > 0) {
-            os << *fCall.arguments[0];
-            for(unsigned int i = 1; i < fCall.arguments.size(); ++i) {
-                os << ", " << *fCall.arguments[i];
+    std::ostream& FunctionCall::Write(std::ostream & os) const {
+        os << *functionName << "(";
+        if(arguments.size() > 0) {
+            os << *arguments[0];
+            for(unsigned int i = 1; i < arguments.size(); ++i) {
+                os << ", " << *arguments[i];
             }
         }
         return os << ")";

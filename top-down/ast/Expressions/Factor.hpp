@@ -19,6 +19,8 @@ namespace ast {
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
+
             ValueType ResultType() const;
 
         private:
@@ -26,10 +28,7 @@ namespace ast {
             Factor*         rhs = nullptr;
             Operator*       op  = nullptr;
 
-            friend std::ostream& operator<<(std::ostream & os, const Factor & factor);
     };
-
-    std::ostream& operator<<(std::ostream & os, const Factor & factor);
 
 }
 

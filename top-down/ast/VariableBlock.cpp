@@ -43,4 +43,12 @@ namespace ast {
 
     }
 
+    std::ostream& VariableBlock::Write(std::ostream & os) const {
+        os << "var (" << std::endl;
+        for(const auto & v : vars) {
+            os << *v.lhs << " = " << *v.rhs << std::endl;
+        }
+        return os << ")";
+    }
+
 }

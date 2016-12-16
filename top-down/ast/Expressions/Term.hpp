@@ -24,6 +24,8 @@ namespace ast {
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream & os) const;
+
             ValueType ResultType() const;
 
         private:
@@ -38,11 +40,7 @@ namespace ast {
 
             Identifier*     ident = nullptr;
 
-            friend std::ostream & operator<<(std::ostream & os, const Term & term);
-
     };
-
-    std::ostream & operator<<(std::ostream & os, const Term & term);
 
 }
 
