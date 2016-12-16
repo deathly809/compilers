@@ -8,10 +8,10 @@
 
 namespace ast {
 
-    class Statement;
-
     class Block : public Ast {
-        std::vector<Statement*> stmts;
+
+        std::vector<Ast*> stmts;
+        
         public:
             Block(lexer::Lexer & lex, symtable::SymbolTable * table);
             ~Block();

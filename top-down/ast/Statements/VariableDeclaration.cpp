@@ -23,14 +23,17 @@ namespace ast {
             default:
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
+
         lex.Next();
         lex.HasNext();
 
         name = new Identifier(lex, table);
 
         if(NextType(lex) == lexer::C_EQUAL) {
-            lex.Next();
+            
+            consumeLexemeType(lex.Next(),lexer::C_EQUAL);
             lex.HasNext();
+
             value = new Expression(lex, table);
         } else {
             type = new Type(lex, table);

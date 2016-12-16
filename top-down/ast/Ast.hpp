@@ -28,13 +28,15 @@ namespace ast {
 
             virtual std::ostream& Write(std::ostream & os) const = 0;
 
+            virtual ~Ast();
+
         protected:
 
             bool                    validated;
             symtable::SymbolTable*  table;
 
             Ast(symtable::SymbolTable * table);
-            virtual ~Ast();
+            
 
     };
 

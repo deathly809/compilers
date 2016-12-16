@@ -22,12 +22,14 @@ namespace ast {
             std::vector<VariableBlock*>         vars;
 
         public:
+            Program(lexer::Lexer& lex, symtable::SymbolTable * table);
             Program(lexer::Lexer& lex);
             ~Program();
 
 
             virtual void Validate() const;
             virtual void GenerateCode(std::ostream & out) const;
+            virtual std::ostream& Write(std::ostream& os) const;
 
     };
 

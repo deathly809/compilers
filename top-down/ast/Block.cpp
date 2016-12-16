@@ -4,6 +4,7 @@
 #include <ast/Statements/Statement.hpp>
 #include <ast/Statements/VariableDeclaration.hpp>
 #include <ast/Statements/Assignment.hpp>
+#include <ast/Expressions/FunctionCall.hpp>
 #include <ast/Statements/Return.hpp>
 #include <ast/Statements/IfStatement.hpp>
 #include <ast/Statements/Loop.hpp>
@@ -11,9 +12,13 @@
 #include <Lexeme.hpp>
 #include <LexemeTypes.hpp>
 
+#include <ast/UnexpectedToken.hpp>
+
 namespace ast {
 
     Block::Block(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
+        std::unique_ptr<lexer::Lexeme> tmp = nullptr;
+
         consumeLexemeType(lex.Next(),lexer::O_BRACE);
         lex.HasNext();
 
@@ -24,7 +29,15 @@ namespace ast {
                     stmts.push_back(new VariableDeclaration(lex,table));
                     break;
                 case lexer::ID:
-                    stmts.push_back(new Assignment(lex,table));
+                    tmp = lex.Next();
+                    lex.HasNext();
+                    if(NextType(lex) == lexer::EQUAL) {
+                        lex.PushBack(tmp);
+                        stmts.push_back(new Assignment(lex,table));
+                    } else {
+                        lex.PushBack(tmp);
+                        stmts.push_back(new FunctionCall(lex,table));
+                    }
                     break;
                 case lexer::RETURN:
                     stmts.push_back(new Return(lex,table));
@@ -36,11 +49,11 @@ namespace ast {
                     stmts.push_back(new Loop(lex,table));
                     break;
                 default:
-                    std::cout << *lex.Next() << std::endl;
-                    throw std::runtime_error("error: " + std::to_string(__LINE__) + " " + std::string(__FILE__));
+                    throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         }
         consumeLexemeType(lex.Next(),lexer::C_BRACE);
+        lex.HasNext();
     }
 
     Block::~Block() {

@@ -39,7 +39,7 @@ TEST_CASE( "IfStatement: boolean w/ non-empty blocks" , "[IfStatement]" ) {
 }
 
 TEST_CASE( "IfStatement: conditionals w/ empty blocks" , "[IfStatement]" ) {
-    run<ast::IfStatement>("if i < 3  {} else { }");
+    run<ast::IfStatement>("if i < 3  { } else { }");
     run<ast::IfStatement>("if 5 > (2 + 3) {} else { }");
 }
 

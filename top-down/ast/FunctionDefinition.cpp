@@ -10,42 +10,37 @@
 
 namespace ast {
 
+    // func ID ( OPT_PARAMS ) OPT_RET_TYPE BLOCK
     FunctionDefinition::FunctionDefinition(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         consumeLexemeType(lex.Next(),lexer::FUNC);
-        
-        functionName = new Identifier(lex, table);
-        consumeLexemeType(lex.Next(), lexer::O_PAREN);
-        
-        std::unique_ptr<lexer::Lexeme>  l = lex.Next();
-        if(l->GetType() != lexer::C_PAREN) {
+        lex.HasNext();
 
-            lex.PushBack(l);
+        functionName = new Identifier(lex, table);
+
+        consumeLexemeType(lex.Next(), lexer::O_PAREN);
+        lex.HasNext();
+        
+        if(NextType(lex) != lexer::C_PAREN) {
             optParams.push_back(
                 {
                     new Identifier(lex, table),
                     new Type(lex, table)
                 });
 
-            l = lex.Next();
-            while(l->GetType() == lexer::COMMA) {
-                lex.HasNext();
+            while(NextType(lex) == lexer::COMMA) {
                 optParams.push_back(
                     {
                         new Identifier(lex, table),
                         new Type(lex, table)
-                    });
-                l = lex.Next();
+                    });            
             }
         }
-        consumeLexemeType(l,lexer::C_PAREN);
 
-        l = lex.Next();
+        consumeLexemeType(lex.Next(),lexer::C_PAREN);
+        lex.HasNext();
 
-        if(l->GetType() != lexer::O_BRACE) {
-            lex.PushBack(l);
+        if(NextType(lex) != lexer::O_BRACE) {
             optRetType = new Type(lex, table);
-        } else {
-            consumeLexemeType(l,lexer::O_BRACE);
         }
 
         block = new Block(lex, table);
