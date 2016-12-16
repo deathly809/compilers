@@ -1,8 +1,8 @@
 
 #include <ast/Expressions/RealLiteral.hpp>
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 namespace ast {
 

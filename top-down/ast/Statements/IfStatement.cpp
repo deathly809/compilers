@@ -4,8 +4,8 @@
 #include <ast/Expressions/Expression.hpp>
 #include <ast/Block.hpp>
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 namespace ast {
 

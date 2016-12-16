@@ -5,9 +5,9 @@
 
 #include <symtable/SymbolTable.hpp>
 
-#include <Lexer.hpp>
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexer.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 #include <memory>
 

@@ -3,8 +3,8 @@
 #ifndef UTIL_HPP_
 #define UTIL_HPP_
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 #include <string>
 #include <sstream>

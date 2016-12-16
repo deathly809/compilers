@@ -5,8 +5,8 @@
 #include <ast/Expressions/Operator.hpp>
 #include <ast/Expressions/Factor.hpp>
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 #include <map>
 #include <vector>

@@ -4,7 +4,7 @@
 #define RUNNER_HPP_
 
 #include <symtable/SymbolTable.hpp>
-#include <Lexer.hpp>
+#include <lexer/Lexer.hpp>
 
 #include <string>
 #include <sstream>

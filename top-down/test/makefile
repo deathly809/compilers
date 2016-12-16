@@ -4,27 +4,19 @@ GCC		= g++
 STD		= -std=c++11
 CFLAGS	= -Wall ${STD} -g
 CMP		= ${GCC} ${CFLAGS} ${INCLUDE}
-ODIR 	= ../output
 
-SOURCES    := ${wildcard *.cpp}
-OBJECTS    := ${SOURCES:.cpp=.o}
-OBJS       := $(patsubst %,objs/%,$(OBJECTS))
+ODIR    = ../output
 
-main: ${OBJS} lib.o
-	${CMP} $(ODIR)/*.o objs/*.o -o main
-
-
-objs/%.o: %.cpp runner.hpp
-	${CMP} -c $< -o $@
-
-debug:
-	${CMP} -DDEBUG *.cpp $(ODIR)/*.o -o main
-
-lib.o:
+main: 
 	make -C ../
-	
+	make -C ast
+	make -C symtable
+	make -C hardware
+	${CMP} main.cpp $(ODIR)/*.o objs/*.o -o tests
 
 clean:
-	rm -f main
-	rm -f objs/*.o
+	rm -f test 
 	make -C ../ clean
+	make -C ast clean
+	make -C symtable clean
+	make -C hardware clean

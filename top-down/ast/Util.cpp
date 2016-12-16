@@ -1,9 +1,9 @@
 
 #include <ast/Util.hpp>
 
-#include <LexemeTypes.hpp>
-#include <Lexeme.hpp>
-#include <Lexer.hpp>
+#include <lexer/LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/Lexer.hpp>
 
 #include <memory>
 

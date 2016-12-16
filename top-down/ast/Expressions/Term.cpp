@@ -4,8 +4,8 @@
 #include <ast/Expressions/VName.hpp>
 #include <ast/Expressions/Operator.hpp>
 
-#include <Lexeme.hpp>
-#include <LexemeTypes.hpp>
+#include <lexer/Lexeme.hpp>
+#include <lexer/LexemeTypes.hpp>
 
 namespace ast {
 

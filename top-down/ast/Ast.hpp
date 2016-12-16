@@ -5,7 +5,7 @@
 #include <ast/Util.hpp>
 
 #include <ostream>
-#include <Lexer.hpp>
+#include <lexer/Lexer.hpp>
 
 #include <symtable/SymbolTable.hpp>
 
