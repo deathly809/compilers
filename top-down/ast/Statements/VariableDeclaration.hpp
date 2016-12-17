@@ -4,7 +4,6 @@
 
 #include <ast/Statements/Statement.hpp>
 
-
 namespace ast {
 
     class Expression;

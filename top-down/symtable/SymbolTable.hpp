@@ -39,6 +39,9 @@ namespace symtable {
             // Insert an attribute into the symbol table.  The symbol table takes ownership.
             void Insert(std::shared_ptr<Attribute> attr);
 
+            // temp
+            void PrintScope() const;
+
     };
 
 }

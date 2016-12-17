@@ -10,16 +10,14 @@ namespace symtable {
 
 namespace ast {
 
-    class ConstantBlock;
+    class BlockDefinition;
     class FunctionDefinition;
-    class VariableBlock;
     
     class Program : public Ast {
 
         private:
             std::vector<FunctionDefinition*>    funcs;
-            std::vector<ConstantBlock*>         consts;
-            std::vector<VariableBlock*>         vars;
+            std::vector<BlockDefinition*>       vars;
 
         public:
             Program(lexer::Lexer& lex, symtable::SymbolTable * table);

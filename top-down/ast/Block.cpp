@@ -18,8 +18,8 @@ namespace ast {
 
     Block::Block(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         std::unique_ptr<lexer::Lexeme> tmp = nullptr;
-
         consumeLexemeType(lex,lexer::O_BRACE);
+        table->OpenScope();
         while(NextType(lex) != lexer::C_BRACE) {
             switch(NextType(lex)) {
                 case lexer::VAR:
@@ -50,6 +50,8 @@ namespace ast {
                     throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         }
+        table->PrintScope();
+        table->CloseScope();
         consumeLexemeType(lex,lexer::C_BRACE);
     }
 

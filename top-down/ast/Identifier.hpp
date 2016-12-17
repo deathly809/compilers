@@ -25,6 +25,10 @@ namespace ast {
             ValueType ResultType() const;
             std::string GetName() const;
 
+            std::string GetFilename() const;
+            int GetColumn() const;
+            int GetLine() const;
+            
         private:
             std::unique_ptr<lexer::Lexeme> lexeme;
 

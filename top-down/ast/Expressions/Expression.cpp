@@ -52,10 +52,6 @@ namespace ast {
     // T = (E) | ID | LIT | F_CALL
     Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
         
-        #ifdef DEBUG
-            std::cout << "Expression" << std::endl;
-        #endif
-        
         lhs = new Factor(lex, table);
 
         switch(NextType(lex)) {

@@ -13,7 +13,7 @@ namespace lexer {
         /* Empty */
     }
 
-    const std::string& Lexeme::GetFileName() const { 
+    const std::string& Lexeme::GetFilename() const { 
         return file;
     }
     

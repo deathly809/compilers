@@ -2,15 +2,19 @@
 #ifndef ATTRIBUTE_HPP_
 #define ATTRIBUTE_HPP_
 
+
+#include <ast/Type.hpp>
 #include <string>
 
 namespace symtable {
 
-    enum AttributeType {IntAttributeType, RealAttributeType, StringAttributeType, BooleanAttributeType, NilAttributeType, VariableAttributeType };
+    
+    enum AttributeType {IntAttributeType, RealAttributeType, StringAttributeType, BooleanAttributeType, NilAttributeType, VariableAttributeType, FunctionAttributeType };
     enum IdentifierKind { Const, Var };
-    enum IdentifierType { IntegerType, StringType, ArrayType, RealType, BooleanType, None };
-
-
+    
+    std::string& IdentifierKindToString(IdentifierKind idk);
+    std::string& AttributeTypeToString(IdentifierKind idk);
+    
     class Attribute {
         protected:
             Attribute(std::string name, AttributeType type);
@@ -23,8 +27,10 @@ namespace symtable {
             Attribute();
             ~Attribute();
 
-            virtual std::string GetName();
-            virtual AttributeType GetType();
+            std::string GetName() const;
+            AttributeType GetType() const;
+
+            virtual void Write(std::ostream & os) const ;
 
         private:
             AttributeType type;
@@ -39,6 +45,8 @@ namespace symtable {
             IntAttribute(std::string name, int value);
             int GetValue() const;
 
+            virtual void Write(std::ostream & os) const ;
+
     };
 
     class RealAttribute : public Attribute {
@@ -48,6 +56,8 @@ namespace symtable {
 
             RealAttribute(std::string name, double value);
             double GetValue() const;
+
+            virtual void Write(std::ostream & os) const ;
             
     };
 
@@ -58,6 +68,9 @@ namespace symtable {
 
             StringAttribute(std::string name, std::string value);
             std::string GetValue() const;
+
+            virtual void Write(std::ostream & os) const ;
+
     };
 
     class BooleanAttribute : public Attribute {
@@ -67,24 +80,46 @@ namespace symtable {
         public:
             BooleanAttribute(std::string name, bool value);
             bool GetValue() const;
+
+            virtual void Write(std::ostream & os) const ;
+
     };
 
     class NilAttribute : public Attribute {
         public:
             NilAttribute();
+
+            virtual void Write(std::ostream & os) const ;
+
     };
 
     /* Holds information about attributes */
     class VariableAttribute : public Attribute {
         private:
             IdentifierKind iKind;
-            IdentifierType iType;
+            ast::ValueType iType;
         public:
-            VariableAttribute(std::string name, IdentifierKind kind, IdentifierType type);
+            VariableAttribute(std::string name, IdentifierKind kind, ast::ValueType type);
             IdentifierKind GetKind();
-            IdentifierType GetVariableType();
+            ast::ValueType GetVariableType();
+
+            virtual void Write(std::ostream & os) const;
+
     };
 
+    class FunctionAttribute : public Attribute {
+        private:
+            ast::ValueType iType;
+        public:
+            FunctionAttribute(std::string name, ast::ValueType type);
+            ast::ValueType GetReturnType();
+
+            virtual void Write(std::ostream & os) const;
+    };
+
+    std::ostream& operator<<(std::ostream & os, const Attribute & attr);
+
 }
+
 
 #endif

@@ -2,6 +2,7 @@
 #include <symtable/SymbolTable.hpp>
 #include <symtable/Attribute.hpp>
 
+#include <symtable/VariableRedefinition.hpp>
 
 #include <iostream>
 
@@ -56,7 +57,24 @@ namespace symtable {
 
     // Insert an attribute into the symbol table.  The symbol table takes ownership.
     void SymbolTable::Insert(std::shared_ptr<Attribute> attr) {
-        scopes[scopes.size() - 1].insert({ attr->GetName(),std::move(attr)});
+        auto & scope = scopes[scopes.size() - 1];
+        auto ptr = scope.find(attr->GetName());
+        if(ptr != scope.end()) {
+            throw VariableRedefinition(attr->GetName());
+        }
+        scope.insert({ attr->GetName(),std::move(attr)});
     }
 
+
+    void SymbolTable::PrintScope() const {
+        std::cout << scopes.size() << ": [";
+        
+        if(scopes.size() > 0) std::cout << std::endl;
+
+        for( auto & v : scopes.back()) {
+            auto s = v.second;
+            std::cout << "\t" << *s << std::endl;
+        }
+        std::cout << "]" << std::endl;
+    }
 }

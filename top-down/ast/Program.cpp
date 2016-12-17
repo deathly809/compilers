@@ -2,8 +2,7 @@
 #include <ast/Program.hpp>
 
 #include <ast/FunctionDefinition.hpp>
-#include <ast/ConstantBlock.hpp>
-#include <ast/VariableBlock.hpp>
+#include <ast/BlockDefinitions.hpp>
 
 #include <symtable/SymbolTable.hpp>
 
@@ -21,10 +20,8 @@ namespace ast {
                     funcs.push_back(new FunctionDefinition(lex, table));
                     break;
                 case lexer::CONST:
-                    consts.push_back(new ConstantBlock(lex, table));
-                    break;
                 case lexer::VAR:
-                    vars.push_back(new VariableBlock(lex, table));
+                    vars.push_back(new BlockDefinition(lex, table));
                     break;
                 case lexer::ENDFILE:
                     return;
@@ -42,10 +39,8 @@ namespace ast {
                     funcs.push_back(new FunctionDefinition(lex, table));
                     break;
                 case lexer::CONST:
-                    consts.push_back(new ConstantBlock(lex, table));
-                    break;
                 case lexer::VAR:
-                    vars.push_back(new VariableBlock(lex, table));
+                    vars.push_back(new BlockDefinition(lex, table));
                     break;
                 case lexer::ENDFILE:
                     return;
@@ -56,27 +51,21 @@ namespace ast {
     }
 
     Program::~Program() {
+        table->PrintScope();
         for( auto&& f : funcs ) {
             delete f;
-        }
-        for( auto&& c : consts ) {
-            delete c;
         }
         for( auto&& v : vars ) {
             delete v;
         }
 
         funcs.clear();
-        consts.clear();
         vars.clear();
     }
 
     void Program::Validate() const {
         for( auto&& f : funcs ) {
             f->Validate();
-        }
-        for( auto&& c : consts ) {
-            c->Validate();
         }
         for( auto&& v : vars ) {
             v->Validate();
@@ -89,9 +78,6 @@ namespace ast {
 
     std::ostream& Program::Write(std::ostream& os) const {
         for( auto && v : vars) {
-            os << *v << std::endl;
-        }
-        for( auto && v : consts) {
             os << *v << std::endl;
         }
         for( auto && v : funcs) {

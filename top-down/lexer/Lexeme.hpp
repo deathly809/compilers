@@ -17,7 +17,7 @@ namespace lexer {
             Lexeme(const Lexeme && other) = delete;
             Lexeme& operator=(const Lexeme & other) = delete;
 
-            const std::string& GetFileName() const;
+            const std::string& GetFilename() const;
             
             LexemeType GetType() const;
 

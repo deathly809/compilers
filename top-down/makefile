@@ -7,6 +7,9 @@ all:
 	make -C symtable
 	make -C hardware
 
+compiler: compiler.cpp
+	g++ -I. --std=c++11 compiler.cpp output/*.o -o compiler
+
 
 clean:
 	$(MAKE) -C ast clean

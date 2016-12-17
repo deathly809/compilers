@@ -8,9 +8,14 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <symtable/Attribute.hpp>
+#include <symtable/SymbolTable.hpp>
+
 #include <iostream>
+#include <memory>
 
 namespace ast {
+
 
     VariableDeclaration::VariableDeclaration(lexer::Lexer &lex, symtable::SymbolTable * table) : Statement(table) {
         switch(NextType(lex)) {
@@ -26,6 +31,9 @@ namespace ast {
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
 
+        symtable::IdentifierKind kind = variable? symtable::Var:symtable::Const;
+
+
         name = new Identifier(lex, table);
 
         if(NextType(lex) == lexer::EQUAL) {
@@ -33,6 +41,12 @@ namespace ast {
             value = new Expression(lex, table);
         } else {
             type = new Type(lex, table);
+            table->Insert(
+                std::shared_ptr<symtable::Attribute>(
+                    new symtable::VariableAttribute(name->GetName(),kind,type->GetType())
+                )
+            );
+
         }
     }
 

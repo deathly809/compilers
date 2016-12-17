@@ -15,17 +15,8 @@ namespace ast {
     // F = T | T ( "*" | "/" | "%" | "&" ) F
     // T = (E) | ID | LIT | F_CALL
     Factor::Factor(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
-
-        #ifdef DEBUG
-            std::cout << "Factor" << std::endl;
-        #endif
-
         lhs = new Term(lex, table);        
         
-        #ifdef DEBUG
-            std::cout << "after Term:"  << *l << std::endl;
-        #endif
-
         switch(NextType(lex)) {
             case lexer::MUL:
                 op = new Operator(Operator::MultiplicationOperator);

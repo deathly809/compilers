@@ -53,7 +53,7 @@ namespace parser {
             }
             std::stringstream ss;
             ss << "in file ";
-            ss << current->GetFileName();
+            ss << current->GetFilename();
             ss << " on line "; 
             ss << current->GetLine();
             ss << ", column ";
@@ -70,7 +70,7 @@ namespace parser {
 
     std::string unexpectedToken(std::unique_ptr<lexer::Lexeme> & current) {
         std::stringstream ss;
-        ss << "in file" << current->GetFileName() << " on line " << current->GetLine() << " column " << current->GetColumn();
+        ss << "in file" << current->GetFilename() << " on line " << current->GetLine() << " column " << current->GetColumn();
         ss << " unexpected token: ";
         if(current->GetValue() == "") {
             ss << LexemeTypeToString(current->GetType());

@@ -1,1 +1,39 @@
-if true { }
+
+var (
+    x = 5
+    y = 9
+)
+
+const (
+    hello = "hello"
+)
+
+func fib(n int) int {
+    if n < 2 {
+        return 1
+    }
+    return fib(n - 1) + fib(n - 2)
+}
+
+func main() {
+    
+    var x int
+    var y int
+    
+    x = 2
+    y = 5
+    
+    if x < y {
+        var z string
+    }
+    
+    for i = 0 ; i < 10 ; i = i + 1 {
+        Println(i)
+    }
+
+    for x < y {
+        Println(i)
+        x = x + 1
+    }
+    var y string
+}

@@ -19,7 +19,7 @@ namespace ast {
     }
 
     void ArrayExpression::GenerateCode(std::ostream & out) const {
-
+        // REG_OUT = REG_NAME[REG_IDX]
     }
 
     std::ostream& ArrayExpression::Write(std::ostream & os) const {

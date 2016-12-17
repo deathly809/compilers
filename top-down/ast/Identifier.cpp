@@ -37,4 +37,16 @@ namespace ast {
             return os << GetName();
         }
 
+        std::string Identifier::GetFilename() const {
+            return lexeme->GetFilename();
+        }
+
+        int Identifier::GetLine() const {
+            return lexeme->GetLine();
+        }
+
+        int Identifier::GetColumn() const {
+            return lexeme->GetColumn();
+        }
+
 }

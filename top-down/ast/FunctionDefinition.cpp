@@ -5,6 +5,8 @@
 #include <ast/Identifier.hpp>
 #include <ast/Type.hpp>
 
+#include <symtable/Attribute.hpp>
+
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
@@ -40,6 +42,18 @@ namespace ast {
         if(NextType(lex) != lexer::O_BRACE) {
             optRetType = new Type(lex, table);
         }
+
+        ValueType retType = NilType;
+        if(optRetType != nullptr) {
+            retType = optRetType->GetType();
+        }
+
+        table->Insert(
+            std::shared_ptr<symtable::Attribute>(
+                new symtable::FunctionAttribute(functionName->GetName(),retType)
+            )
+        );
+
 
         block = new Block(lex, table);
     }
