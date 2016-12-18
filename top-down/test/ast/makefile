@@ -18,4 +18,6 @@ $(ODIR)/%.o: %.cpp
 
 
 clean:
-	rm -f ${OBJS}
+	-@rm -f ${OBJS}
+
+nuke: clean

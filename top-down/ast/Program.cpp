@@ -11,6 +11,8 @@
 
 #include <ast/UnexpectedToken.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     Program::Program(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
@@ -51,7 +53,6 @@ namespace ast {
     }
 
     Program::~Program() {
-        table->PrintScope();
         for( auto&& f : funcs ) {
             delete f;
         }
@@ -72,8 +73,14 @@ namespace ast {
         }
     }
 
-    void Program::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> Program::GenerateCode(std::ostream & out) const {
+        for( auto&& v : vars ) {
+            v->GenerateCode(out);
+        }
+        for( auto&& f : funcs ) {
+            f->GenerateCode(out);
+        }
+        return nullptr;
     }
 
     std::ostream& Program::Write(std::ostream& os) const {

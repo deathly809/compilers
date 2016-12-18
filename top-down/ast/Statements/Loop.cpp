@@ -7,6 +7,8 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     Loop::Loop(lexer::Lexer& lex, symtable::SymbolTable * table) : Statement(table) {
@@ -28,8 +30,8 @@ namespace ast {
         block->Validate();
     }
 
-    void Loop::GenerateCode(std::ostream & out) const {
-        
+    std::unique_ptr<hardware::Register> Loop::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& Loop::Write(std::ostream & os) const { 

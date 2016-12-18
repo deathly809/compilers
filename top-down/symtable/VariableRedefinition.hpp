@@ -14,11 +14,15 @@ namespace symtable {
             VariableRedefinition() = delete;
 
         public:
-            VariableRedefinition(std::string vname);
+            VariableRedefinition(std::string vname, std::string file, int line, int column);
             virtual const char* what() const throw();
 
         private:
             std::string name;
+            std::string file;
+            int line;
+            int column;
+            mutable char buffer[128];
     };
 }
 

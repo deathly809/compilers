@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "Scanner.hpp"
+#include <lexer/Scanner.hpp>
 
 int main(int argc, char* argv[]) {
     if(argc != 2) {

@@ -11,6 +11,8 @@
 #include <symtable/Attribute.hpp>
 #include <symtable/SymbolTable.hpp>
 
+#include <hardware/Register.hpp>
+
 #include <iostream>
 #include <memory>
 
@@ -43,7 +45,7 @@ namespace ast {
             type = new Type(lex, table);
             table->Insert(
                 std::shared_ptr<symtable::Attribute>(
-                    new symtable::VariableAttribute(name->GetName(),kind,type->GetType())
+                    new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(), kind,type->GetType())
                 )
             );
 
@@ -62,8 +64,8 @@ namespace ast {
         }
     }
 
-    void VariableDeclaration::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& VariableDeclaration::Write(std::ostream & os) const {

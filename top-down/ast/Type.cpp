@@ -6,15 +6,21 @@
 
 #include <ast/UnexpectedToken.hpp>
 
-#include <ast/Expressions/IntegerLiteral.hpp>
+#include <ast/Expressions/Literals/IntegerLiteral.hpp>
+
+#include <hardware/Register.hpp>
+
+#include <map>
 
 namespace ast {
 
     static std::map<ValueType,std::string> valueTypeMapping = {
+        {CharType,          "CHAR"},
         {IntType,           "INT"},
         {RealType,          "REAL"},
         {StringType,        "STRING"},
         {BoolType,          "BOOLEAN"},
+        {CharArrayType,     "[]CHAR]"},
         {IntArrayType,      "[]INT"},
         {RealArrayType,     "[]REAL"},
         {StringArrayType,   "[]STRING"},
@@ -33,36 +39,47 @@ namespace ast {
                 arrayLength = new IntegerLiteral(lex,table);
             }
             consumeLexemeType(lex,lexer::C_BRACKET);
-
-            auto l = lex.Next();
-            
-
-            if(l->GetValue() == "int") {
-                type = IntArrayType;
-            } else if(l->GetValue() == "real") {
-                type = RealArrayType;
-            } else if(l->GetValue() == "string") {
-                type = StringArrayType;
-            } else if(l->GetValue() == "bool") {
-                type = BoolArrayType;
-            } else { 
-                throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
+            switch(NextType(lex)) {
+                case lexer::CHARTYPE:
+                    type = CharArrayType;
+                    break;
+                case lexer::INTTYPE:
+                    type = IntArrayType;
+                    break;
+                case lexer::REALTYPE:
+                    type = RealArrayType;
+                    break;
+                case lexer::STRINGTYPE:
+                    type = StringArrayType;
+                    break;
+                case lexer::BOOLTYPE:
+                    type = BoolArrayType;
+                    break;
+                default: 
+                    throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         } else {
-            auto l = lex.Next();
-
-            if(l->GetValue() == "int") {
-                type = IntType;
-            } else if(l->GetValue() == "real") {
-                type = RealType;
-            } else if(l->GetValue() == "string") {
-                type = StringType;
-            } else if(l->GetValue() == "bool") {
-                type = BoolType;
-            } else { 
-                throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
+            switch(NextType(lex)) {
+                case lexer::CHARTYPE:
+                    type = CharType;
+                    break;
+                case lexer::INTTYPE:
+                    type = IntType;
+                    break;
+                case lexer::REALTYPE:
+                    type = RealType;
+                    break;
+                case lexer::STRINGTYPE:
+                    type = StringType;
+                    break;
+                case lexer::BOOLTYPE:
+                    type = BoolType;
+                    break;
+                default: 
+                    throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         }
+        lex.Next();
         lex.HasNext();
     }
 
@@ -73,8 +90,8 @@ namespace ast {
         return type;
     }
 
-    void Type::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> Type::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
 

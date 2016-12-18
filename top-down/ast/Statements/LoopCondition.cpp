@@ -10,6 +10,8 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     // for {}
@@ -58,8 +60,8 @@ namespace ast {
         if(incr != nullptr) incr->Validate();
     }
 
-    void LoopCondition::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> LoopCondition::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& LoopCondition::Write(std::ostream & os) const {

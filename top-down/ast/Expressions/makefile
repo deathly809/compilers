@@ -11,6 +11,7 @@ OBJS       := $(patsubst %,$(ODIR)/%,$(OBJECTS))
 .SUFFIXES: .cpp .o
 
 all:       main
+	make -C Literals
 
 main:      $(OBJS)
 
@@ -18,4 +19,7 @@ $(ODIR)/%.o: %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
 clean:
-	-rm -fv $(OBJS) 
+	-@rm -fv $(OBJS) 
+
+nuke: clean
+	make -C Literals nuke

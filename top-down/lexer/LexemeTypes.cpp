@@ -6,9 +6,16 @@
 namespace lexer {
     std::map<LexemeType,std::string> typeMappings = {
         {ID,"ID"}, 
+        {CHAR,"CHAR"},
         {INT, "INT"},
         {REAL, "REAL"},
         {STRING, "STRING"},
+        {BOOL,"BOOL"},
+        {CHARTYPE,"CHARTYPE"},
+        {INTTYPE, "INTTYPE"},
+        {REALTYPE, "REALTYPE"},
+        {STRINGTYPE, "STRINGTYPE"},
+        {BOOLTYPE,"BOOLTYPE"},
         {O_PAREN, "O_PAREN"},
         {C_PAREN,"C_PAREN"},
         {O_BRACE, "O_BRACE"},
@@ -45,6 +52,7 @@ namespace lexer {
         {IMPORT,"IMPORT"},
         {PACKAGE,"PACKAGE"},
         {COLON,"COLON"},
+        {TYPE,"TYPE"},
         {ENDFILE,"EOF"}
     };
 

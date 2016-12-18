@@ -7,6 +7,8 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     // T = (E) | ID | LIT | F_CALL
@@ -53,8 +55,8 @@ namespace ast {
     void Term::Validate() const {
     }
 
-    void Term::GenerateCode(std::ostream & out) const {
-        // TODO : Generate the code!
+    std::unique_ptr<hardware::Register> Term::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     ValueType Term::ResultType() const {

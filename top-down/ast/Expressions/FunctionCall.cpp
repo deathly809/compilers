@@ -7,6 +7,8 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     FunctionCall::FunctionCall(lexer::Lexer& lex, symtable::SymbolTable * table ) : Ast(table), functionName(nullptr) {
@@ -38,7 +40,8 @@ namespace ast {
         }
     }
 
-    void FunctionCall::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> FunctionCall::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     ValueType FunctionCall::ResultType() const {

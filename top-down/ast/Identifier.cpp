@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
         Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table) {
@@ -21,9 +23,9 @@ namespace ast {
             /* Nothing to validate */
         }
 
-        void Identifier::GenerateCode(std::ostream & out) const {
-            // Should be nothing to do
-        }
+        std::unique_ptr<hardware::Register> Identifier::GenerateCode(std::ostream & out) const {
+        return nullptr;
+}
 
         ValueType Identifier::ResultType() const {
             return IntType;

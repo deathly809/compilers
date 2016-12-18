@@ -6,7 +6,10 @@
 
 namespace ast {
 
-    enum ValueType { IntType, RealType, StringType, BoolType, IntArrayType, RealArrayType, StringArrayType, BoolArrayType, NilType}; 
+    enum ValueType {
+        CharType, IntType, RealType, StringType, BoolType,
+        CharArrayType, IntArrayType, RealArrayType, StringArrayType, BoolArrayType, NilType
+    };
 
     std::string & ValueTypeToString(ValueType type);
 
@@ -23,7 +26,7 @@ namespace ast {
             ValueType GetType() const;
             
             virtual void Validate() const;
-            virtual void GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
     };

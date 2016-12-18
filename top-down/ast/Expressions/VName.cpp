@@ -3,10 +3,11 @@
 
 #include <ast/Expressions/Expression.hpp>
 
-#include <ast/Expressions/BooleanLiteral.hpp>
-#include <ast/Expressions/IntegerLiteral.hpp>
-#include <ast/Expressions/RealLiteral.hpp>
-#include <ast/Expressions/StringLiteral.hpp>
+#include <ast/Expressions/Literals/CharLiteral.hpp>
+#include <ast/Expressions/Literals/BooleanLiteral.hpp>
+#include <ast/Expressions/Literals/IntegerLiteral.hpp>
+#include <ast/Expressions/Literals/RealLiteral.hpp>
+#include <ast/Expressions/Literals/StringLiteral.hpp>
 
 #include <ast/Expressions/FunctionCall.hpp>
 
@@ -16,6 +17,8 @@
 
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
+
+#include <hardware/Register.hpp>
 
 namespace ast {
 
@@ -42,6 +45,9 @@ namespace ast {
                 consumeLexemeType(lex,lexer::O_PAREN);
                 expr = new Expression(lex,table);
                 consumeLexemeType(lex,lexer::C_PAREN);
+                break;
+            case lexer::CHAR:
+                cLit = new CharLiteral(lex,table);
                 break;
             case lexer::STRING:
                 sLit = new StringLiteral(lex,table);
@@ -103,8 +109,8 @@ namespace ast {
         }
     }
 
-    void VName::GenerateCode(std::ostream & out) const {
-        // TODO : Generate the code!
+    std::unique_ptr<hardware::Register> VName::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     ValueType VName::ResultType() const {

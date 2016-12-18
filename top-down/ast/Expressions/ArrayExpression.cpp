@@ -4,6 +4,8 @@
 #include <ast/Identifier.hpp>
 #include <ast/Expressions/Expression.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     ArrayExpression::ArrayExpression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
@@ -18,9 +20,10 @@ namespace ast {
         index->Validate();
     }
 
-    void ArrayExpression::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> ArrayExpression::GenerateCode(std::ostream & out) const {
         // REG_OUT = REG_NAME[REG_IDX]
-    }
+        return nullptr;
+}
 
     std::ostream& ArrayExpression::Write(std::ostream & os) const {
         return os << *name << "[" << *index << "]";

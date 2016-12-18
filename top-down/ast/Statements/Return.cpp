@@ -7,6 +7,7 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
 
 namespace ast {
     Return::Return(lexer::Lexer& lex, symtable::SymbolTable * table) : Statement(table) {
@@ -26,8 +27,8 @@ namespace ast {
         }
     }
 
-    void Return::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> Return::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& Return::Write(std::ostream & os) const {

@@ -8,6 +8,9 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <symtable/Attribute.hpp>
+#include <symtable/SymbolTable.hpp>
+
+#include <hardware/Register.hpp>
 
 namespace ast {
 
@@ -31,7 +34,7 @@ namespace ast {
 
             table->Insert(
                 std::shared_ptr<symtable::Attribute>(
-                    new symtable::VariableAttribute(id->GetName(),kind,expr->ResultType())
+                    new symtable::VariableAttribute(id->GetName(), id->GetFilename(), id->GetLine(), id->GetColumn(),kind,expr->ResultType())
                 )
             );
 
@@ -55,11 +58,14 @@ namespace ast {
         }
     }
 
-    void BlockDefinition::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> BlockDefinition::GenerateCode(std::ostream & out) const {
         for( auto&& v : vars ) {
-            v.id->Validate();
-            v.expr->Validate();
+            std::shared_ptr<symtable::Attribute> attr = table->Locate(v.id->GetName());
+            std::shared_ptr<symtable::VariableAttribute> vAttr = std::static_pointer_cast<symtable::VariableAttribute,symtable::Attribute>(attr);
+            vAttr->SetRegister(hardware::Register::GetRegister());            
+            out << *vAttr << std::endl;
         }
+        return nullptr;
     }
 
     std::ostream& BlockDefinition::Write(std::ostream & os) const {

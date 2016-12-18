@@ -4,19 +4,37 @@ GCC		= g++
 STD		= -std=c++11
 CFLAGS	= -Wall ${STD} -g
 CMP		= ${GCC} ${CFLAGS} ${INCLUDE}
+EXEC    = tests
 
 ODIR    = ../output
 
-main: 
-	make -C ../
-	make -C ast
-	make -C symtable
-	make -C hardware
+.PHONY: main
+.PHONY: base
+.PHONY: ast 
+.PHONY: symtable
+.PHONY: hardware
+
+main: base ast hardware tests
+
+tests: main.cpp objs/*.o $(ODIR)/*.o
 	${CMP} main.cpp $(ODIR)/*.o objs/*.o -o tests
 
+base:
+	make -C ../
+
+ast:
+	make -C ast
+
+hardware:
+	make -C hardware
+
+symtable:
+	make -C symtable
+
 clean:
-	rm -f test 
-	make -C ../ clean
-	make -C ast clean
-	make -C symtable clean
-	make -C hardware clean
+	-@rm -vf $(EXEC)
+
+nuke: clean
+	make -C ast nuke
+	make -C symtable nuke
+	make -C hardware nuke

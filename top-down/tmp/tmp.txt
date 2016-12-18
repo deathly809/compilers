@@ -19,6 +19,7 @@ func main() {
     
     var x int
     var y int
+    var z char
     
     x = 2
     y = 5
@@ -35,5 +36,4 @@ func main() {
         Println(i)
         x = x + 1
     }
-    var y string
 }

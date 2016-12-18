@@ -1,12 +1,15 @@
 
 #include <lexer/Lexer.hpp>
-
 #include <lexer/Lexeme.hpp>
 
 #include <sstream>
 #include <map>
 
 namespace lexer {
+
+    void checkEOF(bool test) {
+        if(!test) throw std::runtime_error("unexpected EOF");
+    }
 
     const std::map<std::string,LexemeType> Keywords = {
         {"import",IMPORT},
@@ -17,11 +20,15 @@ namespace lexer {
         {"else",ELSE},
         {"package",PACKAGE},
         {"func",FUNC},
-        {"int",INT},
         {"return",RETURN},
-        {"string",STRING},
+        {"char",CHARTYPE},
+        {"int",INTTYPE},
+        {"real",REALTYPE},
+        {"string",STRINGTYPE},
+        {"bool",BOOLTYPE},
         {"true",BOOL},
         {"false",BOOL},
+        {"type",TYPE}
     };
 
 
@@ -59,10 +66,25 @@ namespace lexer {
         return scan->Next() != 0;
     }
 
-    std::string unexpectedCharacter(char  c, std::string file, int line, int column) {
+    std::string unexpectedCharacter(char  c, std::string file, int line, int column,int line_here) {
         std::stringstream ss;
-        ss << "in file " << file << " on line " << line << " column " << column << " unexpected character: " << c;
+        ss << "["<< line_here << "]" << "in file " << file << " on line " << line << " column " << column << " unexpected character: " << c;
         return ss.str();
+    }
+
+    char getEscaped(char c) {
+        switch(c) {
+            case 'n':
+                return '\n';
+            case 'r':
+                return '\r';
+            case 'b':
+                return '\b';
+            case 't':
+                return '\t';
+            default:
+                return c;
+        }
     }
 
     std::unique_ptr<Lexeme> Lexer::readString() {
@@ -71,23 +93,8 @@ namespace lexer {
         bool closed = false;
         while(!closed && scan->HasNext()) {
             if(escape) {
-                switch(scan->Next()) {
-                    case 'n':
-                        ss << '\n';
-                        break;
-                    case 'r':
-                        ss << '\r';
-                        break;
-                    case 'b':
-                        ss << '\b';
-                        break; 
-                    case 't':
-                        ss << '\t';
-                        break;
-                    default:
-                        ss << scan->Next();
-                        break;
-                }
+                ss << getEscaped(scan->Next());
+                escape = false;
             } else if(scan->Next() == '\\') {
                 escape = true;
             } else if(scan->Next() == '"') {
@@ -122,6 +129,31 @@ namespace lexer {
             return std::unique_ptr<Lexeme>(new Lexeme(ptr->second,id,file,line,column));
         }
         return std::unique_ptr<Lexeme>(new Lexeme(ID,id,file,line,column));
+    }
+
+    std::unique_ptr<Lexeme> Lexer::readCharacter() {
+        std::stringstream ss;
+
+        ss << scan->Next(); // single quote
+        checkEOF(scan->HasNext());
+
+        char c = scan->Next();
+        if(c == '\\') {
+            checkEOF(scan->HasNext());
+            c = getEscaped(scan->Next());
+        }
+        ss << c;
+
+        checkEOF(scan->HasNext());
+
+        c = scan->Next();
+        if(c != '\'') {
+            std::stringstream ss;
+            ss << "in file " << file << " on line " << line << " column " << column << ": unclosed character";
+            throw std::runtime_error(ss.str());
+        }
+
+        return std::unique_ptr<Lexeme>(new Lexeme(CHAR,ss.str(),file,line,column));
     }
 
     std::unique_ptr<Lexeme> Lexer::readNumber() {
@@ -237,8 +269,11 @@ namespace lexer {
                     case '"':
                         result = readString();
                         break;
+                    case '\'':
+                        result = readCharacter();
+                        break;
                     default:
-                        throw std::runtime_error(unexpectedCharacter(curr,file,line,column));
+                        throw std::runtime_error(unexpectedCharacter(curr,file,line,column,__LINE__));
                         break;
                 }
             }

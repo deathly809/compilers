@@ -21,7 +21,7 @@ namespace ast {
             ArrayExpression(lexer::Lexer & lex, symtable::SymbolTable * table);
 
             virtual void Validate() const;
-            virtual void GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             virtual ValueType ResultType() const;

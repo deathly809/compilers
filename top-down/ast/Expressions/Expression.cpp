@@ -1,29 +1,39 @@
 
 #include <ast/Expressions/Expression.hpp>
 
-#include <ast/Expressions/InvalidTypeCombination.hpp>
 #include <ast/Expressions/Operator.hpp>
 #include <ast/Expressions/Factor.hpp>
+
+#include <ast/Expressions/InvalidTypeCombination.hpp>
+#include <ast/Expressions/NilExpression.hpp>
+
 
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 #include <map>
 #include <vector>
-
 #include <algorithm>
 
 namespace ast {
 
 
-    std::map<ValueType,std::vector<Operator::OperatorType>> acceptableTables = 
+    static std::map<ValueType,std::vector<Operator::OperatorType>> acceptableTables = 
     {
+        {
+            CharType,
+            {
+                Operator::AdditionOperator,
+                Operator::SubtractionOperator
+            }
+        },
         {
             IntType, 
             {
                 Operator::AdditionOperator,
-                Operator::SubtractionOperator, 
-                Operator::ModulusOperator
+                Operator::SubtractionOperator
             }
         },
         {
@@ -88,20 +98,29 @@ namespace ast {
         if(rhs != nullptr) {
 
             if(lhs->ResultType() != rhs->ResultType()) {
-                throw std::runtime_error("mismatched types: " + std::to_string(__LINE__) + " " + std::string(__FILE__));
+                throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);                
             }
 
-            const auto & options = acceptableTables[lhs->ResultType()];
-            const auto & ptr = std::find(options.begin(), options.end(), op->GetType()); 
-            if(ptr == options.end()) {
+            const auto & options = acceptableTables.find(lhs->ResultType());
+            if( options == acceptableTables.end()) {
+                throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);                
+            }
+
+            const auto & ptr = std::find(options->second.begin(), options->second.end(), op->GetType()); 
+            if(ptr == options->second.end()) {
                 throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
             }
 
+        } else {
+            ValueType type = lhs->ResultType();
+            if( type == NilType) {
+                throw NilExpression(__FILE__, __LINE__);
+            }
         }
     }
 
-    void Expression::GenerateCode(std::ostream & out) const {
-        // TODO : Generate the code!
+    std::unique_ptr<hardware::Register> Expression::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     ValueType Expression::ResultType() const {

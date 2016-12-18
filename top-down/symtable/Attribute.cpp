@@ -33,7 +33,11 @@ namespace symtable {
         return ptr->second;
     }
 
-    Attribute::Attribute(std::string name, AttributeType type) : type(type), name(name) {
+    Attribute::Attribute(std::string name, AttributeType type) : type(type), name(name), filename("nil"), line(-1), column(-1) {
+        /* Empty */
+    }
+
+    Attribute::Attribute(std::string name, std::string filename, int line, int column, AttributeType type) : type(type), name(name), filename(filename), line(line), column(column) {
         /* Empty */
     }
             
@@ -115,7 +119,7 @@ namespace symtable {
 
 // VAR
 
-    VariableAttribute::VariableAttribute(std::string name, IdentifierKind kind, ast::ValueType type) : Attribute(name,VariableAttributeType), iKind(kind), iType(type) {
+    VariableAttribute::VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type) : Attribute(name,filename, line, column, VariableAttributeType), iKind(kind), iType(type) {
         /* Empty */
     }
 
@@ -129,11 +133,20 @@ namespace symtable {
 
     void VariableAttribute::Write(std::ostream & os) const  {
         os << "[" << GetName() << ", " << IdentifierKindToString(iKind) << ", " << ast::ValueTypeToString(iType) << "]";
+        if(reg) {
+            os << "@REG(" << reg->GetID() << ")";
+        } else {
+            os << "@REG(nullptr)";            
+        }
+    }
+
+    void VariableAttribute::SetRegister(std::unique_ptr<hardware::Register> reg) {
+        this->reg = std::move(reg);
     }
 
 // FunctionAttribute
 
-    FunctionAttribute::FunctionAttribute(std::string name, ast::ValueType type) : Attribute(name,FunctionAttributeType), iType(type) {
+    FunctionAttribute::FunctionAttribute(std::string name, std::string filename, int line, int column, ast::ValueType type) : Attribute(name, filename, line, column, FunctionAttributeType), iType(type) {
         /* Empty */
     }
 
@@ -143,6 +156,15 @@ namespace symtable {
 
     void FunctionAttribute::Write(std::ostream & os) const  {
         os << AttributeTypeToString(GetType()) << "[" << GetName() << ", " << ast::ValueTypeToString(iType) << "]";
+        if(reg) {
+            os << "@REG(" << reg->GetID() << ")";
+        } else {
+            os << "@REG(nullptr)";            
+        }
+    }
+
+    void FunctionAttribute::SetRegister(std::unique_ptr<hardware::Register> reg) {
+        this->reg = std::move(reg);
     }
 
 

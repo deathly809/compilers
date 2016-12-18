@@ -10,6 +10,8 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
+#include <hardware/Register.hpp>
+
 namespace ast {
 
     // func ID ( OPT_PARAMS ) OPT_RET_TYPE BLOCK
@@ -50,7 +52,7 @@ namespace ast {
 
         table->Insert(
             std::shared_ptr<symtable::Attribute>(
-                new symtable::FunctionAttribute(functionName->GetName(),retType)
+                new symtable::FunctionAttribute(functionName->GetName(), functionName->GetFilename(), functionName->GetLine(), functionName->GetColumn(), retType)
             )
         );
 
@@ -81,8 +83,8 @@ namespace ast {
         block->Validate();
     }
 
-    void FunctionDefinition::GenerateCode(std::ostream & out) const {
-        
+    std::unique_ptr<hardware::Register> FunctionDefinition::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& FunctionDefinition::Write(std::ostream & os) const {

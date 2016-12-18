@@ -9,7 +9,7 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
-#include <memory>
+#include <hardware/Register.hpp>
 
 namespace ast {
 
@@ -34,8 +34,8 @@ namespace ast {
             varDef->Validate();
         }
     }
-    void InitStatement::GenerateCode(std::ostream & os) const {
-
+    std::unique_ptr<hardware::Register> InitStatement::GenerateCode(std::ostream & os) const {
+        return nullptr;
     }
 
     std::ostream& InitStatement::Write(std::ostream & os) const {

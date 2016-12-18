@@ -2,9 +2,11 @@
 #ifndef ATTRIBUTE_HPP_
 #define ATTRIBUTE_HPP_
 
-
 #include <ast/Type.hpp>
+#include <hardware/Register.hpp>
+
 #include <string>
+#include <memory>
 
 namespace symtable {
 
@@ -17,6 +19,7 @@ namespace symtable {
     
     class Attribute {
         protected:
+            Attribute(std::string name, std::string filename, int line, int column, AttributeType type);
             Attribute(std::string name, AttributeType type);
         public:
             Attribute(const Attribute &) = delete;
@@ -32,9 +35,25 @@ namespace symtable {
 
             virtual void Write(std::ostream & os) const ;
 
+            std::string GetFilename() {
+                return filename;
+            }
+
+            int GetLine() {
+                return line;
+            }
+
+            int GetColumn() {
+                return column;
+            }
+
         private:
             AttributeType type;
+
             std::string name;
+            std::string filename;
+            int line;
+            int column;
 
     };
 
@@ -95,26 +114,35 @@ namespace symtable {
 
     /* Holds information about attributes */
     class VariableAttribute : public Attribute {
-        private:
-            IdentifierKind iKind;
-            ast::ValueType iType;
+
         public:
-            VariableAttribute(std::string name, IdentifierKind kind, ast::ValueType type);
+            VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type);
             IdentifierKind GetKind();
             ast::ValueType GetVariableType();
 
             virtual void Write(std::ostream & os) const;
+            void SetRegister(std::unique_ptr<hardware::Register> reg);
+
+        private:
+            IdentifierKind iKind;
+            ast::ValueType iType;
+            std::unique_ptr<hardware::Register> reg;
 
     };
 
     class FunctionAttribute : public Attribute {
-        private:
-            ast::ValueType iType;
+
         public:
-            FunctionAttribute(std::string name, ast::ValueType type);
+            FunctionAttribute(std::string name, std::string filename, int line, int column, ast::ValueType type);
             ast::ValueType GetReturnType();
 
             virtual void Write(std::ostream & os) const;
+            void SetRegister(std::unique_ptr<hardware::Register> reg);
+
+        private:
+            ast::ValueType iType;
+            std::unique_ptr<hardware::Register> reg;
+
     };
 
     std::ostream& operator<<(std::ostream & os, const Attribute & attr);

@@ -10,6 +10,7 @@ namespace ast {
 
     class ArrayExpression;
     class Expression;
+    class CharLiteral;
     class BooleanLiteral;
     class IntegerLiteral;
     class RealLiteral;
@@ -24,7 +25,7 @@ namespace ast {
             ~VName();
 
             virtual void Validate() const;
-            virtual void GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;
@@ -32,6 +33,7 @@ namespace ast {
         private:
             Expression*         expr = nullptr;
 
+            CharLiteral*        cLit = nullptr;
             BooleanLiteral*     bLit = nullptr;
             IntegerLiteral*     iLit = nullptr;
             RealLiteral*        rLit = nullptr;

@@ -60,7 +60,7 @@ namespace symtable {
         auto & scope = scopes[scopes.size() - 1];
         auto ptr = scope.find(attr->GetName());
         if(ptr != scope.end()) {
-            throw VariableRedefinition(attr->GetName());
+            throw VariableRedefinition(attr->GetName(), attr->GetFilename(), attr->GetLine(), attr->GetColumn());
         }
         scope.insert({ attr->GetName(),std::move(attr)});
     }

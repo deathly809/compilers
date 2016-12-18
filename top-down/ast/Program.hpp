@@ -4,10 +4,6 @@
 
 #include <ast/Ast.hpp>
 
-namespace symtable {
-    class SymbolTable;
-}
-
 namespace ast {
 
     class BlockDefinition;
@@ -26,7 +22,7 @@ namespace ast {
 
 
             virtual void Validate() const;
-            virtual void GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
             virtual std::ostream& Write(std::ostream& os) const;
 
     };

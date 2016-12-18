@@ -9,10 +9,14 @@
 #include <ast/Statements/IfStatement.hpp>
 #include <ast/Statements/Loop.hpp>
 
+#include <ast/UnexpectedToken.hpp>
+
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
-#include <ast/UnexpectedToken.hpp>
+#include <hardware/Register.hpp>
+
+#include <symtable/SymbolTable.hpp>
 
 namespace ast {
 
@@ -50,7 +54,6 @@ namespace ast {
                     throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         }
-        table->PrintScope();
         table->CloseScope();
         consumeLexemeType(lex,lexer::C_BRACE);
     }
@@ -68,8 +71,8 @@ namespace ast {
         }
     }
 
-    void Block::GenerateCode(std::ostream & out) const {
-
+    std::unique_ptr<hardware::Register> Block::GenerateCode(std::ostream & out) const {
+        return nullptr;
     }
 
     std::ostream& Block::Write(std::ostream & os) const {

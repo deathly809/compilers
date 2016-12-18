@@ -1,12 +1,13 @@
 
 #include <ast/Expressions/Operator.hpp>
 
+#include <hardware/Register.hpp>
+
 #include <string>
 
 #include <iostream>
 
 #include <map>
-
 
 namespace ast {
 
@@ -55,8 +56,8 @@ namespace ast {
         /* empty */
     }
 
-    void Operator::GenerateCode(std::ostream & os) const {
-        /* empty */
+    std::unique_ptr<hardware::Register> Operator::GenerateCode(std::ostream & os) const {
+        return nullptr;
     }
 
     std::ostream& Operator::Write(std::ostream& os) const {

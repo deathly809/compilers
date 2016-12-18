@@ -12,10 +12,11 @@ OBJS       := $(patsubst %,$(ODIR)/%,$(OBJECTS))
 
 main: ${OBJS} 
 
-
 $(ODIR)/%.o: %.cpp 
 	${CMP} -c $< -o $@
 
 
 clean:
 	rm -f ${OBJS}
+
+nuke: clean

@@ -21,7 +21,12 @@ namespace ast {
             virtual const char* what() const throw() {
                 std::ostringstream cnvt( "" );
                 cnvt << runtime_error::what() << ": " << file << "(" << line << ") " << GetTypeLeft() << " " << GetOperator() << " " << GetTypeRight(); 
-                return cnvt.str().c_str();
+
+                auto str = cnvt.str();
+                std::copy(str.begin(),str.end(),buffer);
+                buffer[str.size()] = '\0';
+                
+                return buffer;
             }
 
         private:
@@ -45,6 +50,7 @@ namespace ast {
             const std::string file;
             const ValueType lhs, rhs;
             const Operator* bop;
+            mutable char buffer[512];
 
     };
 

@@ -20,6 +20,8 @@ $(ODIR)/%.o: %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
 clean:
-	-rm -fv $(OBJS) 
-	$(MAKE) -C Expressions clean
-	$(MAKE) -C Statements clean
+	-@rm -fv $(OBJS) 
+
+nuke: clean
+	$(MAKE) -C Expressions nuke
+	$(MAKE) -C Statements nuke

@@ -7,13 +7,23 @@
 #include <ostream>
 #include <lexer/Lexer.hpp>
 
-#include <symtable/SymbolTable.hpp>
+#include <memory>
 
 // #define DEBUG
 
 #ifdef DEBUG 
     #include <iostream>
 #endif
+
+
+namespace hardware {
+    class Register;
+}
+
+
+namespace symtable {
+    class SymbolTable;
+}
 
 
 namespace ast {
@@ -24,7 +34,7 @@ namespace ast {
             virtual void Validate() const = 0;
 
             /* Given an output stream we write the code generated */
-            virtual void GenerateCode(std::ostream & out) const = 0;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const = 0;
 
             virtual std::ostream& Write(std::ostream & os) const = 0;
 

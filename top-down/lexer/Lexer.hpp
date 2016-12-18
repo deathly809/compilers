@@ -35,6 +35,8 @@ namespace lexer {
             std::unique_ptr<Lexeme> readIdentifier();
             std::unique_ptr<Lexeme> readNumber();
             std::unique_ptr<Lexeme> readString();
+            std::unique_ptr<Lexeme> readCharacter();
+            //std::unique_ptr<Lexeme> readReal();
             
     };
 

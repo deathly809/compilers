@@ -24,7 +24,7 @@ namespace ast {
             Operator(const Operator && other);
 
             virtual void Validate() const;
-            virtual void GenerateCode(std::ostream & os) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & os) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             OperatorType GetType() const;
