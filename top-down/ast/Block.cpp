@@ -15,6 +15,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <symtable/SymbolTable.hpp>
 
@@ -71,7 +72,7 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> Block::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Block::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

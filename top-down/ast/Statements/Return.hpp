@@ -4,6 +4,10 @@
 
 #include <ast/Statements/Statement.hpp>
 
+namespace hardware {
+    class InstructionGenerator;
+}
+
 namespace ast {
 
     class Expression;
@@ -16,7 +20,7 @@ namespace ast {
             ~Return();
             
             virtual void Validate() const;
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
     };

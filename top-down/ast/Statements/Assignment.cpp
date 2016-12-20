@@ -7,6 +7,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -33,7 +34,7 @@ namespace ast {
         rhs->Validate();
     }
 
-    std::unique_ptr<hardware::Register> Assignment::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Assignment::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

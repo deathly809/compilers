@@ -10,6 +10,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <map>
 #include <vector>
@@ -106,7 +107,7 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> Factor::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Factor::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

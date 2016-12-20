@@ -18,6 +18,7 @@
 
 namespace hardware {
     class Register;
+    class InstructionGenerator;
 }
 
 
@@ -34,7 +35,7 @@ namespace ast {
             virtual void Validate() const = 0;
 
             /* Given an output stream we write the code generated */
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const = 0;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const = 0;
 
             virtual std::ostream& Write(std::ostream & os) const = 0;
 

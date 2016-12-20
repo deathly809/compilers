@@ -19,6 +19,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -109,7 +110,7 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> VName::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> VName::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

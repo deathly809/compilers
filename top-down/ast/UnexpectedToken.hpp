@@ -23,7 +23,10 @@ namespace ast {
                 if(lexeme) {
                     cnvt << *lexeme; 
                 }
-                return cnvt.str().c_str();
+                std::string s = cnvt.str();
+                s.copy(buffer,s.size());
+                buffer[s.size()] = '\0';
+                return buffer;
             }
 
         private:
@@ -32,6 +35,7 @@ namespace ast {
             const std::string file;
             const int line;
             std::unique_ptr<lexer::Lexeme> lexeme;
+            mutable char buffer[512];
 
     };
 

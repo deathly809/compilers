@@ -6,6 +6,10 @@
 
 #include <ast/Type.hpp>
 
+namespace hardware {
+    class InstructionGenerator;
+}
+
 namespace ast {
 
     class Factor;
@@ -20,7 +24,7 @@ namespace ast {
             ~Expression();
 
             virtual void Validate() const;
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;

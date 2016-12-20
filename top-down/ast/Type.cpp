@@ -9,6 +9,7 @@
 #include <ast/Expressions/Literals/IntegerLiteral.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <map>
 
@@ -90,7 +91,7 @@ namespace ast {
         return type;
     }
 
-    std::unique_ptr<hardware::Register> Type::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Type::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

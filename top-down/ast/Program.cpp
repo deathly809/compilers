@@ -12,6 +12,7 @@
 #include <ast/UnexpectedToken.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -73,13 +74,25 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> Program::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Program::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        int variables = 0;
+        codeGen.Init();
+
         for( auto&& v : vars ) {
-            v->GenerateCode(out);
+            variables += v->VariablesDeclared();
+        }
+
+        codeGen.Alloc(variables);
+
+        for( auto&& v : vars ) {
+            v->GenerateCode(codeGen);
         }
         for( auto&& f : funcs ) {
-            f->GenerateCode(out);
+            f->GenerateCode(codeGen);
         }
+
+        codeGen.Alloc(-variables);
+        codeGen.Halt();
         return nullptr;
     }
 

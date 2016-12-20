@@ -8,6 +8,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -55,7 +56,7 @@ namespace ast {
     void Term::Validate() const {
     }
 
-    std::unique_ptr<hardware::Register> Term::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Term::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

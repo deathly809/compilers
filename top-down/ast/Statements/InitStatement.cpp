@@ -10,6 +10,11 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
+
+namespace hardware {
+    class InstructionGenerator;
+}
 
 namespace ast {
 
@@ -34,7 +39,7 @@ namespace ast {
             varDef->Validate();
         }
     }
-    std::unique_ptr<hardware::Register> InitStatement::GenerateCode(std::ostream & os) const {
+    std::unique_ptr<hardware::Register> InitStatement::GenerateCode(hardware::InstructionGenerator & gen) const {
         return nullptr;
     }
 

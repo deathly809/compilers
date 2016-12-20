@@ -22,7 +22,7 @@ namespace symtable {
             std::string file;
             int line;
             int column;
-            mutable char buffer[128];
+            mutable char buffer[512];
     };
 }
 

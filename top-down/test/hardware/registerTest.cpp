@@ -2,6 +2,7 @@
 #include <test/catch.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <vector>
 #include <memory>

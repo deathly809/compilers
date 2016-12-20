@@ -5,6 +5,7 @@
 #include <ast/Expressions/Expression.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -20,7 +21,7 @@ namespace ast {
         index->Validate();
     }
 
-    std::unique_ptr<hardware::Register> ArrayExpression::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> ArrayExpression::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         // REG_OUT = REG_NAME[REG_IDX]
         return nullptr;
 }

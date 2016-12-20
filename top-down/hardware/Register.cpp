@@ -1,5 +1,6 @@
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <algorithm>
 

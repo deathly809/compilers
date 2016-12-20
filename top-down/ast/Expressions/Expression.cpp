@@ -12,6 +12,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <map>
 #include <vector>
@@ -119,7 +120,7 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> Expression::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> Expression::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

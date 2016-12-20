@@ -4,6 +4,10 @@
 
 #include <ast/Ast.hpp>
 
+namespace hardware {
+    class InstructionGenerator;
+}
+
 namespace symtable {
     class SymbolTable;
 }
@@ -24,7 +28,7 @@ namespace ast {
             ~InitStatement();
 
             virtual void Validate() const;
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & os) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & gen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
         private:

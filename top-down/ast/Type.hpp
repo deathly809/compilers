@@ -4,6 +4,10 @@
 
 #include <ast/Ast.hpp>
 
+namespace hardware {
+    class InstructionGenerator;
+}
+
 namespace ast {
 
     enum ValueType {
@@ -26,7 +30,7 @@ namespace ast {
             ValueType GetType() const;
             
             virtual void Validate() const;
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & out) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
     };

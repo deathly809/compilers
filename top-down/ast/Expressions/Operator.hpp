@@ -6,6 +6,10 @@
 
 #include <string>
 
+namespace hardware {
+    class InstructionGenerator;
+}
+
 namespace ast {
 
     class Operator : public Ast {
@@ -24,7 +28,7 @@ namespace ast {
             Operator(const Operator && other);
 
             virtual void Validate() const;
-            virtual std::unique_ptr<hardware::Register> GenerateCode(std::ostream & os) const;
+            virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & gen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             OperatorType GetType() const;

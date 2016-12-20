@@ -6,6 +6,7 @@
 #include <lexer/LexemeTypes.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -29,7 +30,7 @@ namespace ast {
         /* Empty */
     }
 
-    std::unique_ptr<hardware::Register> BooleanLiteral::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> BooleanLiteral::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

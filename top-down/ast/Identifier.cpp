@@ -4,9 +4,10 @@
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
 
-#include <iostream>
-
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
+
+#include <iostream>
 
 namespace ast {
 
@@ -23,7 +24,7 @@ namespace ast {
             /* Nothing to validate */
         }
 
-        std::unique_ptr<hardware::Register> Identifier::GenerateCode(std::ostream & out) const {
+        std::unique_ptr<hardware::Register> Identifier::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
 }
 

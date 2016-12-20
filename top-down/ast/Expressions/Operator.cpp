@@ -2,6 +2,7 @@
 #include <ast/Expressions/Operator.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <string>
 
@@ -56,7 +57,7 @@ namespace ast {
         /* empty */
     }
 
-    std::unique_ptr<hardware::Register> Operator::GenerateCode(std::ostream & os) const {
+    std::unique_ptr<hardware::Register> Operator::GenerateCode(hardware::InstructionGenerator & gen) const {
         return nullptr;
     }
 

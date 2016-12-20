@@ -12,6 +12,7 @@
 #include <symtable/SymbolTable.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 #include <iostream>
 #include <memory>
@@ -64,7 +65,7 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         return nullptr;
     }
 

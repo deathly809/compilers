@@ -11,6 +11,7 @@
 #include <symtable/SymbolTable.hpp>
 
 #include <hardware/Register.hpp>
+#include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
 
@@ -58,14 +59,17 @@ namespace ast {
         }
     }
 
-    std::unique_ptr<hardware::Register> BlockDefinition::GenerateCode(std::ostream & out) const {
+    std::unique_ptr<hardware::Register> BlockDefinition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         for( auto&& v : vars ) {
             std::shared_ptr<symtable::Attribute> attr = table->Locate(v.id->GetName());
             std::shared_ptr<symtable::VariableAttribute> vAttr = std::static_pointer_cast<symtable::VariableAttribute,symtable::Attribute>(attr);
-            vAttr->SetRegister(hardware::Register::GetRegister());            
-            out << *vAttr << std::endl;
+            vAttr->SetRegister(hardware::Register::GetRegister());
         }
         return nullptr;
+    }
+
+    size_t BlockDefinition::VariablesDeclared() const {
+        return vars.size();
     }
 
     std::ostream& BlockDefinition::Write(std::ostream & os) const {
