@@ -27,8 +27,6 @@ namespace ast {
             scope = table->GetDeclaringScope(lexeme->GetValue());
 
             if(!scope) {
-                std::cout << *table << std::endl;
-                std::cout.flush();
                 throw std::runtime_error("use of an undeclared variable: " + lexeme->GetValue() + " on line " + std::to_string(lexeme->GetLine()));
             }
         }
@@ -59,7 +57,16 @@ namespace ast {
         }
 
         ValueType Identifier::ResultType() const {
-            return IntType;
+            if(!scope) {
+                return IntType;
+            }
+
+            auto attr = scope->GetVariableAttribute(GetName());
+            if(!attr) {
+                return IntType;
+            }
+            
+            return attr->GetVariableType();
         }
 
         std::string Identifier::GetName() const {

@@ -34,8 +34,12 @@ TEST_CASE( "complex expression declaration" , "[VariableDeclaration]" ) {
         run<ast::VariableDeclaration>("var x = 5 + 5");
     }
     SECTION("bool") {
-        run<ast::VariableDeclaration>("var x = true | false");
-        run<ast::VariableDeclaration>("var x = false & true");
+		SECTION("or") {
+				run<ast::VariableDeclaration>("var x = true | false");
+		}
+		SECTION("and") {
+				run<ast::VariableDeclaration>("var x = false & true");
+		}
     }
     SECTION("string") {
         run<ast::VariableDeclaration>("var x = \"this is a string which I hope is saved\" + \"concat hopefully\"");

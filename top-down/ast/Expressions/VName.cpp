@@ -41,6 +41,8 @@ namespace ast {
             lex.HasNext();
         }
 
+        
+
         switch(NextType(lex)) {
             case lexer::O_PAREN:
                 consumeLexemeType(lex,lexer::O_PAREN);
@@ -144,7 +146,9 @@ namespace ast {
     ValueType VName::ResultType() const {
         if(expr != nullptr) return expr->ResultType();
         
-        if(bLit != nullptr) return bLit->ResultType();
+        if(bLit != nullptr) {
+            return bLit->ResultType();
+        }
         if(iLit != nullptr) return iLit->ResultType();
         if(rLit != nullptr) return rLit->ResultType();
         if(sLit != nullptr) return sLit->ResultType();

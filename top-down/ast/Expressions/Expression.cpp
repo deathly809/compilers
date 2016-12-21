@@ -61,25 +61,43 @@ namespace ast {
     // E = F | F ( "+" | "-" | "|" ) E
     // F = T | T ( "*" | "/" | "%" | "&" ) F
     // T = (E) | ID | LIT | F_CALL
-    Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), rhs(nullptr), op(nullptr) {
+    Expression::Expression(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) { //, lhs(nullptr), rhs(nullptr), op(nullptr) {
         
-        lhs = new Factor(lex, table);
+        rhs = new Factor(lex, table);
+        Operator *op;
 
-        switch(NextType(lex)) {
-            case lexer::PLUS:
-                op = new Operator(Operator::AdditionOperator);
-                break;
-            case lexer::MINUS:
-                op = new Operator(Operator::SubtractionOperator);
-                break;
-            case lexer::OR:
-                op = new Operator(Operator::OrOperator);
-                break;
-            default:
-                op = new Operator(Operator::None);
-                break;
+        bool doIt = true;
+        while(doIt) {
+            switch(NextType(lex)) {
+                case lexer::PLUS:
+                    op = new Operator(Operator::AdditionOperator);
+                    lex.Next();
+                    lex.HasNext();
+                    list.push_back({rhs,op});
+                    rhs = new Factor(lex ,table);
+                    break;
+                case lexer::MINUS:
+                    op = new Operator(Operator::SubtractionOperator);
+                    lex.Next();
+                    lex.HasNext();
+                    list.push_back({rhs,op});
+                    rhs = new Factor(lex ,table);
+                    break;
+                case lexer::OR:
+                    op = new Operator(Operator::OrOperator);
+                    lex.Next();
+                    lex.HasNext();
+                    list.push_back({rhs,op});
+                    rhs = new Factor(lex ,table);
+                    break;
+                default:
+                    // op = new Operator(Operator::None);
+                    doIt = false;
+                    break;
+            }
         }
 
+        /*
         if(op->GetType() != Operator::None) {
             lex.Next();
             lex.HasNext();
@@ -87,18 +105,31 @@ namespace ast {
         } else {
             // pushed l back
         }
+        */
     }
 
     Expression::~Expression() {
-        delete lhs;
-        delete op;
+        for(auto & p : list) {
+            delete p.lhs;
+            delete p.op;
+        }
+        list.clear();
+        //delete lhs;
+        //delete op;
         delete rhs;
     }
 
     void Expression::Validate() const {
-        lhs->Validate();
-        if(rhs != nullptr) {
-            rhs->Validate();
+        rhs->Validate();
+        if( rhs->ResultType() == NilType) {
+            throw NilExpression(__FILE__, __LINE__);
+        }
+
+        for(auto & p : list) {
+            auto lhs = p.lhs;
+            auto op  = p.op;
+            
+            lhs->Validate();
 
             if(lhs->ResultType() != rhs->ResultType()) {
                 throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);                
@@ -114,34 +145,43 @@ namespace ast {
                 throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
             }
 
-        } else {
-            ValueType type = lhs->ResultType();
-            if( type == NilType) {
-                throw NilExpression(__FILE__, __LINE__);
-            }
         }
+
     }
 
     std::unique_ptr<hardware::Register> Expression::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        lhs->GenerateCode(codeGen);
-        if(rhs != nullptr) {
+        if(list.size() > 0) {
+            list[0].lhs->GenerateCode(codeGen);
+            for(size_t i = 1; i < list.size();i++) {
+                list[i].lhs->GenerateCode(codeGen);
+                list[i-1].op->GenerateCode(codeGen);
+            }
+
             rhs->GenerateCode(codeGen);
-            op->GenerateCode(codeGen);
+            list[list.size()-1].op->GenerateCode(codeGen);
+        } else {
+            rhs->GenerateCode(codeGen);
         }
-    return nullptr;
+        return nullptr;
     }
 
     ValueType Expression::ResultType() const {
-        return lhs->ResultType();
+        return rhs->ResultType();
     } 
 
     std::ostream & Expression::Write(std::ostream & os) const {
+        for(auto & p : list) {
+            os << *p.lhs << " " <<  *p.op << " ";
+        }
+        return os << *rhs;
+        /*
         if(op->GetType() == Operator::None) {
             os << *lhs;
         } else {
             os << "(" << *lhs << *op << *rhs << ")";
         }
         return os;
+        */
     }
 
 }

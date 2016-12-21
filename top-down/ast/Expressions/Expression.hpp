@@ -6,6 +6,8 @@
 
 #include <ast/Type.hpp>
 
+#include <vector>
+
 namespace hardware {
     class InstructionGenerator;
 }
@@ -18,6 +20,10 @@ namespace ast {
     
     class Expression : public Ast {
 
+        struct Pair {
+            Factor* lhs;
+            Operator* op;
+        };
 
         public:
             Expression(lexer::Lexer & lex, symtable::SymbolTable * table);
@@ -30,9 +36,10 @@ namespace ast {
             ValueType ResultType() const;
 
         private:
-            Factor*     lhs = nullptr;
-            Expression* rhs = nullptr;
-            Operator*   op  = nullptr;
+            std::vector<Pair> list;
+            Factor*     rhs = nullptr;
+            //Expression* rhs = nullptr;
+            //Operator*   op  = nullptr;
 
     };
 

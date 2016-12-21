@@ -60,6 +60,11 @@ namespace ast {
         ValueType varType = ValueType::NilType;
         
         if(value != nullptr) {
+            try {
+                value->Validate();
+            } catch(std::exception &e) {
+
+            }
             varType = value->ResultType();
         } else {
             varType = type->GetType();

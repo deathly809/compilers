@@ -5,6 +5,8 @@
 #include <ast/Ast.hpp>
 #include <ast/Type.hpp>
 
+#include <vector>
+
 namespace hardware {
     class InstructionGenerator;
 }
@@ -17,6 +19,11 @@ namespace ast {
 
     class Factor : public Ast {
 
+        struct Pair {
+            Term* lhs;
+            Operator* op;
+        };
+
         public:
             Factor(lexer::Lexer & lex,symtable::SymbolTable * table);
             ~Factor();
@@ -28,9 +35,10 @@ namespace ast {
             ValueType ResultType() const;
 
         private:
-            Term*           lhs = nullptr;
-            Factor*         rhs = nullptr;
-            Operator*       op  = nullptr;
+            Term*               rhs = nullptr;
+            std::vector<Pair> list;
+            //Factor*         rhs = nullptr;
+            //Operator*       op  = nullptr;
 
     };
 
