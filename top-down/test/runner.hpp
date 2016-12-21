@@ -14,7 +14,6 @@ void run(std::string input, bool print = false) {
     std::stringstream ss;
     ss << input;
     lexer::Lexer lex(new Scanner(ss));
-    lex.HasNext();
     symtable::SymbolTable table;
     T expr(lex, &table);
     if(print) {

@@ -58,6 +58,49 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Operator::GenerateCode(hardware::InstructionGenerator & gen) const {
+        switch(op) {
+            case Operator::AdditionOperator:
+                gen.Add();
+                break;
+            case Operator::SubtractionOperator:
+                gen.Sub();
+                break;
+            case Operator::MultiplicationOperator:
+                gen.Mult();
+                break;
+            case Operator::DivisionOperator:
+                gen.Div();
+                break;
+            case Operator::ModulusOperator:
+                gen.Mod();
+                break;
+            case Operator::OrOperator:
+                gen.Or();
+                break;
+            case Operator::AndOperator:
+                gen.And();
+                break;
+            case Operator::LessThan:
+                gen.Lt();
+                break;
+            case Operator::LessThanOrEqual:
+                gen.Le();
+                break;
+            case Operator::GreaterThan:
+                gen.Gt();
+                break;
+            case Operator::GreaterThanOrEqual:
+                gen.Ge();
+                break;
+            case Operator::EqualTo:
+                gen.Eq();
+                break;
+            case Operator::NotEqual:
+                gen.Ne();
+                break;
+            default:
+                break;
+        }
         return nullptr;
     }
 

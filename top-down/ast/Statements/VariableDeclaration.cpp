@@ -36,21 +36,27 @@ namespace ast {
 
         symtable::IdentifierKind kind = variable? symtable::Var:symtable::Const;
 
+        std::unique_ptr<lexer::Lexeme> nameLexeme = lex.Next();
+        auto tmpAttr = new symtable::VariableAttribute(nameLexeme->GetValue(), nameLexeme->GetFilename(), nameLexeme->GetLine(), nameLexeme->GetColumn(),kind,NilType);
+        auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
+        lex.PushBack(nameLexeme);
+        table->Insert(attr);
 
         name = new Identifier(lex, table);
+
+        ValueType varType = ValueType::NilType;
 
         if(NextType(lex) == lexer::EQUAL) {
             consumeLexemeType(lex,lexer::EQUAL);
             value = new Expression(lex, table);
+            varType = value->ResultType();
         } else {
             type = new Type(lex, table);
-            table->Insert(
-                std::shared_ptr<symtable::Attribute>(
-                    new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(), kind,type->GetType())
-                )
-            );
-
+            varType = type->GetType();
         }
+
+        tmpAttr->SetVariableType(varType);
+        
     }
 
     VariableDeclaration::~VariableDeclaration() {
@@ -66,6 +72,9 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(value != nullptr) {
+            return value->GenerateCode(codeGen);
+        }
         return nullptr;
     }
 

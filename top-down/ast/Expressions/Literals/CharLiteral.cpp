@@ -23,6 +23,7 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> CharLiteral::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        codeGen.LdC(value);
         return nullptr;
     }
 

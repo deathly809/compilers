@@ -1,6 +1,7 @@
 
 #include <symtable/SymbolTable.hpp>
 #include <symtable/Attribute.hpp>
+#include <symtable/Scope.hpp>
 
 #include <symtable/VariableRedefinition.hpp>
 
@@ -15,21 +16,17 @@
 
 namespace symtable {
 
-
     SymbolTable::SymbolTable() {
-        scopes.push_back(global);
+        OpenScope();
     }
 
     SymbolTable::~SymbolTable() {
-        for(auto && s : scopes) {
-            s.clear();
-        }
         scopes.clear();
     }
 
     // Create a new scope
     void SymbolTable::OpenScope() {
-        scopes.push_back(Scope());
+        scopes.push_back(std::shared_ptr<Scope>(new Scope()));
     }
 
     // Move to parent scope
@@ -37,44 +34,118 @@ namespace symtable {
         if(scopes.size() == 1) {
             throw std::runtime_error("Cannot remove global scope.");
         }
-
-        auto back = scopes.back();
-        back.clear();
         scopes.pop_back();
     }
 
     // Locate an identifer
     std::shared_ptr<Attribute> SymbolTable::Locate(std::string name) {
-        for( int pos = scopes.size() - 1; pos > -1; pos-- ) {
-            Scope& s = scopes[pos];
-            auto finger = s.find(name);
-            if(finger != s.end()) {
-                return finger->second;
+        for( int pos = scopes.size() - 1; pos >= 0; --pos ) {
+
+            std::shared_ptr<Scope> s = scopes[pos];
+
+            auto ptr1 = s->GetFunctionAttribute(name);
+            if(ptr1) {
+                return ptr1;
             }
+
+            auto ptr2 = s->GetVariableAttribute(name);
+            if(ptr2) {
+                return ptr2;
+            }
+
         }
-        return std::shared_ptr<Attribute>(new Attribute());
+        return nullptr;
+    }
+
+    template<class After>
+    std::shared_ptr<After> ConvertAttribute(std::shared_ptr<Attribute> b) {
+        return std::static_pointer_cast<After,Attribute>(b);
     }
 
     // Insert an attribute into the symbol table.  The symbol table takes ownership.
     void SymbolTable::Insert(std::shared_ptr<Attribute> attr) {
-        auto & scope = scopes[scopes.size() - 1];
-        auto ptr = scope.find(attr->GetName());
-        if(ptr != scope.end()) {
-            throw VariableRedefinition(attr->GetName(), attr->GetFilename(), attr->GetLine(), attr->GetColumn());
+        std::shared_ptr<Scope> scope = scopes[scopes.size() - 1];
+        switch(attr->GetType()) {
+            case FunctionAttributeType:
+                scope->InsertFunction(ConvertAttribute<FunctionAttribute>(attr));
+                break;
+            case VariableAttributeType:
+                scope->InsertVariable(ConvertAttribute<VariableAttribute>(attr));
+                break;
+            default:
+                throw std::runtime_error("SymbolTable: unsupported type.  Function and Variable attributes supported.");
+                break;
         }
-        scope.insert({ attr->GetName(),std::move(attr)});
+    }
+
+    size_t SymbolTable::CountType(AttributeType type) const {
+        std::shared_ptr<Scope> scope = scopes.back();
+        switch(type) {
+            case FunctionAttributeType:
+                return scope->FunctionCount();
+            case VariableAttributeType:
+                return scope->VariableCount();
+            default:
+                break;
+        }
+        return 0;
     }
 
 
-    void SymbolTable::PrintScope() const {
-        std::cout << scopes.size() << ": [";
+    int SymbolTable::GetScopeIndex(std::string name) const {
+        for(int i = scopes.size() - 1; i >= 0; --i) {
+
+            if(scopes[i]->ContainsFunction(name)) {
+                return i;
+            }
+
+            if(scopes[i]->ContainsVariable(name)) {
+                return i;
+            }
+
+        }
+        return -1;
+    }
+
+    // Given a name we find its position declaired among identical types
+    int SymbolTable::GetPositionIndex(std::string name) const {
+        int scopeId = GetScopeIndex(name);
         
-        if(scopes.size() > 0) std::cout << std::endl;
-
-        for( auto & v : scopes.back()) {
-            auto s = v.second;
-            std::cout << "\t" << *s << std::endl;
+        if(scopeId == -1) {
+            return -1;
         }
-        std::cout << "]" << std::endl;
+
+        
+        int index = scopes[scopeId]->FunctionIndex(name);
+        if(index != -1) return index;
+
+        return scopes[scopeId]->VariableIndex(name);
+
     }
+
+    size_t SymbolTable::ScopeCount() const {
+        return scopes.size();
+    }
+
+    const std::shared_ptr<Scope> SymbolTable::GetScope(size_t index) const {
+        return scopes[index];
+    }
+
+    const std::shared_ptr<Scope> SymbolTable::GetDeclaringScope(std::string name) const {
+        int idx = GetScopeIndex(name);
+        if(idx == -1) {
+            std::cout << *this << std::endl;
+            throw std::runtime_error("undefined variable: " + name);
+        }
+
+        return scopes[idx];
+    }
+
+    std::ostream& operator<<(std::ostream & os, const SymbolTable & table) {
+        for(auto & s : table.scopes) {
+            os << *s << std::endl;
+        }
+        return os;
+    }
+
 }

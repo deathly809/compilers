@@ -57,6 +57,11 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Term::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        lhs->GenerateCode(codeGen);
+        if(rhs != nullptr) {
+            rhs->GenerateCode(codeGen);
+            op->GenerateCode(codeGen);
+        }
         return nullptr;
     }
 

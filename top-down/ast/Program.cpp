@@ -17,7 +17,8 @@
 namespace ast {
 
     Program::Program(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
-        do{
+        lex.HasNext();
+        while(true) {
             switch(NextType(lex)) {
                 case lexer::FUNC:
                     funcs.push_back(new FunctionDefinition(lex, table));
@@ -29,9 +30,9 @@ namespace ast {
                 case lexer::ENDFILE:
                     return;
                 default:
-                    throw UnexpectedToken(lex.Next(), __FILE__, __LINE__);
+                    throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
-        } while(true);
+        }
     }
 
     Program::Program(lexer::Lexer & lex) : Ast(new symtable::SymbolTable()) {
@@ -75,12 +76,9 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Program::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        int variables = 0;
         codeGen.Init();
 
-        for( auto&& v : vars ) {
-            variables += v->VariablesDeclared();
-        }
+        int variables = table->CountType(symtable::VariableAttributeType);
 
         codeGen.Alloc(variables);
 
@@ -90,6 +88,7 @@ namespace ast {
         for( auto&& f : funcs ) {
             f->GenerateCode(codeGen);
         }
+
 
         codeGen.Alloc(-variables);
         codeGen.Halt();

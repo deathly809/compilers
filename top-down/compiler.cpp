@@ -5,6 +5,9 @@
 #include <hardware/Register.hpp>
 #include <hardware/InstructionGenerator.hpp>
 
+#include <symtable/Attribute.hpp>
+#include <symtable/SymbolTable.hpp>
+
 #include <exception>
 #include <memory>
 
@@ -12,7 +15,7 @@ const int Success = 0;
 const int MissingFilename = 1;
 const int CompilerError = 2;
 
-#define CATCH
+#define NOCATCH
 
 int main(int argc, char* argv[]) {
 
@@ -25,16 +28,34 @@ int main(int argc, char* argv[]) {
     try {
 #endif
         lexer::Lexer lex(argv[1]);
-        ast::Program prog(lex);
+        symtable::SymbolTable table;
+        hardware::InstructionGenerator gen(std::cout);
+
+        std::function<void(hardware::InstructionGenerator&)> printInt = [](hardware::InstructionGenerator & f) { f.Out(); };
+        std::function<void(hardware::InstructionGenerator&)> readInt = [](hardware::InstructionGenerator & f) { f.In(); };
+
+        table.Insert(
+            std::shared_ptr<symtable::Attribute>(
+                new symtable::FunctionAttribute(printInt,"printInt", ast::ValueType::NilType)
+            )
+        );
+
+        table.Insert(
+            std::shared_ptr<symtable::Attribute>(
+                new symtable::FunctionAttribute(printInt,"readInt", ast::ValueType::IntType)
+            )
+        );
+
+
+        ast::Program prog(lex,&table);
 
         prog.Validate();
-        hardware::InstructionGenerator gen(std::cout);
+
+
         auto ptr = prog.GenerateCode(gen);
         if(ptr) {
             std::cout << "this should have been null" << std::endl;
         }
-
-        std::cout << prog << std::endl;
 
 #ifdef CATCH
     } catch(std::exception & ex ) {

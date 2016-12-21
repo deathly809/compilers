@@ -7,12 +7,15 @@
 #include <hardware/Register.hpp>
 #include <hardware/InstructionGenerator.hpp>
 
+#include <symtable/SymbolTable.hpp>
+#include <symtable/Attribute.hpp>
+#include <symtable/Scope.hpp>
+
 #include <iostream>
 
 namespace ast {
 
-        Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table) {
-            lexeme = lex.Next();
+        Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table), lexeme(lex.Next()), scope(table->GetDeclaringScope(lexeme->GetValue())), index(table->ScopeCount()) {
             checkLexemeType(lexeme,lexer::ID);
             lex.HasNext();
         }
@@ -25,8 +28,18 @@ namespace ast {
         }
 
         std::unique_ptr<hardware::Register> Identifier::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        return nullptr;
-}
+            int idx = scope->VariableIndex(lexeme->GetValue());
+            if(idx != -1) {
+                codeGen.LdV(
+                    index,
+                    idx
+                );
+            } else {
+                throw std::runtime_error("unknown variable " + lexeme->GetValue());
+            }
+
+            return nullptr;
+        }
 
         ValueType Identifier::ResultType() const {
             return IntType;

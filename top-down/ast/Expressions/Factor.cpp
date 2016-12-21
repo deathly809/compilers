@@ -108,6 +108,11 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Factor::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        lhs->GenerateCode(codeGen);
+        if(rhs != nullptr) {
+            rhs->GenerateCode(codeGen);
+            op->GenerateCode(codeGen);
+        }
         return nullptr;
     }
 

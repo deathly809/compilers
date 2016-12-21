@@ -9,6 +9,7 @@
 
 #include <symtable/Attribute.hpp>
 #include <symtable/SymbolTable.hpp>
+#include <symtable/Scope.hpp>
 
 #include <hardware/Register.hpp>
 #include <hardware/InstructionGenerator.hpp>
@@ -29,15 +30,18 @@ namespace ast {
         consumeLexemeType(lex,lexer::O_PAREN);
 
         while(NextType(lex) != lexer::C_PAREN) {
+
+            std::unique_ptr<lexer::Lexeme> name = lex.Next();
+            auto tmpAttr = new symtable::VariableAttribute(name->GetValue(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,NilType);
+            auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
+            lex.PushBack(name);
+            table->Insert(attr);
+
             Identifier* id = new Identifier(lex, table);
             consumeLexemeType(lex,lexer::EQUAL);
             Expression* expr = new Expression(lex, table);
 
-            table->Insert(
-                std::shared_ptr<symtable::Attribute>(
-                    new symtable::VariableAttribute(id->GetName(), id->GetFilename(), id->GetLine(), id->GetColumn(),kind,expr->ResultType())
-                )
-            );
+            tmpAttr->SetVariableType(expr->ResultType());
 
             vars.push_back({id,expr});
         }
@@ -61,9 +65,21 @@ namespace ast {
 
     std::unique_ptr<hardware::Register> BlockDefinition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         for( auto&& v : vars ) {
+            v.expr->GenerateCode(codeGen);
+            
             std::shared_ptr<symtable::Attribute> attr = table->Locate(v.id->GetName());
             std::shared_ptr<symtable::VariableAttribute> vAttr = std::static_pointer_cast<symtable::VariableAttribute,symtable::Attribute>(attr);
+            
             vAttr->SetRegister(hardware::Register::GetRegister());
+
+            int scope = table->GetScopeIndex(v.id->GetName());
+            int pos = table->GetPositionIndex(v.id->GetName());
+
+            codeGen.StI(
+                scope,
+                pos
+            );
+            
         }
         return nullptr;
     }

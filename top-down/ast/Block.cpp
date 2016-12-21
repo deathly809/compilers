@@ -73,6 +73,19 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Block::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        int variables = table->CountType(symtable::VariableAttributeType);
+        if(variables > 0) {
+            codeGen.Alloc(variables);
+        }
+        
+        for(auto && s : stmts) {
+            s->GenerateCode(codeGen);
+        }
+
+        if(variables > 0) {
+            codeGen.Alloc(-variables);
+        }
+        
         return nullptr;
     }
 

@@ -10,7 +10,6 @@
 
 namespace symtable {
 
-    
     enum AttributeType {IntAttributeType, RealAttributeType, StringAttributeType, BooleanAttributeType, NilAttributeType, VariableAttributeType, FunctionAttributeType };
     enum IdentifierKind { Const, Var };
     
@@ -117,8 +116,9 @@ namespace symtable {
 
         public:
             VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type);
-            IdentifierKind GetKind();
-            ast::ValueType GetVariableType();
+            IdentifierKind GetKind() const;
+            ast::ValueType GetVariableType() const;
+            void SetVariableType(ast::ValueType type);
 
             virtual void Write(std::ostream & os) const;
             void SetRegister(std::unique_ptr<hardware::Register> reg);
@@ -134,14 +134,23 @@ namespace symtable {
 
         public:
             FunctionAttribute(std::string name, std::string filename, int line, int column, ast::ValueType type);
-            ast::ValueType GetReturnType();
+            FunctionAttribute(std::function<void(hardware::InstructionGenerator&)> gen, std::string name, ast::ValueType type);
+
+            ast::ValueType GetReturnType() const;
+            void SetReturnType(ast::ValueType type);
 
             virtual void Write(std::ostream & os) const;
-            void SetRegister(std::unique_ptr<hardware::Register> reg);
+            std::string GetLabel() const;
+            void SetLabel(std::string);
+
+            bool IsBuiltIn();
+            void GenerateCode(hardware::InstructionGenerator & codeGen) const;
 
         private:
             ast::ValueType iType;
-            std::unique_ptr<hardware::Register> reg;
+            std::string label;
+            bool builtin;
+            std::function<void(hardware::InstructionGenerator&)> gen;
 
     };
 

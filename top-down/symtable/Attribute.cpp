@@ -123,12 +123,16 @@ namespace symtable {
         /* Empty */
     }
 
-    IdentifierKind VariableAttribute::GetKind() {
+    IdentifierKind VariableAttribute::GetKind() const {
         return iKind;
     }
 
-    ast::ValueType VariableAttribute::GetVariableType() {
+    ast::ValueType VariableAttribute::GetVariableType() const {
         return iType;
+    }
+
+    void VariableAttribute::SetVariableType(ast::ValueType type) {
+        iType = type;
     }
 
     void VariableAttribute::Write(std::ostream & os) const  {
@@ -146,26 +150,40 @@ namespace symtable {
 
 // FunctionAttribute
 
-    FunctionAttribute::FunctionAttribute(std::string name, std::string filename, int line, int column, ast::ValueType type) : Attribute(name, filename, line, column, FunctionAttributeType), iType(type) {
+    FunctionAttribute::FunctionAttribute(std::string name, std::string filename, int line, int column, ast::ValueType type) : Attribute(name, filename, line, column, FunctionAttributeType), iType(type), label("NONE"), builtin(false) {
         /* Empty */
     }
 
-    ast::ValueType FunctionAttribute::GetReturnType() {
+    FunctionAttribute::FunctionAttribute(std::function<void(hardware::InstructionGenerator&)> gen, std::string name, ast::ValueType type) : Attribute(name, "builtin", -1, -1, FunctionAttributeType), iType(type), label("NONE") , builtin(true), gen(gen) {
+        /* Empty */
+    }
+
+    ast::ValueType FunctionAttribute::GetReturnType() const {
         return iType;
+    }
+    void FunctionAttribute::SetReturnType(ast::ValueType type) {
+        iType = type;
     }
 
     void FunctionAttribute::Write(std::ostream & os) const  {
-        os << AttributeTypeToString(GetType()) << "[" << GetName() << ", " << ast::ValueTypeToString(iType) << "]";
-        if(reg) {
-            os << "@REG(" << reg->GetID() << ")";
-        } else {
-            os << "@REG(nullptr)";            
-        }
+        os << AttributeTypeToString(GetType()) << "[" << GetName() << ", " << ast::ValueTypeToString(iType) << "]@" << label;
     }
 
-    void FunctionAttribute::SetRegister(std::unique_ptr<hardware::Register> reg) {
-        this->reg = std::move(reg);
+    void FunctionAttribute::SetLabel(std::string lbl) {
+        label = lbl;
     }
+
+    std::string FunctionAttribute::GetLabel() const {
+        return label;
+    }
+
+    bool FunctionAttribute::IsBuiltIn() {
+        return builtin;
+    }
+    void FunctionAttribute::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        gen(codeGen);
+    }
+
 
 
 // OStream

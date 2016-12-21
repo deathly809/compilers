@@ -111,6 +111,19 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> VName::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(expr != nullptr) return expr->GenerateCode(codeGen);
+        
+        if(bLit != nullptr) return bLit->GenerateCode(codeGen);
+        if(iLit != nullptr) return iLit->GenerateCode(codeGen);
+        if(rLit != nullptr) return rLit->GenerateCode(codeGen);
+        if(sLit != nullptr) return sLit->GenerateCode(codeGen);
+
+        if(fCall != nullptr) return fCall->GenerateCode(codeGen);
+
+        if(ident != nullptr) return ident->GenerateCode(codeGen);
+
+        if(array != nullptr) return array->GenerateCode(codeGen);
+
         return nullptr;
     }
 

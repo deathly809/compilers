@@ -34,13 +34,13 @@ namespace hardware {
             void LdI(int a1, int a2);
             void St(int a1, int a2);
             void StI(int a1, int a2);
-            void JMP(int a1);
-            void JMPF(int a1);
-            void JMPT(int a1);
+            void Jmp(std::string label);
+            void JmpF(std::string label);
+            void JmpT(std::string label);
             void Init();
             void Halt();
             void Alloc(int a1);
-            void Call(int a1);
+            void Call(std::string);
             void Proc(int a1);
             void Ret(int a1);
             void Enter(int a1);
@@ -54,8 +54,13 @@ namespace hardware {
             void OutStr(int a1);
             void AddLabel(std::string label);
 
+            void WriteLabel(std::string);
+
+            std::string GenerateLabel();
+
             private:
                 std::ostream & out;
+                int label;
     };
 }
 

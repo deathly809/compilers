@@ -19,6 +19,12 @@ namespace ast {
     FunctionDefinition::FunctionDefinition(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         consumeLexemeType(lex,lexer::FUNC);
 
+        std::unique_ptr<lexer::Lexeme> name = lex.Next();
+        auto tmpAttr = new symtable::FunctionAttribute(name->GetValue(), name->GetFilename(), name->GetLine(), name->GetColumn(),NilType);
+        auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
+        lex.PushBack(name);
+        table->Insert(attr);
+
         functionName = new Identifier(lex, table);
 
         consumeLexemeType(lex, lexer::O_PAREN);
@@ -40,6 +46,7 @@ namespace ast {
                 
             }
         }
+
         consumeLexemeType(lex,lexer::C_PAREN);
 
         if(NextType(lex) != lexer::O_BRACE) {
@@ -51,12 +58,7 @@ namespace ast {
             retType = optRetType->GetType();
         }
 
-        table->Insert(
-            std::shared_ptr<symtable::Attribute>(
-                new symtable::FunctionAttribute(functionName->GetName(), functionName->GetFilename(), functionName->GetLine(), functionName->GetColumn(), retType)
-            )
-        );
-
+        tmpAttr->SetReturnType(retType);
 
         block = new Block(lex, table);
     }
@@ -85,6 +87,28 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> FunctionDefinition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        std::string label = codeGen.GenerateLabel();
+        std::shared_ptr<symtable::Attribute> attr = table->Locate(functionName->GetName());
+        if(attr) {
+            std::shared_ptr<symtable::FunctionAttribute> fAttr = std::static_pointer_cast<symtable::FunctionAttribute,symtable::Attribute>(attr);
+            fAttr->SetLabel(label);
+            codeGen.WriteLabel(label);
+            codeGen.NOp();
+            /*
+            for(auto && opt : optParams) {
+                opt.ident->Validate();
+                opt.type->Validate();
+            }
+            
+            if(optRetType != nullptr) {
+                optRetType->Validate();
+            }
+            */
+            block->GenerateCode(codeGen);
+            codeGen.Ret(1);
+        } else {
+            throw std::runtime_error("CodeGen: FunctionDefinition");
+        }
         return nullptr;
     }
 

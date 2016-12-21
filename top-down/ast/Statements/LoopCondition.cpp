@@ -62,6 +62,16 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> LoopCondition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(init != nullptr) init->GenerateCode(codeGen);
+        std::string topLabel = codeGen.GenerateLabel();
+        if(cond != nullptr) cond->GenerateCode(codeGen);
+
+        // body!
+        
+        if(incr != nullptr) incr->GenerateCode(codeGen);
+
+        std::string endingLabel = codeGen.GenerateLabel();
+        
         return nullptr;
     }
 

@@ -29,6 +29,10 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Return::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(result != nullptr) {
+            result->GenerateCode(codeGen);
+        }
+        codeGen.Ret(1);
         return nullptr;
     }
 

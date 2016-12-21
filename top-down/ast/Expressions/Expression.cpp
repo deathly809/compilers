@@ -121,7 +121,12 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Expression::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        return nullptr;
+        lhs->GenerateCode(codeGen);
+        if(rhs != nullptr) {
+            rhs->GenerateCode(codeGen);
+            op->GenerateCode(codeGen);
+        }
+    return nullptr;
     }
 
     ValueType Expression::ResultType() const {

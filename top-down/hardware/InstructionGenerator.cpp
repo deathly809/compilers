@@ -3,180 +3,187 @@
 
 namespace hardware {
 
-            InstructionGenerator::InstructionGenerator(std::ostream & out) : out(out){
+            InstructionGenerator::InstructionGenerator(std::ostream & out) : out(out), label(0){
                 // empty
             }
             void InstructionGenerator::Add() {
-                out << "\tADD" << std::endl;
+                out << "\t\tADD" << std::endl;
             }
 
             void InstructionGenerator::Sub() {
-                out << "\tSUB" << std::endl;
+                out << "\t\tSUB" << std::endl;
             }
 
             void InstructionGenerator::Mult() {
-                out << "\tMULT" << std::endl;
+                out << "\t\tMULT" << std::endl;
             }
             
             void InstructionGenerator::Div() {
-                out << "\tDIV" << std::endl;
+                out << "\t\tDIV" << std::endl;
             }
             
             void InstructionGenerator::Mod() {
-                out << "\tMOD" << std::endl;
+                out << "\t\tMOD" << std::endl;
             }
             
             void InstructionGenerator::And() {
-                out << "\tAND" << std::endl;
+                out << "\t\tAND" << std::endl;
             }
             
             void InstructionGenerator::Or() {
-                out << "\tOR" << std::endl;
+                out << "\t\tOR" << std::endl;
             }
             
             void InstructionGenerator::Neg() {
-                out << "\tNEG" << std::endl;
+                out << "\t\tNEG" << std::endl;
             }
             
             void InstructionGenerator::Not() {
-                out << "\tNOT" << std::endl;
+                out << "\t\tNOT" << std::endl;
             }
             
             void InstructionGenerator::Eq() {
-                out << "\tEQ" << std::endl;
+                out << "\t\tEQ" << std::endl;
             }
             
             void InstructionGenerator::Ne() {
-                out << "\tNE" << std::endl;
+                out << "\t\tNE" << std::endl;
             }
             
             void InstructionGenerator::Lt() {
-                out << "\tLT" << std::endl;
+                out << "\t\tLT" << std::endl;
             }
             
             void InstructionGenerator::Gt() {
-                out << "\tGT" << std::endl;
+                out << "\t\tGT" << std::endl;
             }
             
             void InstructionGenerator::Le() {
-                out << "\tLE" << std::endl;
+                out << "\t\tLE" << std::endl;
             }
             
             void InstructionGenerator::Ge() {
-                out << "\tGE" << std::endl;
+                out << "\t\tGE" << std::endl;
             }
             
             void InstructionGenerator::In() {
-                out << "\tIN" << std::endl;
+                out << "\t\tIN" << std::endl;
             }
             
             void InstructionGenerator::Out() {
-                out << "\tOUT" << std::endl;
+                out << "\t\tOUT" << std::endl;
             }
             
             void InstructionGenerator::NOp() {
-                out << "\tNOP" << std::endl;
+                out << "\t\tNOP" << std::endl;
             }
             
             void InstructionGenerator::LdC(int a1) {
-                out << "\tLDC " << a1 << std::endl;
+                out << "\t\tLDC " << a1 << std::endl;
             }
             
             void InstructionGenerator::LdA(int a1, int a2) {
-                out << "\tLDA " << a1 << " " << a2 << std::endl;
+                out << "\t\tLDA " << a1 << " " << a2 << std::endl;
             }
             
             void InstructionGenerator::LdV(int a1, int a2) {
-                out << "\tLDV " << a1 << " " << a2 << std::endl;
+                out << "\t\tLDV " << a1 << " " << a2 << std::endl;
             }
             
             void InstructionGenerator::LdI(int a1, int a2) {
-                out << "\tLDI " << a1 << " " << a2 << std::endl;
+                out << "\t\tLDI " << a1 << " " << a2 << std::endl;
             }
             
             void InstructionGenerator::St(int a1, int a2) {
-                out << "\tST " << a1 << " " << a2 << std::endl;
+                out << "\t\tST " << a1 << " " << a2 << std::endl;
             }
             
             void InstructionGenerator::StI(int a1, int a2) {
-                out << "\tSTI " << a1 << " " << a2 << std::endl;
+                out << "\t\tSTI " << a1 << " " << a2 << std::endl;
             }
             
-            void InstructionGenerator::JMP(int a1) {
-                out << "\tJMP " << a1 << std::endl;
+            void InstructionGenerator::Jmp(std::string lbl) {
+                out << "\t\tJMP " << lbl << std::endl;
             }
             
-            void InstructionGenerator::JMPF(int a1) {
-                out << "\tJMPF " << a1 << std::endl;
+            void InstructionGenerator::JmpF(std::string lbl) {
+                out << "\t\tJMPF " << lbl << std::endl;
             }
             
-            void InstructionGenerator::JMPT(int a1) {
-                out << "\tJMPT " << a1 << std::endl;
+            void InstructionGenerator::JmpT(std::string lbl) {
+                out << "\t\tJMPT " << lbl << std::endl;
             }
             
             void InstructionGenerator::Init() {
-                out << "\tINIT" << std::endl;
+                out << "\t\tINIT" << std::endl;
             }
             
             void InstructionGenerator::Halt() {
-                out << "\tHALT" << std::endl;
+                out << "\t\tHALT" << std::endl;
             }
             
             void InstructionGenerator::Alloc(int a1) {
-                out << "\tALLOC " << a1 << std::endl;
+                out << "\t\tALLOC " << a1 << std::endl;
             }
             
-            void InstructionGenerator::Call(int a1) {
-                out << "\tCALL " << a1 << std::endl;
+            void InstructionGenerator::Call(std::string label) {
+                out << "\t\tCALL " << label << std::endl;
             }
             
             void InstructionGenerator::Proc(int a1) {
-                out << "\tPROC " << a1 << std::endl;
+                out << "\t\tPROC " << a1 << std::endl;
             }
             
             void InstructionGenerator::Ret(int a1) {
-                out << "\tRET " << a1 << std::endl;
+                out << "\t\tRET " << a1 << std::endl;
             }
             
             void InstructionGenerator::Enter(int a1) {
-                out << "\tENTER " << a1 << std::endl;
+                out << "\t\tENTER " << a1 << std::endl;
             }
             
             void InstructionGenerator::Exit(int a1) {
-                out << "\tEXIT " << a1 << std::endl;
+                out << "\t\tEXIT " << a1 << std::endl;
             }
             
             void InstructionGenerator::Dup() {
-                out << "\tDUP" << std::endl;
+                out << "\t\tDUP" << std::endl;
             }
             
             void InstructionGenerator::Pop() {
-                out << "\tPOP" << std::endl;
+                out << "\t\tPOP" << std::endl;
             }
             
             void InstructionGenerator::StL() {
-                out << "\tSTL" << std::endl;
+                out << "\t\tSTL" << std::endl;
             }
             
             void InstructionGenerator::Ind() {
-                out << "\tIND" << std::endl;
+                out << "\t\tIND" << std::endl;
             }
             
             void InstructionGenerator::InCh() {
-                out << "\tINCH" << std::endl;
+                out << "\t\tINCH" << std::endl;
             }
             
             void InstructionGenerator::OutCh() {
-                out << "\\tOUTCH" << std::endl;
+                out << "\t\tOUTCH" << std::endl;
             }
             
             void InstructionGenerator::OutStr(int a1) {
-                out << "\tOUTSTR ";
+                out << "\t\tOUTSTR ";
             }
             
             void InstructionGenerator::AddLabel(std::string label) {
                 out << label << ":";
             }
-            
+
+            void InstructionGenerator::WriteLabel(std::string theLabel) {
+                out << theLabel;
+            }
+
+            std::string InstructionGenerator::GenerateLabel() {
+                return "L" + std::to_string(++label);
+            }
 
     }

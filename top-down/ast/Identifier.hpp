@@ -7,6 +7,10 @@
 
 #include <memory>
 
+namespace symtable {
+    class Scope;
+}
+
 namespace hardware {
     class InstructionGenerator;
 }
@@ -35,7 +39,8 @@ namespace ast {
             
         private:
             std::unique_ptr<lexer::Lexeme> lexeme;
-
+            const std::shared_ptr<symtable::Scope> scope;
+            const size_t index;
     };
 
 }

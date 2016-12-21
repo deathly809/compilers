@@ -1,8 +1,4 @@
 
-package main
-
-import "fmt"
-
 var (
     zeros = 0
     ones = 0
@@ -11,9 +7,9 @@ var (
 func fib(n int) int {
     if n < 2 {
         if n == 0 {
-            zeros++
+            zeros = zeros + 1
         } else {
-            ones++
+            ones = ones + 1
         }
         return 1
     }
@@ -22,6 +18,6 @@ func fib(n int) int {
 
 func main() {
     fib(6)
-    fmt.Println("zeros", zeros)
-    fmt.Println("ones", ones)
+	printInt(zeros)
+	printInt(ones)
 }

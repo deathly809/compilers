@@ -39,8 +39,12 @@ namespace ast {
             varDef->Validate();
         }
     }
-    std::unique_ptr<hardware::Register> InitStatement::GenerateCode(hardware::InstructionGenerator & gen) const {
-        return nullptr;
+    std::unique_ptr<hardware::Register> InitStatement::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(assign != nullptr) {
+            return assign->GenerateCode(codeGen);
+        } else {
+            return varDef->GenerateCode(codeGen);
+        }
     }
 
     std::ostream& InitStatement::Write(std::ostream & os) const {

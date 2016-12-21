@@ -35,6 +35,7 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Assignment::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        rhs->GenerateCode(codeGen);
         return nullptr;
     }
 

@@ -2,9 +2,10 @@
 var (
 	low = 0
 	high = 0
+	N = 0
 )
 
-func Update(n int) int {
+func Update() int {
 	var mid int
 	mid = (low + high) / 2
 	if mid * mid <= N {
@@ -15,11 +16,11 @@ func Update(n int) int {
 }
 
 func Main() {
-	var n = ReadInt()
+	var n = readInt()
 	low = 0
 	high = n + 1
 	for (high - low) > 1 {
-		update()
+		Update()
 	}
-	Print(low)
+	printInt(low)
 }

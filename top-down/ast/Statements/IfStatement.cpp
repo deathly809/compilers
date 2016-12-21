@@ -38,6 +38,28 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> IfStatement::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        std::string endingLabel = codeGen.GenerateLabel();
+
+        cond->GenerateCode(codeGen);
+        codeGen.JmpF(endingLabel);
+        trueBlock->GenerateCode(codeGen);
+        
+        if(falseBlock != nullptr) {            
+            
+            std::string falseLabel = endingLabel;
+            endingLabel = codeGen.GenerateLabel();
+
+            codeGen.Jmp(endingLabel);
+            
+            codeGen.WriteLabel(falseLabel);
+            codeGen.NOp();
+
+            falseBlock->GenerateCode(codeGen);
+        }
+        
+        codeGen.WriteLabel(endingLabel);
+        codeGen.NOp();
+        
         return nullptr;
     }
 

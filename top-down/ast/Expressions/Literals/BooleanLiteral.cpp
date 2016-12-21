@@ -31,6 +31,11 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> BooleanLiteral::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        if(value) {
+            codeGen.LdC(1);
+        } else {
+            codeGen.LdC(0);
+        }
         return nullptr;
     }
 
