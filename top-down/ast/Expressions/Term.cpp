@@ -17,6 +17,15 @@ namespace ast {
 
     // T = (E) | ID | LIT | F_CALL
     Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), op(nullptr), rhs(nullptr) {
+
+        if(NextType(lex) == lexer::BANG) {
+            lex.Next();
+            lex.HasNext();
+            isnot = true;
+        } else {
+            isnot = false;
+        }
+
         lhs = new VName(lex,table);
 
         switch(NextType(lex)) {
@@ -76,6 +85,9 @@ namespace ast {
         if(rhs != nullptr) {
             rhs->GenerateCode(codeGen);
             op->GenerateCode(codeGen);
+        }
+        if(isnot) {
+            codeGen.Not();
         }
         return nullptr;
     }

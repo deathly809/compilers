@@ -31,6 +31,7 @@ namespace ast {
             VName*      lhs = nullptr;
             Operator*   op  = nullptr;
             Term*       rhs = nullptr;
+            bool        isnot;
             
     };
 
