@@ -1,0 +1,59 @@
+		INIT
+		ALLOC 3
+		LDC 0
+		ST 0 1
+		LDC 0
+		ST 0 2
+		LDC 5
+		LDC 3
+		ADD
+		ST 0 3
+		JMP L1
+L2		NOP
+		PROC 1
+		ALLOC 1
+		LDV 0 1
+		LDV 0 2
+		ADD
+		LDC 2
+		DIV
+		ST 1 1
+		LDV 1 1
+		LDV 1 1
+		MULT
+		LDV 0 3
+		LE
+		JMPF L3
+		LDV 1 1
+		ST 0 1
+		JMP L4
+L3		NOP
+		LDV 1 1
+		ST 0 2
+L4		NOP
+		ALLOC -1
+		RET 1
+L5		NOP
+		PROC 1
+		IN
+		ST 0 3
+		LDC 0
+		ST 0 1
+		LDV 0 3
+		LDC 1
+		ADD
+		ST 0 2
+L6		LDV 0 2
+		LDV 0 1
+		SUB
+		LDC 1
+		GT
+		JMPF L7
+		CALL L2
+		JMP L6
+L7		LDV 0 1
+		OUT
+		RET 1
+L1		CALL L5
+		ALLOC -3
+		HALT

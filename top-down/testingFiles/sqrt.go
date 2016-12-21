@@ -8,7 +8,7 @@ var (
 func Update() int {
 	var mid int
 	mid = (low + high) / 2
-	if mid * mid <= N {
+	if (mid * mid) <= N {
 		low = mid
 	} else {
 		high = mid
