@@ -99,7 +99,19 @@ namespace ast {
     }
 
     void VName::Validate() const {
-        if(expr != nullptr) expr->Validate();
+        if(expr != nullptr) return expr->Validate();
+        
+        if(bLit != nullptr) return bLit->Validate();
+        if(iLit != nullptr) return iLit->Validate();
+        if(rLit != nullptr) return rLit->Validate();
+        if(sLit != nullptr) return sLit->Validate();
+
+        if(fCall != nullptr) return fCall->Validate();
+
+        if(ident != nullptr) return ident->Validate();
+
+        if(array != nullptr) return array->Validate();
+
         if(negate) {
             switch(ResultType()) {
                 case StringType:
@@ -123,7 +135,9 @@ namespace ast {
         if(ident != nullptr) return ident->GenerateCode(codeGen);
 
         if(array != nullptr) return array->GenerateCode(codeGen);
-
+        if(negate) {
+            codeGen.Neg();
+        }
         return nullptr;
     }
 

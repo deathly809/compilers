@@ -4,6 +4,8 @@
 
 #include <ast/Statements/Statement.hpp>
 
+#include <symtable/Attribute.hpp>
+
 namespace hardware {
     class InstructionGenerator;
 }
@@ -24,10 +26,11 @@ namespace ast {
             virtual std::ostream& Write(std::ostream&) const;
 
         private:
-            bool        variable    = true;
-            Type*       type        = nullptr;
-            Identifier* name        = nullptr;
-            Expression* value       = nullptr; 
+            bool                        variable    = true;
+            Type*                       type        = nullptr;
+            Identifier*                 name        = nullptr;
+            Expression*                 value       = nullptr;
+            symtable::IdentifierKind    kind;
 
     };
 }

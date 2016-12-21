@@ -3,6 +3,7 @@
 
 #include <ast/Expressions/VName.hpp>
 #include <ast/Expressions/Operator.hpp>
+#include <ast/Expressions/InvalidTypeCombination.hpp>
 
 #include <lexer/Lexeme.hpp>
 #include <lexer/LexemeTypes.hpp>
@@ -11,6 +12,8 @@
 #include <hardware/InstructionGenerator.hpp>
 
 namespace ast {
+
+
 
     // T = (E) | ID | LIT | F_CALL
     Term::Term(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), lhs(nullptr), op(nullptr), rhs(nullptr) {
@@ -54,6 +57,18 @@ namespace ast {
     }
 
     void Term::Validate() const {
+        lhs->Validate();
+        if(rhs != nullptr) {
+            rhs->Validate();
+
+            if(lhs->ResultType() != rhs->ResultType()) {
+                throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
+            }
+
+            if(lhs->ResultType() != ValueType::IntType) {
+                throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);
+            }
+        }
     }
 
     std::unique_ptr<hardware::Register> Term::GenerateCode(hardware::InstructionGenerator & codeGen) const {

@@ -28,7 +28,7 @@ namespace ast {
 
         private:
             std::vector<Ast*> stmts;
-            std::shared_ptr<symtable::Scope> scope;
+            mutable std::shared_ptr<symtable::Scope> scope;
             
 };
 }

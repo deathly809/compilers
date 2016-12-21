@@ -15,10 +15,7 @@
 
 namespace ast {
 
-        Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table), lexeme(lex.Next()), scope(table->GetDeclaringScope(lexeme->GetValue())), index(table->ScopeCount()) {
-            if(!scope) {
-                throw std::runtime_error("use of an undeclared variable: " + lexeme->GetValue() + " on line " + std::to_string(lexeme->GetLine()));
-            }
+        Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table), lexeme(lex.Next()) {
             checkLexemeType(lexeme,lexer::ID);
             lex.HasNext();
         }
@@ -27,10 +24,18 @@ namespace ast {
         }
 
         void Identifier::Validate() const {
-            /* Nothing to validate */
+            scope = table->GetDeclaringScope(lexeme->GetValue());
+
+            if(!scope) {
+                std::cout << *table << std::endl;
+                std::cout.flush();
+                throw std::runtime_error("use of an undeclared variable: " + lexeme->GetValue() + " on line " + std::to_string(lexeme->GetLine()));
+            }
         }
 
         std::unique_ptr<hardware::Register> Identifier::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+            
+
             int scp = ScopeID();
             int idx = ScopePosition();
             if(idx != -1) {

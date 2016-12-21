@@ -16,7 +16,7 @@ ODIR    = ../output
 
 main: base ast hardware tests
 
-tests: main.cpp objs/*.o $(ODIR)/*.o
+tests: main.cpp ./objs/*.o $(ODIR)/*.o
 	${CMP} main.cpp $(ODIR)/*.o objs/*.o -o tests
 
 base:

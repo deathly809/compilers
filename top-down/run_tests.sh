@@ -4,6 +4,8 @@ make nuke
 
 (
 	cd test
+	make nuke
+	make
 	make
 	if [[ $? != 0 ]];
 	then

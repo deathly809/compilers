@@ -39,6 +39,7 @@ namespace ast {
     }
 
     void FunctionCall::Validate() const {
+        functionName->Validate();
         for(auto && a : arguments) {
             a->Validate();
         }

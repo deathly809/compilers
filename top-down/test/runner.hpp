@@ -10,11 +10,12 @@
 #include <sstream>
 
 template<class T>
-void run(std::string input, bool print = false) {
+void run(std::string input, bool print = false, bool preLoad = true) {
     std::stringstream ss;
     ss << input;
     lexer::Lexer lex(new Scanner(ss));
     symtable::SymbolTable table;
+    if(preLoad) lex.HasNext();
     T expr(lex, &table);
     if(print) {
         std::cout << input << " : " << expr << std::endl;

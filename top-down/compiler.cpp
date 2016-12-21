@@ -15,7 +15,7 @@ const int Success = 0;
 const int MissingFilename = 1;
 const int CompilerError = 2;
 
-#define CATCH
+#define NOCATCH
 
 int main(int argc, char* argv[]) {
 

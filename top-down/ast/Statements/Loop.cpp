@@ -31,7 +31,9 @@ namespace ast {
     }
 
     void Loop::Validate() const {
-        cond->Validate();
+        if( cond != nullptr) {
+            cond->Validate();
+        }
         block->Validate();
     }
 

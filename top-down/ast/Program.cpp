@@ -67,11 +67,11 @@ namespace ast {
     }
 
     void Program::Validate() const {
-        for( auto&& f : funcs ) {
-            f->Validate();
-        }
         for( auto&& v : vars ) {
             v->Validate();
+        }
+        for( auto&& f : funcs ) {
+            f->Validate();
         }
     }
 

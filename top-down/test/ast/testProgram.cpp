@@ -10,7 +10,7 @@ TEST_CASE( "simple programs" , "[Program]" ) {
             "func main() {"
             "   Println(\"Hello World\")"
             "}"
-        );
+        ,false,false);
     }
 
     SECTION("simple expressions") {
@@ -19,14 +19,14 @@ TEST_CASE( "simple programs" , "[Program]" ) {
                 "func main() {"
                 "   Println(5 + 6)"
                 "}"
-            );
+            ,false,false);
         }
         SECTION("second") {
             run<ast::Program>(
                 "func main() {"
                 "    var x = 5 + 6"
                 "}"
-            );
+            ,false,false);
         }
         SECTION("third") {
             run<ast::Program>(
@@ -34,7 +34,7 @@ TEST_CASE( "simple programs" , "[Program]" ) {
                 "   var x = 5 + 6"
                 "   var y = x + 3"
                 "}"
-            );
+            ,false,false);
         }
     }
 }
@@ -47,7 +47,7 @@ TEST_CASE("Program: conditionals", "[Program]") {
             "    } else {"
             "    }"
             "}"
-        );
+        ,false,false);
     }
     SECTION("second") {
         run<ast::Program>(
@@ -57,7 +57,7 @@ TEST_CASE("Program: conditionals", "[Program]") {
             "    } else {"
             "    }"
             "}"
-        );
+        ,false,false);
     }
     SECTION("third") {
         run<ast::Program>(
@@ -69,7 +69,7 @@ TEST_CASE("Program: conditionals", "[Program]") {
             "        Println(\"greater than or equal to 3\")"
             "    }"
             "}"
-        );
+        ,false,false);
     }
     SECTION("fourth") {
         run<ast::Program>(
@@ -85,7 +85,7 @@ TEST_CASE("Program: conditionals", "[Program]") {
             "        Println(\"greater than or equal to 3\")"
             "    }"
             "}"
-        );
+        ,false,false);
     }
 }
 
@@ -101,7 +101,7 @@ TEST_CASE("Program: fibonacci" , "[Program]") {
         "func main() {"
         "   Println(fib(5))"
         "}"
-    );
+    ,false,false);
 }
 
 TEST_CASE("Program: constant blocks" , "[Program]") {
@@ -111,7 +111,7 @@ TEST_CASE("Program: constant blocks" , "[Program]") {
         "   y = 10"
         "   z = f(1)"
         ")"
-    );
+    ,false,false);
 }
 
 TEST_CASE("Program: variable blocks" , "[Program]") {
@@ -121,7 +121,7 @@ TEST_CASE("Program: variable blocks" , "[Program]") {
         "   y = 10"
         "   z = f(1)"
         ")"
-    );
+    ,false,false);
 }
 
 TEST_CASE("Program: Binary Search", "[Program]") {
@@ -130,7 +130,7 @@ TEST_CASE("Program: Binary Search", "[Program]") {
             "func middle(a int, b int) int {"
             "   return (a + b) / 2"
             "}"
-        );    
+        ,false,false);    
     }
 
     SECTION("bSearch") {
@@ -148,7 +148,7 @@ TEST_CASE("Program: Binary Search", "[Program]") {
             "   }"
             "   return bSearch(val,list,mid + 1,right)"
             "}"
-        );
+        ,false,false);
     }
 
     SECTION("entire program") {
@@ -169,7 +169,7 @@ TEST_CASE("Program: Binary Search", "[Program]") {
             "   }"
             "   return bSearch(val,list,mid + 1,right)"
             "}"
-        );
+        ,false,false);
     }
 }
 
@@ -179,5 +179,5 @@ TEST_CASE("Program: array assignment", "[Program]") {
         "   var x [100]int"
         "   x[10] = x[6]"
         "}"
-    );    
+    ,false,false);    
 }

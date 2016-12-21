@@ -96,7 +96,9 @@ namespace ast {
     }
 
     void Expression::Validate() const {
+        lhs->Validate();
         if(rhs != nullptr) {
+            rhs->Validate();
 
             if(lhs->ResultType() != rhs->ResultType()) {
                 throw InvalidTypeCombination(lhs->ResultType(),rhs->ResultType(),op,__LINE__,__FILE__);                

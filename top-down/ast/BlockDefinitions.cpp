@@ -25,23 +25,14 @@ namespace ast {
             variable = false;
             consumeLexemeType(lex,lexer::CONST);
         }
-        symtable::IdentifierKind kind = variable? symtable::Var:symtable::Const;
+        kind = variable? symtable::Var:symtable::Const;
     
         consumeLexemeType(lex,lexer::O_PAREN);
 
         while(NextType(lex) != lexer::C_PAREN) {
-
-            std::unique_ptr<lexer::Lexeme> name = lex.Next();
-            auto tmpAttr = new symtable::VariableAttribute(name->GetValue(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,NilType);
-            auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
-            lex.PushBack(name);
-            table->Insert(attr);
-
             Identifier* id = new Identifier(lex, table);
             consumeLexemeType(lex,lexer::EQUAL);
             Expression* expr = new Expression(lex, table);
-
-            tmpAttr->SetVariableType(expr->ResultType());
 
             vars.push_back({id,expr});
         }
@@ -58,8 +49,13 @@ namespace ast {
 
     void BlockDefinition::Validate() const {
         for( auto&& v : vars ) {
+
+            auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(v.id->GetName(), v.id->GetFilename(), v.id->GetLine(), v.id->GetColumn(),kind,v.expr->ResultType()));
+            table->Insert(attr);
+
             v.id->Validate();
             v.expr->Validate();
+
         }
     }
 

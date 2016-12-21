@@ -3,6 +3,9 @@
 #define BLOCKDEFINITION_HPP_
 
 #include <ast/Ast.hpp>
+
+#include <symtable/Attribute.hpp>
+
 #include <vector>
 
 namespace hardware {
@@ -24,6 +27,7 @@ namespace ast {
         private:
             bool variable;
             std::vector<BlockDecl> vars;
+            symtable::IdentifierKind kind;
 
         public:
             BlockDefinition(lexer::Lexer & lex, symtable::SymbolTable * table);

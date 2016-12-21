@@ -34,28 +34,17 @@ namespace ast {
                 throw std::runtime_error(std::string(__FILE__) + ":" + std::to_string(__LINE__) + ", expected var or const");
         }
 
-        symtable::IdentifierKind kind = variable? symtable::Var:symtable::Const;
-
-        std::unique_ptr<lexer::Lexeme> nameLexeme = lex.Next();
-        auto tmpAttr = new symtable::VariableAttribute(nameLexeme->GetValue(), nameLexeme->GetFilename(), nameLexeme->GetLine(), nameLexeme->GetColumn(),kind,NilType);
-        auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
-        lex.PushBack(nameLexeme);
-        table->Insert(attr);
+        kind = variable? symtable::Var:symtable::Const;
 
         name = new Identifier(lex, table);
 
-        ValueType varType = ValueType::NilType;
-
+        
         if(NextType(lex) == lexer::EQUAL) {
             consumeLexemeType(lex,lexer::EQUAL);
             value = new Expression(lex, table);
-            varType = value->ResultType();
         } else {
             type = new Type(lex, table);
-            varType = type->GetType();
         }
-
-        tmpAttr->SetVariableType(varType);
         
     }
 
@@ -66,12 +55,28 @@ namespace ast {
     }
 
     void VariableDeclaration::Validate() const {
+        
+        
+        ValueType varType = ValueType::NilType;
+        
+        if(value != nullptr) {
+            varType = value->ResultType();
+        } else {
+            varType = type->GetType();
+        }
+
+        auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,varType));
+        table->Insert(attr);
+
+        name->Validate();
+
         if(value != nullptr) {
             value->Validate();
         }
     }
 
     std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+
         if(value != nullptr) {
             value->GenerateCode(codeGen);
         

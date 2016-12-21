@@ -19,12 +19,6 @@ namespace ast {
     FunctionDefinition::FunctionDefinition(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         consumeLexemeType(lex,lexer::FUNC);
 
-        std::unique_ptr<lexer::Lexeme> name = lex.Next();
-        auto tmpAttr = new symtable::FunctionAttribute(name->GetValue(), name->GetFilename(), name->GetLine(), name->GetColumn(),NilType);
-        auto attr = std::shared_ptr<symtable::Attribute>(tmpAttr);
-        lex.PushBack(name);
-        table->Insert(attr);
-
         functionName = new Identifier(lex, table);
 
         consumeLexemeType(lex, lexer::O_PAREN);
@@ -53,13 +47,6 @@ namespace ast {
             optRetType = new Type(lex, table);
         }
 
-        ValueType retType = NilType;
-        if(optRetType != nullptr) {
-            retType = optRetType->GetType();
-        }
-
-        tmpAttr->SetReturnType(retType);
-
         block = new Block(lex, table);
     }
 
@@ -75,15 +62,25 @@ namespace ast {
     }
 
     void FunctionDefinition::Validate() const {
-        functionName->Validate();
+
         for(auto && opt : optParams) {
             opt.ident->Validate();
             opt.type->Validate();
         }
+
+        auto retType = ValueType::NilType;
         if(optRetType != nullptr) {
             optRetType->Validate();
+            retType = optRetType->GetType();
         }
+
+        auto attr = std::shared_ptr<symtable::FunctionAttribute>(new symtable::FunctionAttribute(functionName->GetName(), functionName->GetFilename(), functionName->GetLine(), functionName->GetColumn(),retType));
+        table->Insert(attr);
+
+        functionName->Validate();
+
         block->Validate();
+
     }
 
     std::unique_ptr<hardware::Register> FunctionDefinition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
