@@ -15,6 +15,8 @@ namespace symtable {
     class Scope {
 
         public:
+
+            Scope(size_t id);
             
             bool ContainsFunction(std::string) const;
             bool ContainsVariable(std::string) const;
@@ -31,6 +33,8 @@ namespace symtable {
             size_t FunctionCount() const;
             size_t VariableCount() const;
 
+            size_t GetID() const;
+
         private:
             // list of functions
             std::vector<std::shared_ptr<FunctionAttribute>> functions;
@@ -41,6 +45,8 @@ namespace symtable {
             // quick way to look up where an attribute is located
             std::map<std::string,int> varLookup;
             std::map<std::string,int> funcLookup;
+
+            size_t id;
 
             friend std::ostream& operator<<(std::ostream & os, const Scope & scope);
     };

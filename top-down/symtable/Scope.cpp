@@ -5,6 +5,10 @@
 
 namespace symtable {
 
+    Scope::Scope(size_t id) : id(id) {
+        // empty
+    }
+
     bool Scope::ContainsFunction(std::string name) const {
         return FunctionIndex(name) != -1;
     }
@@ -29,6 +33,7 @@ namespace symtable {
         if(ptr == varLookup.end()) {
             return -1;
         }
+
         return ptr->second;
     }
 
@@ -49,7 +54,7 @@ namespace symtable {
             throw std::runtime_error("Cannot redefine variable: " + attr->GetName());
         }
 
-        varLookup.insert({attr->GetName(),functions.size()});
+        varLookup.insert({attr->GetName(),variables.size()});
         variables.push_back(attr);
     }
 
@@ -75,6 +80,10 @@ namespace symtable {
 
     size_t Scope::VariableCount() const {
         return variables.size();
+    }
+
+    size_t Scope::GetID() const {
+        return id;
     }
 
     std::ostream& operator<<(std::ostream & os, const Scope & scope) {

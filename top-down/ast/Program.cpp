@@ -76,21 +76,38 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Program::GenerateCode(hardware::InstructionGenerator & codeGen) const {
+        std::string bottomLabel = codeGen.GenerateLabel();
         codeGen.Init();
 
         int variables = table->CountType(symtable::VariableAttributeType);
 
-        codeGen.Alloc(variables);
+        if(variables > 0) {
+            codeGen.Alloc(variables);
+        }
 
         for( auto&& v : vars ) {
             v->GenerateCode(codeGen);
         }
+
+        codeGen.Jmp(bottomLabel);
+
         for( auto&& f : funcs ) {
             f->GenerateCode(codeGen);
         }
 
+        codeGen.WriteLabel(bottomLabel);
 
-        codeGen.Alloc(-variables);
+        auto ptr = table->Locate("Main");
+        if(ptr) {
+            std::string mainLabel = std::static_pointer_cast<symtable::FunctionAttribute,symtable::Attribute>(ptr)->GetLabel();
+        codeGen.Call(mainLabel);
+        } else {
+            throw std::runtime_error("missing Main method");
+        }
+
+        if(variables > 0) {
+            codeGen.Alloc(-variables);
+        }
         codeGen.Halt();
         return nullptr;
     }

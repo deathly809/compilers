@@ -16,6 +16,9 @@
 namespace ast {
 
         Identifier::Identifier(lexer::Lexer& lex, symtable::SymbolTable * table) : Ast(table), lexeme(lex.Next()), scope(table->GetDeclaringScope(lexeme->GetValue())), index(table->ScopeCount()) {
+            if(!scope) {
+                throw std::runtime_error("use of an undeclared variable: " + lexeme->GetValue() + " on line " + std::to_string(lexeme->GetLine()));
+            }
             checkLexemeType(lexeme,lexer::ID);
             lex.HasNext();
         }
@@ -28,17 +31,26 @@ namespace ast {
         }
 
         std::unique_ptr<hardware::Register> Identifier::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-            int idx = scope->VariableIndex(lexeme->GetValue());
+            int scp = ScopeID();
+            int idx = ScopePosition();
             if(idx != -1) {
                 codeGen.LdV(
-                    index,
-                    idx
+                    scp,
+                    idx + 1
                 );
             } else {
                 throw std::runtime_error("unknown variable " + lexeme->GetValue());
             }
 
             return nullptr;
+        }
+
+        size_t Identifier::ScopeID() const {
+            return scope->GetID();
+        }
+
+        size_t Identifier::ScopePosition() const {
+            return scope->VariableIndex(lexeme->GetValue());
         }
 
         ValueType Identifier::ResultType() const {

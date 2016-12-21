@@ -15,7 +15,7 @@ const int Success = 0;
 const int MissingFilename = 1;
 const int CompilerError = 2;
 
-#define NOCATCH
+#define CATCH
 
 int main(int argc, char* argv[]) {
 
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
         table.Insert(
             std::shared_ptr<symtable::Attribute>(
-                new symtable::FunctionAttribute(printInt,"readInt", ast::ValueType::IntType)
+                new symtable::FunctionAttribute(readInt,"readInt", ast::ValueType::IntType)
             )
         );
 

@@ -17,7 +17,7 @@ func fib(n int) int {
 }
 
 func main() {
-    fib(6)
+    fib(1)
 	printInt(zeros)
 	printInt(ones)
 }

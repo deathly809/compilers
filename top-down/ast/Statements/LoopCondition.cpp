@@ -62,17 +62,19 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> LoopCondition::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        if(init != nullptr) init->GenerateCode(codeGen);
-        std::string topLabel = codeGen.GenerateLabel();
-        if(cond != nullptr) cond->GenerateCode(codeGen);
-
-        // body!
-        
-        if(incr != nullptr) incr->GenerateCode(codeGen);
-
-        std::string endingLabel = codeGen.GenerateLabel();
-        
         return nullptr;
+    }
+
+    InitStatement* LoopCondition::GetInit() const {
+        return init;
+    }
+
+    Expression*    LoopCondition::GetCondition() const {
+        return cond;
+    }
+
+    Assignment*    LoopCondition::GetUpdate() const {
+        return incr;
     }
 
     std::ostream& LoopCondition::Write(std::ostream & os) const {

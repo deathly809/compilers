@@ -36,6 +36,12 @@ namespace ast {
 
     std::unique_ptr<hardware::Register> Assignment::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         rhs->GenerateCode(codeGen);
+        int scope = lhs->ScopeID();
+        int pos = lhs->ScopePosition();
+        codeGen.St(
+                scope,
+                pos + 1
+            );
         return nullptr;
     }
 

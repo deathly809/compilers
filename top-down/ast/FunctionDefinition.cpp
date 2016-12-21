@@ -94,6 +94,7 @@ namespace ast {
             fAttr->SetLabel(label);
             codeGen.WriteLabel(label);
             codeGen.NOp();
+            codeGen.Proc(1);
             /*
             for(auto && opt : optParams) {
                 opt.ident->Validate();

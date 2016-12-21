@@ -1,0 +1,24 @@
+		INIT
+		JMP L1
+L2		NOP
+		PROC 1
+		ALLOC 2
+		IN
+		ST 1 1
+		IN
+		ST 1 2
+		LDV 1 1
+		LDV 1 2
+		LT
+		JMPF L3
+		LDV 1 1
+		OUT
+		JMP L4
+L3		NOP
+		LDV 1 2
+		OUT
+L4		NOP
+		ALLOC -2
+		RET 1
+L1		CALL L2
+		HALT

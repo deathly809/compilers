@@ -73,7 +73,14 @@ namespace ast {
 
     std::unique_ptr<hardware::Register> VariableDeclaration::GenerateCode(hardware::InstructionGenerator & codeGen) const {
         if(value != nullptr) {
-            return value->GenerateCode(codeGen);
+            value->GenerateCode(codeGen);
+        
+            size_t scope = name->ScopeID();
+            size_t pos = name->ScopePosition();
+            codeGen.St(
+                scope,
+                pos + 1
+            );
         }
         return nullptr;
     }

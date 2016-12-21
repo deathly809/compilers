@@ -2,7 +2,7 @@
 var (
 	low = 0
 	high = 0
-	N = 0
+	N = 5 + 3
 )
 
 func Update() int {
@@ -16,11 +16,12 @@ func Update() int {
 }
 
 func Main() {
-	var n = readInt()
+	N = readInt()
 	low = 0
-	high = n + 1
+	high = N + 1
 	for (high - low) > 1 {
 		Update()
 	}
 	printInt(low)
 }
+

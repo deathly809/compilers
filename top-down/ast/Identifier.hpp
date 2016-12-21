@@ -36,6 +36,10 @@ namespace ast {
             std::string GetFilename() const;
             int GetColumn() const;
             int GetLine() const;
+
+            size_t ScopeID() const;
+            size_t ScopePosition() const;
+            
             
         private:
             std::unique_ptr<lexer::Lexeme> lexeme;

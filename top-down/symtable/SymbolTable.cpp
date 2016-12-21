@@ -26,7 +26,7 @@ namespace symtable {
 
     // Create a new scope
     void SymbolTable::OpenScope() {
-        scopes.push_back(std::shared_ptr<Scope>(new Scope()));
+        scopes.push_back(std::shared_ptr<Scope>(new Scope(scopes.size())));
     }
 
     // Move to parent scope
@@ -38,7 +38,7 @@ namespace symtable {
     }
 
     // Locate an identifer
-    std::shared_ptr<Attribute> SymbolTable::Locate(std::string name) {
+    std::shared_ptr<Attribute> SymbolTable::Locate(std::string name) const {
         for( int pos = scopes.size() - 1; pos >= 0; --pos ) {
 
             std::shared_ptr<Scope> s = scopes[pos];
@@ -134,8 +134,7 @@ namespace symtable {
     const std::shared_ptr<Scope> SymbolTable::GetDeclaringScope(std::string name) const {
         int idx = GetScopeIndex(name);
         if(idx == -1) {
-            std::cout << *this << std::endl;
-            throw std::runtime_error("undefined variable: " + name);
+            return nullptr;
         }
 
         return scopes[idx];

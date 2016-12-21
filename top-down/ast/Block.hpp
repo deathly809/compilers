@@ -6,6 +6,10 @@
 
 #include <vector>
 
+namespace symtable {
+    class Scope;
+}
+
 namespace hardware {
     class InstructionGenerator;
 }
@@ -14,8 +18,6 @@ namespace ast {
 
     class Block : public Ast {
 
-        std::vector<Ast*> stmts;
-        
         public:
             Block(lexer::Lexer & lex, symtable::SymbolTable * table);
             ~Block();
@@ -23,7 +25,12 @@ namespace ast {
             virtual void Validate() const;
             virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;
             virtual std::ostream& Write(std::ostream& os) const;
-    };
+
+        private:
+            std::vector<Ast*> stmts;
+            std::shared_ptr<symtable::Scope> scope;
+            
+};
 }
 
 #endif

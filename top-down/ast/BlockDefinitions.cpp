@@ -69,15 +69,13 @@ namespace ast {
             
             std::shared_ptr<symtable::Attribute> attr = table->Locate(v.id->GetName());
             std::shared_ptr<symtable::VariableAttribute> vAttr = std::static_pointer_cast<symtable::VariableAttribute,symtable::Attribute>(attr);
-            
-            vAttr->SetRegister(hardware::Register::GetRegister());
 
             int scope = table->GetScopeIndex(v.id->GetName());
             int pos = table->GetPositionIndex(v.id->GetName());
 
-            codeGen.StI(
+            codeGen.St(
                 scope,
-                pos
+                pos + 1
             );
             
         }
