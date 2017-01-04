@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -I../ -Wall -g 
+CFLAGS  = -I../ -Wall -g -pedantic 
 OBIN    = ../../bin
 
 $(OBIN)/node.o: node.c node.h

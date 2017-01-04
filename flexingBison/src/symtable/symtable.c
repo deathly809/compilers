@@ -11,20 +11,20 @@
  *  CreateItem - Creates a new scope item
  *
  *      name        - The identifer value for this item
- *      modifier    - What type of item is this
- *      type        - What value type this item managess
+ *      mod         - What type of data stored
+ *      data        - Pointer to data
  *
  *      @result     - Returns a pointer to a new item
  *
  */
-struct item* CreateItem(const char *name, unsigned int modifier, unsigned int type) {
+struct item* CreateItem(const char *name, Modifier mod, void* data) {
     struct item* result = malloc(sizeof(struct item));
 
     memcheck(result,"create item");
 
     result->ident = strdup(name);
-    result->modifier = modifier;
-    result->type = type;
+    result->mod = mod;
+    result->data = data;
 
     return result;
 }
@@ -45,11 +45,12 @@ void DestroyItem(struct item** it) {
  *      @result - returns a new scope if no error
  *
  */
-struct scope* CreateScope() {
+struct scope* CreateScope(unsigned int id) {
     struct scope* result = malloc(sizeof(struct scope));
 
     memcheck(result,"create scope");
 
+    result->id = id;
     result->max_items = 128;
     result->num_items = 0;
     result->items = malloc(sizeof(struct item*) * result->max_items);
@@ -131,13 +132,14 @@ struct symtable* CreateTable() {
 
     result->max_scopes = 32;
     result->num_scopes = 1;
+    result->label = 2;
 
     result->scopes = malloc(result->max_scopes * sizeof(struct item*));
     memcheck(result->scopes, "create scopes" );
     memset(result->scopes,0,result->max_scopes * sizeof(struct item*));
 
     // Global Scope
-    result->scopes[0] = CreateScope();
+    result->scopes[0] = CreateScope(0);
 
     return result;
 }
@@ -164,7 +166,7 @@ void DestroyTable(struct symtable** table) {
  *  PushScope - push a new scope on the stack
  */
 void PushScope(struct symtable* table) {
-    table->scopes[table->num_scopes] = CreateScope();
+    table->scopes[table->num_scopes] = CreateScope(table->num_scopes);
     table->num_scopes++;
 }
 
@@ -178,20 +180,24 @@ void PopScope(struct symtable* table) {
     }
 }
 
+struct scope* TopScope(struct symtable* table) {
+    if(table == NULL) return NULL;
+    return table->scopes[table->num_scopes - 1];
+}
+
 /*
  *  Insert - create a new item and insert it into the top most scope
  *
  *      table       - table to insert our item into
- *      name        - name of the identifier
- *      modifier    - item attributes
+ *      modifier    - type of data stored
  *      type        - value type we result in
  *
  */
-int Insert(struct symtable *table, const char* name, int modifier, int type) {
+int Insert(struct symtable *table, const char* name, Modifier mod, void* data) {
     int result = 0;
 
     if(table) {
-        result = insert(table->scopes[table->num_scopes - 1], CreateItem(name, modifier, type));
+        result = insert(table->scopes[table->num_scopes - 1], CreateItem(name,mod, data));
     }
 
     return result;    
@@ -219,4 +225,8 @@ struct item* Lookup(struct symtable* table, const char* name) {
     }
 
     return result;
+}
+
+unsigned int GenerateLabel(struct symtable* table) {
+    return table->label++;
 }

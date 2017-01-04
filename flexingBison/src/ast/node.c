@@ -1,60 +1,265 @@
 
 #include <ast/node.h>
 
-#include <constants.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
-#define CONVERT(_TO_,_VAL_) ((struct _TO_**)_VAL_)
+#include <instructions.h>
 
-#define allocate_struct(_TYPE_,_MSG_)                        \
-    struct _TYPE_* result = malloc(sizeof(struct _TYPE_));    \
-    memcheck(result,_MSG_);
+void Exception(const char* format, ...)
+{
+    char dest[1024 * 16];
+    va_list argptr;
+    va_start(argptr, format);
+    vsprintf(dest, format, argptr);
+    va_end(argptr);
+    printf("%s",dest);
+    exit(1);
+}
 
-void DestroyNode(struct node** n) {
+
+#define UnimplementedFunction(NAME) do { printf("unimplemented function: %s\n", #NAME); exit(1); } while(0);
+
+const int InitialCapacity = 32;
+
+#define CONVERT(_TO_,_VAL_) ((struct _TO_)_VAL_)
+
+
+#define allocate_name(_TYPE_,_NAME_,_MSG_)                      \
+    struct _TYPE_* _NAME_ = malloc(sizeof(struct _TYPE_));      \
+    memcheck(_NAME_,_MSG_);
+
+#define allocate_struct(_TYPE_,_MSG_)   allocate_name(_TYPE_,result,_MSG_)
+    
+
+void printNodeType(NodeType t) {
+    switch(t) {
+        case ExpressionNode:
+            printf("expression");
+            break;
+        case AssignmentNode:
+            printf("assignment");
+            break;
+        case ProgramNode:
+            printf("program");
+            break;
+        case TargetNode:
+            printf("target");
+            break;
+        case BlockNode:
+            printf("block");
+            break;
+        case FunctionDefinitionNode:
+            printf("func_def");
+            break;
+        case ValueTypeNode:
+            printf("value_type");
+            break;
+        case LoopNode:
+            printf("loop");
+            break;
+        case ConditionalNode:
+            printf("conditional");
+            break;
+        case VariableDefinitionNode:
+            printf("var_def");            
+            break;
+        case IdentifierNode:
+            printf("ident");            
+            break;
+        case FunctionCallNode:
+            printf("func_call");            
+            break;
+        case ReturnNode:
+            printf("return_stmt");            
+            break;
+        case BlockDefinitionNode:
+            printf("block_def");            
+            break;
+    }
+}
+
+struct generic_node* CreateNode(NodeType t, void* ptr) {
+    allocate_struct(generic_node,"create node");
+    
+    result->nodetype = t;
+    result->ptr = ptr;
+
+    return result;
+}
+
+void DestroyNode(struct generic_node** n) {
     if(*n == NULL) return;
 
     void** ptr = &(n[0]->ptr);
-    int const type = n[0]->nodetype;
+    NodeType type = n[0]->nodetype;
 
     switch(type) {
-        case EXPRESSION:
+        case ExpressionNode:
             // &((struct expression*)n[0]->ptr)
-            DestroyExpression( CONVERT(expression,ptr) );
+            DestroyExpression( CONVERT(expression**,ptr) );
             break;
-        case ASSIGNMENT:
-            DestroyAssignment( CONVERT(assignment,ptr));
+        case AssignmentNode:
+            DestroyAssignment( CONVERT(assignment**,ptr));
             break;
-        case PROGRAM:
-            DestroyProgram( CONVERT(program,ptr));
+        case ProgramNode:
+            DestroyProgram( CONVERT(program**,ptr));
             break;
-        case TARGET:
-            DestroyTarget( CONVERT(target,ptr) );
+        case TargetNode:
+            DestroyTarget( CONVERT(target**,ptr) );
             break;
-        case BLOCK:
-            DestroyBlock( CONVERT(block,ptr));
+        case BlockNode:
+            DestroyBlock( CONVERT(block**,ptr));
             break;
-        case FUNC_DEF:
-            DestroyFunctionDefinition( CONVERT(func_def,ptr));
+        case FunctionDefinitionNode:
+            DestroyFunctionDefinition( CONVERT(func_def**,ptr));
             break;
-        case NUMBER:
+        case ValueTypeNode:
+            DestroyValueType( CONVERT(value_type**,ptr));
             break;
-        case VAL_TYPE:
-            DestroyValueType( CONVERT(value_type,ptr));
+        case LoopNode:
+            DestroyLoop(CONVERT(loop**,ptr));
             break;
-        default:
-            fprintf(stderr, "error: unknown node type (%d)\n",(*n)->nodetype);
-            exit(1);
+        case ConditionalNode:
+            DestroyConditional(CONVERT(conditional**,ptr));
+            break;
+        case VariableDefinitionNode:
+            DestroyVariableDefinition(CONVERT(var_def**, ptr));
+            break;
+        case IdentifierNode:
+            DestroyIdent(CONVERT(ident**,ptr));
+            break;
+        case FunctionCallNode:
+            DestroyFunctionCall(CONVERT(func_call**,ptr));
+            break;
+        case ReturnNode:
+            DestroyReturnStatement(CONVERT(return_stmt**,ptr));
+            break;
+        case BlockDefinitionNode:
+            DestroyBlockDefinition(CONVERT(block_def**,ptr));
+            break;
     }
     free(*n);
     *n = NULL;
 }
 
+void PrintNode(struct generic_node* n) {
+    if(n == NULL) return;
+
+    void* ptr = n->ptr;
+    NodeType type = n->nodetype;
+
+    switch(type) {
+        case ExpressionNode:
+            // &((struct expression*)n[0]->ptr)
+            PrintExpression( CONVERT(expression*,ptr) );
+            break;
+        case AssignmentNode:
+            PrintAssignment( CONVERT(assignment*,ptr));
+            break;
+        case ProgramNode:
+            PrintProgram( CONVERT(program*,ptr));
+            break;
+        case TargetNode:
+            PrintTarget( CONVERT(target*,ptr) );
+            break;
+        case BlockNode:
+            PrintBlock( CONVERT(block*,ptr));
+            break;
+        case FunctionDefinitionNode:
+            PrintFunctionDefinition( CONVERT(func_def*,ptr));
+            break;
+        case ValueTypeNode:
+            PrintValueType( CONVERT(value_type*,ptr));
+            break;
+        case LoopNode:
+            PrintLoop(CONVERT(loop*,ptr));
+            break;
+        case ConditionalNode:
+            PrintConditional(CONVERT(conditional*,ptr));
+            break;
+        case VariableDefinitionNode:
+            PrintVariableDefinition(CONVERT(var_def*, ptr));
+            break;
+        case BlockDefinitionNode:
+            PrintBlockDefinition(CONVERT(block_def*,ptr));
+            break;
+        case IdentifierNode:
+            PrintIdent(CONVERT(ident*,ptr));
+            break;
+        case FunctionCallNode:
+            PrintFunctionCall(CONVERT(func_call*,ptr));
+            break;
+        case ReturnNode:
+            PrintReturnStatement(CONVERT(return_stmt*,ptr));
+            break;
+    }
+}
+
+void PrintNodeCode(struct generic_node* n, struct symtable* table) {
+    if(n == NULL) return;
+
+    void* ptr = n->ptr;
+    NodeType type = n->nodetype;
+
+    switch(type) {
+        case ExpressionNode:
+            // &((struct expression*)n[0]->ptr)
+            PrintExpressionCode( CONVERT(expression*,ptr), table );
+            break;
+        case AssignmentNode:
+            PrintAssignmentCode( CONVERT(assignment*,ptr), table);
+            break;
+        case ProgramNode:
+            PrintProgramCode( CONVERT(program*,ptr), table);
+            break;
+        case TargetNode:
+            PrintTargetCode( CONVERT(target*,ptr), table);
+            break;
+        case BlockNode:
+            PrintBlockCode( CONVERT(block*,ptr), table);
+            break;
+        case FunctionDefinitionNode:
+            PrintFunctionDefinitionCode( CONVERT(func_def*,ptr), table);
+            break;
+        case ValueTypeNode:
+            PrintValueTypeCode( CONVERT(value_type*,ptr), table);
+            break;
+        case LoopNode:
+            PrintLoopCode(CONVERT(loop*,ptr), table);
+            break;
+        case ConditionalNode:
+            PrintConditionalCode(CONVERT(conditional*,ptr), table);
+            break;
+        case VariableDefinitionNode:
+            PrintVariableDefinitionCode(CONVERT(var_def*, ptr), table);
+            break;
+        case BlockDefinitionNode:
+            PrintBlockDefinitionCode(CONVERT(block_def*,ptr), table);
+            break;
+        case IdentifierNode:
+            PrintIdentCode(CONVERT(ident*,ptr), table);
+            break;
+        case FunctionCallNode:
+            PrintFunctionCallCode(CONVERT(func_call*,ptr), table);
+            break;
+        case ReturnNode:
+            PrintReturnStatementCode(CONVERT(return_stmt*,ptr), table);
+            break;
+    }
+}
+
+
+
+
+
+
+
 void freeNodeList(struct node_list** n_list) {
     while(Count(*n_list) > 0) {
-        struct node* n = Pop(*n_list);
+        struct generic_node* n = Pop(*n_list);
         DestroyNode(&n);
     }
 
@@ -64,17 +269,14 @@ void freeNodeList(struct node_list** n_list) {
 // create a new empty stack with capacity 32.
 struct node_list* CreateNodeList() {
 
-    struct node_list* result = malloc(sizeof(struct node_list));
-
-    memcheck(result, "create node list");
+    allocate_struct(node_list,"create node list");
 
     result->count = 0;
-    result->capacity = 32;
-    result->list = malloc(sizeof(struct node) * result->capacity);
+    result->capacity = InitialCapacity;
 
+    result->list = malloc(sizeof(struct generic_node*) * result->capacity);
     memcheck(result->list,"node list");
-
-    memset(result->list,0,sizeof(struct node) * result->capacity);
+    memset(result->list,0,sizeof(struct generic_node*) * result->capacity);
 
     return result;
 }
@@ -86,22 +288,45 @@ void DestroyNodeList(struct node_list** n_list) {
     *n_list = NULL;
 }
 
+void PrintNodeList(struct node_list* list, char sep) {
 
-void Push(struct node_list* n_list, struct node* node) {
+    if(list == NULL) return;
+    if(list->count == 0) return;
+
+    PrintNode(list->list[0]);
+    for(int i = 1 ; i < list->count; ++i) {
+        printf("%c ", sep);
+        PrintNode(list->list[i]);
+    }
+
+}
+
+void PrintNodeListCode(struct node_list* list, struct symtable* table) {
+    if(list == NULL) return;
+    for(int i = 0 ; i < list->count; ++i) {
+        PrintNodeCode(list->list[i], table);
+    }
+}
+
+void Push(struct node_list* n_list, struct generic_node* node) {
+
     if(n_list == NULL) return;
+    if(node == NULL) return;
 
     if(4 * n_list->count > 3 * n_list->capacity) {
-
+        fprintf(stdout,"resize\n");
+        fflush(stdout);
         int old_capacity = n_list->capacity;
         int new_capacity = old_capacity * 2;
         
-        struct node** resized = malloc(sizeof(struct node) * new_capacity);
+        struct generic_node** resized = malloc(sizeof(struct generic_node*) * new_capacity);
         memcheck(resized, "resize node list");
 
         // copy over old stuff
+        memset(resized, 0, new_capacity * sizeof(struct generic_node*));
         memcpy(resized,n_list->list,old_capacity);
 
-        struct node** old_list = n_list->list;
+        struct generic_node** old_list = n_list->list;
 
         // save
         n_list->list = resized;
@@ -111,15 +336,21 @@ void Push(struct node_list* n_list, struct node* node) {
         free(old_list);
     }
 
-    n_list->list[n_list->count++] = node;
+    n_list->list[n_list->count] = node;
+    n_list->count++;
 }
 
-struct node* Pop(struct node_list* n_list) {
+struct generic_node* Pop(struct node_list* n_list) {
     if(n_list == NULL || n_list->count == 0) return NULL;
+
+    if(4 * n_list->count < n_list->capacity && n_list->capacity > InitialCapacity ) {
+
+    }
+
     return n_list->list[--n_list->count];
 }
 
-struct node* Get(struct node_list* n_list, int pos) {
+struct generic_node* Get(struct node_list* n_list, int pos) {
     if(n_list == NULL || (pos < 0 && pos >= n_list->count)) return NULL;
     return n_list->list[pos];
 }
@@ -136,7 +367,7 @@ int Capacity(struct node_list* n_list) {
 
 
 /* value type stuff */
-struct value_type* CreateValueType(int type, int modifier, int size) {
+struct value_type* CreateValueType(Type type, int modifier, int size) {
     allocate_struct(value_type,"create value type");
 
     result->type = type;
@@ -151,6 +382,46 @@ void DestroyValueType(struct value_type ** vt) {
     *vt = NULL;
 }
 
+void printType(Type type) {
+    switch(type){
+        case IntType:
+            printf("int");
+            break;
+        case StringType:
+            printf("string");
+            break;
+        case CharType:
+            printf("char");
+            break;
+        case BoolType:
+            printf("bool");
+            break;
+        case RealType:
+            printf("real");
+            break;
+        case NilType:
+            printf("nil");
+            break;
+    }
+}
+
+void PrintValueType(struct value_type* type) {
+    if(type == NULL) return;
+
+    if(type->size == 0) {
+        printf("[]");  
+    } else if(type->size > 0) {
+        printf("[%d]", type->size);
+    }
+    printType(type->type);
+}
+
+void PrintValueTypeCode(struct value_type* type, struct symtable* table) {
+    if(type == NULL) return;
+    UnimplementedFunction(PrintValueTypeCode);
+}
+
+// array
 
 // Programs
 struct program* CreateProgram(struct node_list* vars, struct node_list* funcs) {
@@ -173,6 +444,35 @@ void DestroyProgram(struct program** p) {
 }
 
 
+void PrintProgram(struct program* p) {
+    if(p == NULL) return;
+
+    PrintNodeList(p->vars,'\n');
+    PrintNodeList(p->funcs,'\n');
+
+}
+
+void PrintProgramCode(struct program* p, struct symtable* table) {
+    if(p == NULL) return;
+    INIT();
+    PrintNodeListCode(p->vars, table);
+
+    JMP(1);
+    PrintNodeListCode(p->funcs, table);
+
+    struct item* main_ptr = Lookup(table,"main");
+
+    if(main_ptr == NULL) {
+        printf("missing main method\n");
+        exit(1);
+    } else {
+        struct func_def_meta* meta = (struct func_def_meta*)(main_ptr->data);
+        LABEL(1);
+        CALL(meta->label);
+        HALT();
+    }
+}
+
 // Target
 struct target* CreateTarget(struct ident* name, struct expression* index) {
     allocate_struct(target,"create target");
@@ -190,6 +490,17 @@ void DestroyTarget(struct target** tar) {
     DestroyExpression( &tar[0]->index);
     free(*tar);
     *tar = NULL;
+}
+
+void PrintTarget(struct target* t) {
+    if(t == NULL) return;
+    PrintIdent(t->name);
+    PrintExpression(t->index);
+}
+
+void PrintTargetCode(struct target* t, struct symtable* table) {
+    if(t == NULL) return;
+    UnimplementedFunction(PrintTargetCode);
 }
 
 // assignment
@@ -212,12 +523,101 @@ void DestroyAssignment(struct assignment ** a) {
     *a = NULL;
 }
 
+void PrintAssignment(struct assignment* a) {
+    if(a == NULL) return;
+    PrintTarget(a->lhs);
+    printf(" = ");
+    PrintExpression(a->rhs);
+}
+
+Type PrintStore(struct target* l, struct symtable* table) {
+    if(l == NULL) Exception("null pointer: PrintLoad\n");
+    char* name = l->name->name;
+    struct item* it = Lookup(table,name);
+    if(it == NULL) {
+        Exception("undefined variable: %s\n", name);
+    }
+    struct var_def_meta* meta = (struct var_def_meta*)it->data;
+
+    ST(meta->scope,meta->position);
+
+    return meta->node->type->type;
+}
+
+Type PrintLoad(struct target* l, struct symtable* table) {
+    if(l == NULL) Exception("null pointer: PrintLoad\n");
+    char* name = l->name->name;
+    struct item* it = Lookup(table,name);
+
+    if(it == NULL) {
+        Exception("undefined variable: %s\n", name);
+    }
+    struct var_def_meta* meta = (struct var_def_meta*)it->data;
+
+    LDV(meta->scope,meta->position);
+
+    if(meta->node->type->type == NilType) {
+        Exception("variable cannot have nil type\n");
+    }
+    return meta->node->type->type;
+}
+
+void PrintAssignmentCode(struct assignment* a, struct symtable* table) {
+    if(a == NULL) return;
+    PrintExpressionCode(a->rhs,table);
+    PrintStore(a->lhs, table);
+
+    UnimplementedFunction(PrintAssignmentCode);
+}
+
+// block_def
+struct block_def* CreateBlockDefinition(struct node_list* defs, Modifier mod) {
+    allocate_struct(block_def,"create block def");
+
+    result->defs = defs;
+    result->modifier = mod;
+
+    return result;
+}
+
+void DestroyBlockDefinition(struct block_def** bf) {
+    if(*bf == NULL) return;
+    freeNodeList(&bf[0]->defs);
+    free(*bf);
+    *bf = NULL;
+}
+
+void printModifier(Modifier mod) {
+    switch(mod){
+        case Variable:
+            printf("var ");
+            break;
+        case Constant:
+            printf("const ");
+            break;
+        case Function:
+            break; 
+    }
+}
+
+void PrintBlockDefinition(struct block_def* b) {
+    if(b == NULL) return;
+    printModifier(b->modifier);
+    printf(" (\n");
+    PrintNodeList(b->defs, '\n');
+    printf(")\n");
+}
+
+void PrintBlockDefinitionCode(struct block_def* b, struct symtable* table) {
+    if(b == NULL) return;
+    UnimplementedFunction(PrintBlockDefinitionCode);
+}
+
 // ident
 struct ident* CreateIdent(char* name, int line, int col) {
     allocate_struct(ident,"create ident");
 
     result->name = strdup(name);
-    memcheck(result->name,"name in create ident");
     result->line = line;
     result->col = col;
 
@@ -233,11 +633,22 @@ void DestroyIdent(struct ident** id) {
     *id = NULL;
 }
 
+void PrintIdent(struct ident* i) {
+    if( i == NULL) return;
+    printf("%s", i->name);
+}
+
+void PrintIdentCode(struct ident* i, struct symtable* table) {
+    if( i == NULL) return;
+    UnimplementedFunction(PrintIdentCode);
+}
 
 // Block
 struct block* CreateBlock(struct node_list* list) {
     allocate_struct(block,"create block");
 
+    result->num_var_def = 0;
+    result->pos = 0;
     result->stmts = list;
 
     return result;
@@ -251,6 +662,31 @@ void DestroyBlock(struct block** b) {
     *b = NULL;
 }
 
+void PrintBlock(struct block* b) {
+    if( b == NULL) return;
+    printf("{\n");
+    PrintNodeList(b->stmts, '\n');
+    printf("}\n");
+}
+
+void PrintBlockCode(struct block* b, struct symtable* table) {
+    if( b == NULL) return;
+    for(int i = 0 ; i < Count(b->stmts); i++) {
+        if(b->stmts->list[i]->nodetype == VariableDefinitionNode) {
+            b->num_var_def++;
+        }
+    }
+
+    if(b->num_var_def > 0) {
+        ALLOC(b->num_var_def);
+    }
+    
+    PrintNodeListCode(b->stmts, table);
+    
+    if(b->num_var_def > 0) {
+        ALLOC(-b->num_var_def);
+    }
+}
 
 // formal parameter
 struct formal_param* CreateFormalParamater(struct ident* name, struct value_type* type) {
@@ -268,6 +704,18 @@ void DestroyFormalParameter(struct formal_param** fp) {
     DestroyValueType(&fp[0]->type);
     free(*fp);
     *fp = NULL;
+}
+
+void PrintFormalParamater(struct formal_param* f) {
+    if( f == NULL) return;
+    PrintIdent(f->name);
+    printf(" ");
+    PrintValueType(f->type);
+}
+
+void PrintFormalParamaterCode(struct formal_param* f, struct symtable* table) {
+    UnimplementedFunction(PrintFormalParamater);
+    if( f == NULL) return;
 }
 
 // function definition
@@ -293,14 +741,94 @@ void DestroyFunctionDefinition(struct func_def** fd) {
     *fd = NULL;
 }
 
+void PrintFunctionDefinition(struct func_def* f) {
+    if( f == NULL) return;
+
+    printf("func ");
+    PrintIdent(f->name);
+    printf("(");
+    PrintNodeList(f->params, ',');
+    printf(") ");
+    PrintValueType(f->ret);
+    PrintBlock(f->body);
+}
 
 
-// loop
-struct loop* CreateLoop(struct node* init, struct expression* cond, struct node* update, struct block* body) {
-    allocate_struct(loop,"create loop");
+void PrintFunctionDefinitionCode(struct func_def* f, struct symtable* table) {
+
+    if( f == NULL) return;
+
+    allocate_struct(func_def_meta,"create function definition meta");
+
+    result->def_scope = TopScope(table);
+    result->node = f;
+    result->label = GenerateLabel(table);
+
+    LABEL(result->label);
+    PROC(1);
+
+    Insert(table, f->name->name, Function, result);
+
+    PushScope(table);
+
+    PrintBlockCode(f->body, table);
+    RET(1);
+
+    PopScope(table);
+
+}
+
+// loop condtiion
+struct loop_cond* CreateLoopCondition(struct expression* init, struct expression* cond, struct expression* update) {
+    allocate_struct(loop_cond,"create loop");
+
     result->init = init;
     result->test = cond;
     result->update = update;
+
+    return result;
+}
+
+void DestroyLoopCondition(struct loop_cond** l) {
+    if(*l == NULL) return;
+
+    DestroyExpression(&l[0]->init);
+    DestroyExpression(&l[0]->test);
+    DestroyExpression(&l[0]->update);
+
+    free(*l);
+    *l = NULL;
+}
+
+void PrintLoopCondition(struct loop_cond* l) {
+    if(l == NULL) return;
+    
+    if(l->init != NULL) {
+        printf(" ");
+        PrintExpression(l->init);
+        printf("; ");
+        PrintExpression(l->test);
+        printf("; ");
+        PrintExpression(l->update);
+        printf(" ");
+    } else if(l->update != NULL) {
+        printf(" ");
+        PrintExpression(l->test);
+        printf(" ");
+    }
+}
+
+void PrintLoopConditionCode(struct loop_cond* l, struct symtable* table) {
+    UnimplementedFunction(PrintLoopConditionCode);
+    if(l == NULL) return;
+}
+
+
+// loop
+struct loop* CreateLoop(struct loop_cond* cond, struct block* body) {
+    allocate_struct(loop,"create loop");
+
+    result->cond = cond;
     result->body = body;
 
     return result;
@@ -309,16 +837,54 @@ struct loop* CreateLoop(struct node* init, struct expression* cond, struct node*
 void DestroyLoop(struct loop** l) {
     if(*l == NULL) return;
 
-    DestroyNode(&l[0]->init);
-    DestroyExpression(&l[0]->test);
-    DestroyNode(&l[0]->update);
+    DestroyLoopCondition(&l[0]->cond);
     DestroyBlock(&l[0]->body);
 
     free(*l);
     *l = NULL;
 }
 
+void PrintLoop(struct loop* l) {
+    if(l == NULL) return;
+    printf("for");
+    PrintLoopCondition(l->cond);
+    PrintBlock(l->body);
+}
 
+void PrintLoopCode(struct loop* l, struct symtable* table) {
+    //UnimplementedFunction(PrintLoopCode);
+    if(l == NULL) return;
+
+    unsigned int test_label = GenerateLabel(table);
+
+    if(l->cond) {
+        unsigned int after_loop = GenerateLabel(table);
+        if(l->cond->init) {
+            PrintExpressionCode(l->cond->init, table);
+        } 
+
+        LABEL(test_label);
+        if(l->cond->test) {
+            PrintExpressionCode(l->cond->test, table);
+            JMPF(after_loop);
+        }
+
+        PrintBlockCode(l->body, table);
+
+        if(l->cond->update) {
+            PrintExpressionCode(l->cond->update, table);
+            
+        }
+
+        JMP(test_label);
+        LABEL(after_loop);
+    } else {
+        LABEL(test_label);
+        PrintBlockCode(l->body, table);
+        JMP(test_label);
+    }
+
+}
 
 // Conditional
 struct conditional* CreateConditional(struct expression* t, struct block* con, struct block* alt) {
@@ -341,11 +907,42 @@ void DestroyConditional(struct conditional** cond) {
     *cond = NULL;
 }
 
+void PrintConditional(struct conditional* c) {
+    if(c == NULL) return;
+    printf("if ");
+    PrintExpression(c->test);
+    PrintBlock(c->con);
+    if(c->alt != NULL) {
+        printf("else ");
+        PrintBlock(c->alt);
+    }
+}
+
+void PrintConditionalCode(struct conditional* c, struct symtable* table) {
+//    UnimplementedFunction(PrintConditionalCode);
+    if(c == NULL) return;
+
+    unsigned int after_true = GenerateLabel(table);
+    PrintExpressionCode(c->test, table);
+    JMPF(after_true);
+    PrintBlockCode(c->con, table);
+    if(c->alt) {
+        unsigned int after_if = GenerateLabel(table);
+        JMP(after_if);
+        LABEL(after_true);
+        after_true = after_if;
+        PrintBlockCode(c->alt, table);
+    }
+    LABEL(after_true);
+
+}
+
 // Function call
-struct func_call* CreateFunctionCall(struct ident* name) {
+struct func_call* CreateFunctionCall(struct ident* name, struct node_list *n_list) {
     allocate_struct(func_call,"create function call");
+
     result->name = name;
-    result->params = CreateNodeList();
+    result->params = n_list;
 
     return result;
 }
@@ -355,18 +952,79 @@ void DestroyFunctionCall(struct func_call** fc) {
 
     DestroyIdent(&fc[0]->name);
     freeNodeList(&fc[0]->params);
+
     free(*fc);
     *fc = NULL;
 }
 
+void PrintFunctionCall(struct func_call* f) {
+    if( f == NULL) return;
+    PrintIdent(f->name);
+    printf("(");
+    PrintNodeList(f->params, ',');
+    printf(")");
+}
+
+Type PrintFunctionCallCode(struct func_call* f, struct symtable* table) {
+//    UnimplementedFunction(PrintFunctionCallCode);
+    if( f == NULL) return NilType;
+
+    Type t1 = NilType;
+
+    const char* n = f->name->name;
+    const int num_params = Count(f->params);
+
+    struct item* f_call = Lookup(table, n);
+
+    if(f_call == NULL) {
+        Exception("unknown function: %s\n", f->name->name);
+    } else {
+        struct func_def_meta* meta = (struct func_def_meta*)f_call->data;
+        const int num_arguments = Count(meta->node->params);
+
+        if(num_params != num_arguments) {
+            Exception("number of params does not equal number of arguments for %s: %d and %d\n", n, num_params, num_arguments);
+        } else if( meta->node->body == NULL) {
+            // built in
+            if(strcmp(n,"printInt") == 0) {
+                PrintNodeCode(Pop(f->params),table);
+                OUT();
+            } else {
+                IN();
+                t1 = IntType;
+            }
+        }else {
+            CALL(meta->label);
+        }
+    }
+    return t1;
+}
 
 // Expression
-struct expression* CreateExpression(int op, struct node* lhs, struct node* rhs) {
+struct expression* CreateExpression(ExpressionType type, Operator op, void* lhs, void* rhs) {
     allocate_struct(expression,"create expression");
 
-    result->lhs = lhs;
-    result->rhs = rhs;
+    result->type = type;
     result->op = op;
+
+    switch(type) {
+        case BinaryOperator:
+            result->lhs = (struct expression*)lhs;
+            result->rhs = (struct expression*)rhs;
+        break;
+        case UnaryOperator:
+            result->lhs = (struct expression*)lhs;
+        break;
+        case FunctionCall:
+            result->fc = (struct func_call*)lhs;
+        break;
+        case VariableReference:
+            result->tar = (struct target*)lhs;
+        break;
+        case IntegerValue:
+            result->integer = *(int*)lhs;
+        break;
+    }
 
     return result;
 }
@@ -374,9 +1032,310 @@ struct expression* CreateExpression(int op, struct node* lhs, struct node* rhs) 
 void DestroyExpression(struct expression** e) {
     if(*e == NULL) return;
 
-    DestroyNode(&e[0]->lhs);
-    DestroyNode(&e[0]->rhs);
+    switch(e[0]->type) {
+        case BinaryOperator:
+            DestroyExpression(&e[0]->lhs);
+            DestroyExpression(&e[0]->rhs);
+            break;
+        case UnaryOperator:
+            DestroyExpression(&e[0]->lhs);
+            break;
+        case FunctionCall:
+            DestroyFunctionCall(&e[0]->fc);
+            break;
+        case VariableReference:
+            DestroyTarget(&e[0]->tar);
+            break;
+        case IntegerValue:
+            break;
+    }
 
     free(*e);
     *e = NULL;
+}
+
+void PrintExpression(struct expression* e) {
+    if( e == NULL ) return;
+    switch(e->type) {
+        case BinaryOperator:
+            PrintExpression(e->lhs);
+            switch(e->op){
+                case AssignmentOp:
+                    printf("=");
+                    break;
+                case PlusOp:
+                    printf("+");
+                    break;
+                case MinusOp:
+                    printf("-");
+                    break;
+                case MulOp:
+                    printf("*");
+                    break;
+                case DivOp:
+                    printf("/");
+                    break;
+                case ModOp:
+                    printf("%%");
+                    break;
+                case LTOp:
+                    printf("<");
+                    break;
+                case LTEOp:
+                    printf("<=");
+                    break;
+                case GTOp:
+                    printf(">");
+                    break;
+                case GTEOp:
+                    printf(">=");
+                    break;
+                case EqOp:
+                    printf("==");
+                    break;
+                case NEOp:
+                    printf("!=");
+                    break;
+                default:
+                    printf("Invalid operator: %d\n", e->op);
+                    exit(1);
+                    break;
+            }
+            PrintExpression(e->rhs);
+            break;
+        case UnaryOperator:
+            switch(e->op){
+                case NegationOp:
+                    printf("-");
+                    PrintExpression(e->lhs);
+                    break;
+                case IncOp:
+                    PrintExpression(e->lhs);
+                    printf("++");
+                    break;
+                case DecOp:
+                    PrintExpression(e->lhs);
+                    printf("--");
+                    break;
+                case NotOp:
+                    printf("!");
+                    PrintExpression(e->lhs);
+                    break;
+                default:
+                    printf("Invalid operator: %d\n", e->op);
+                    exit(1);
+                    break;
+            }
+            break;
+        case IntegerValue:
+            printf("%d",e->integer);
+            break;
+        case FunctionCall:
+            PrintFunctionCall(e->fc);
+            break;
+        case VariableReference:
+            PrintTarget(e->tar);
+            break;
+    }
+}
+
+
+
+Type PrintExpressionCode(struct expression* e, struct symtable* table) {
+
+//    UnimplementedFunction(PrintExpressionCode);
+    if( e == NULL ) return NilType;
+
+    Type t1 = NilType, t2 = NilType;
+
+    switch(e->type) {
+        case BinaryOperator:
+            if(e->op == AssignmentOp) {
+                t1 = PrintExpressionCode(e->rhs,table);
+                PrintStore(e->lhs->tar,table);
+            } else {
+                t1 = PrintExpressionCode(e->lhs, table);
+                t2 = PrintExpressionCode(e->rhs, table);
+
+                if(t1 != t2) {
+                    PrintExpression(e);
+                    printf("\n");
+                    Exception("binary operator types don't match: %s and %s\n", TypeAsString(t1), TypeAsString(t2));
+                }
+            }
+
+            switch(e->op){
+                case AssignmentOp:
+                    break;
+                case PlusOp:
+                    ADD();
+                    break;
+                case MinusOp:
+                    SUB();
+                    break;
+                case MulOp:
+                    MULT();
+                    break;
+                case DivOp:
+                    DIV();
+                    break;
+                case ModOp:
+                    MOD();
+                    break;
+                case LTOp:
+                    LT();
+                    break;
+                case LTEOp:
+                    LE();
+                    break;
+                case GTOp:
+                    GT();
+                    break;
+                case GTEOp:
+                    GE();
+                    break;
+                case EqOp:
+                    EQ();
+                    break;
+                case NEOp:
+                    NE();
+                    break;
+                default:
+                    printf("Invalid operator: %d\n", e->op);
+                    exit(1);
+                    break;
+            }
+            break;
+        case UnaryOperator:
+            t1 = PrintExpressionCode(e->lhs, table);
+
+            switch(e->op){
+                case NegationOp:
+                    if( t1 != IntType) Exception("integer negate can only be applied to integer values");
+                    NEG();
+                    break;
+                case IncOp:
+                    UnimplementedFunction("post-increment\n");
+                    break;
+                case DecOp:
+                    UnimplementedFunction("post-decrement\n");
+                    break;
+                case NotOp:
+                    if( t1 != BoolType) Exception("boolean not can only be applied to booleans");
+                    NOT();
+                    break;
+                default:
+                    printf("Invalid operator: %d\n", e->op);
+                    exit(1);
+                    break;
+            }
+            break;
+        case IntegerValue:
+            t1 = IntType;
+            LDC(e->integer);
+            break;
+        case FunctionCall:
+            t1 = PrintFunctionCallCode(e->fc, table);
+            break;
+        case VariableReference:
+            t1 = PrintLoad(e->tar, table);
+            break;
+    }
+    return t1;
+}
+
+// return statements
+struct return_stmt* CreateReturnStatement(struct expression* e) {
+    allocate_struct(return_stmt,"create return statement");
+    result->result = e;
+    return result;
+}
+
+void DestroyReturnStatement(struct return_stmt** r) {
+    if(*r  == NULL) return;
+    DestroyExpression(&r[0]->result);
+    free(*r);
+    *r = NULL;
+}
+
+void PrintReturnStatement(struct return_stmt* r) {
+    if(r == NULL) return;
+
+    printf("return");
+    if(r->result) {
+        printf(" ");
+        PrintExpression(r->result);
+    }
+}
+
+void PrintReturnStatementCode(struct return_stmt* r, struct symtable* table) {
+    UnimplementedFunction(PrintReturnStatementCode);
+    if(r == NULL) return;
+}
+
+// Variable definitions 
+struct var_def* CreateVariableDefinition(unsigned int pos, int modifier, struct ident* name, struct expression* value, struct value_type* type) {
+    allocate_struct(var_def,"create variable definition");
+    result->pos = pos;
+    result->modifier = modifier;
+    result->name = name;
+    result->value = value;
+    result->type = type;
+    return result;
+}
+void DestroyVariableDefinition(struct var_def** vd) {
+    if(*vd == NULL) return;
+
+    DestroyIdent(&vd[0]->name);
+    DestroyExpression(&vd[0]->value);
+    DestroyValueType(&vd[0]->type);
+
+    free(*vd);
+    *vd = NULL;
+}
+
+void PrintVariableDefinition(struct var_def* v) {
+    if( v == NULL ) return;
+
+    switch(v->modifier) {
+        case Variable:
+            printf("var ");
+            break;
+        case Constant:
+            printf("const ");
+            break;
+    }
+
+    PrintIdent(v->name);
+    if(v->value) {
+        printf(" = ");
+        PrintExpression(v->value);
+    } else {
+        printf(" ");
+        PrintValueType(v->type);
+    }
+    printf("\n");
+}
+
+void PrintVariableDefinitionCode(struct var_def* v, struct symtable* table) {
+    if( v == NULL ) return;
+
+    allocate_name(var_def_meta,meta,"create variable meta data");
+    struct scope* s = TopScope(table);
+
+    meta->scope = s->id;
+    meta->position = v->pos;
+    meta->node = v;
+
+    Insert(table,v->name->name, v->modifier,meta);
+
+    if(v->value) {
+        v->type = CreateValueType(PrintExpressionCode(v->value, table), Variable,-1);
+        ST(s->id,v->pos);
+    } else {
+        /* initialize to "0" */
+        printType(v->type->type);
+        LDC(0);
+        ST(s->id,v->pos);
+    }
 }

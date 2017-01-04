@@ -1,11 +1,31 @@
 
-unsigned int Constant = 0;
-unsigned int Variable = 1;
-unsigned int Array = 2;
-unsigned int Function = 4;
 
-unsigned int IntType = 0;
-unsigned int RealType = 1;
-unsigned int StringType = 2;
-unsigned int BoolType = 4;
-unsigned int NilType = 8;
+#include <constants.h>
+
+char* conversions[] = {
+    "int",
+    "string",
+    "char",
+    "bool",
+    "real",
+    "nil"
+};
+
+const char* TypeAsString(Type t) {
+
+    switch(t) {
+        case IntType:
+            return conversions[0];
+        case StringType:
+            return conversions[1];
+        case CharType:
+            return conversions[2];
+        case BoolType:
+            return conversions[3];
+        case RealType:
+            return conversions[4];
+        case NilType:
+            return conversions[5];
+    }
+    return 0;
+}

@@ -25,7 +25,7 @@ void testNodeList() {
     AssertTrue(Capacity(n_list) == 32);
 
 
-    struct node* tmp = Pop(n_list);
+    struct generic_node* tmp = Pop(n_list);
 
     AssertTrue(tmp);
 
