@@ -19,9 +19,12 @@ tmp     [\n](" "|"\t")*
 %%
 
 [ \t]                           ;
+"#".*                           ;
 {tmp}                           { yylineno++; return EOL; }
 "\""                            { DISP; return D_QUOTE;}
 "'"                             { DISP; return QUOTE;}
+"true"                          { DISP; return TRUE; }
+"false"                         { DISP; return FALSE; }
 "int"                           { DISP; return INT;}
 "bool"                          { DISP; return BOOL;}
 "string"                        { DISP; return STRING;}
@@ -36,15 +39,14 @@ tmp     [\n](" "|"\t")*
 [[:alpha:]_][[:alnum:]_]*       { DISP; yylval.string = strdup(yytext); return IDENT;}
 "="                             { DISP; return EQUAL;}
 "=="                            { DISP; return EQ;}
+"!"                             { DISP; return BANG; }
 "!="                            { DISP; return NE;}
 "<"                             { DISP; return LT;}
 "<="                            { DISP; return LTE;}
 ">"                             { DISP; return GT;}
 ">="                            { DISP; return GTE;}
 "+"                             { DISP; return PLUS;}
-"++"                            { DISP; return D_PLUS;}
 "-"                             { DISP; return MINUS;}
-"--"                            { DISP; return D_MINUS;}
 "*"                             { DISP; return MUL;}
 "/"                             { DISP; return DIV;}
 "%"                             { DISP; return MOD;}

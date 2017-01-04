@@ -1,12 +1,21 @@
 
 #include <ast/node.h>
 
+#define STACK 1
+
+#if STACK
+    const unsigned int StackSize = 6;
+#endif 
+
+unsigned int offset = 0;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
 #include <instructions.h>
+
 
 void Exception(const char* format, ...)
 {
@@ -19,6 +28,11 @@ void Exception(const char* format, ...)
     exit(1);
 }
 
+void AssertTrue(int test,const char* msg) {
+    if(!test) {
+        Exception(msg);
+    }
+}
 
 #define UnimplementedFunction(NAME) do { printf("unimplemented function: %s\n", #NAME); exit(1); } while(0);
 
@@ -26,13 +40,12 @@ const int InitialCapacity = 32;
 
 #define CONVERT(_TO_,_VAL_) ((struct _TO_)_VAL_)
 
-
 #define allocate_name(_TYPE_,_NAME_,_MSG_)                      \
     struct _TYPE_* _NAME_ = malloc(sizeof(struct _TYPE_));      \
     memcheck(_NAME_,_MSG_);
 
 #define allocate_struct(_TYPE_,_MSG_)   allocate_name(_TYPE_,result,_MSG_)
-    
+ 
 
 void printNodeType(NodeType t) {
     switch(t) {
@@ -303,7 +316,7 @@ void PrintNodeList(struct node_list* list, char sep) {
 
 void PrintNodeListCode(struct node_list* list, struct symtable* table) {
     if(list == NULL) return;
-    for(int i = 0 ; i < list->count; ++i) {
+    for(int i = 0; i < list->count; ++i) {
         PrintNodeCode(list->list[i], table);
     }
 }
@@ -454,8 +467,30 @@ void PrintProgram(struct program* p) {
 
 void PrintProgramCode(struct program* p, struct symtable* table) {
     if(p == NULL) return;
+
+    unsigned int global_size = 0;
+    for(int i = 0; i < Count(p->vars);++i) {
+        struct block_def* bd = (struct block_def*)p->vars->list[i]->ptr;
+        global_size += Count(bd->defs);
+    }
+
     INIT();
+    #if STACK
+        global_size += StackSize + 1;
+    #endif
+
+    if(global_size > 0) {
+        ALLOC(global_size);
+    }
+
+    #if STACK
+        LDC(1)
+        ST(0,1)
+    #endif
+
+    offset = StackSize + 1;
     PrintNodeListCode(p->vars, table);
+    offset = 0;
 
     JMP(1);
     PrintNodeListCode(p->funcs, table);
@@ -469,6 +504,7 @@ void PrintProgramCode(struct program* p, struct symtable* table) {
         struct func_def_meta* meta = (struct func_def_meta*)(main_ptr->data);
         LABEL(1);
         CALL(meta->label);
+        ALLOC(-global_size);
         HALT();
     }
 }
@@ -530,42 +566,54 @@ void PrintAssignment(struct assignment* a) {
     PrintExpression(a->rhs);
 }
 
-Type PrintStore(struct target* l, struct symtable* table) {
-    if(l == NULL) Exception("null pointer: PrintLoad\n");
+
+void PrintStore(struct target* l, struct expression* r, struct symtable* table) {
+    if(l == NULL) Exception("null pointer: PrintStore\n");
     char* name = l->name->name;
     struct item* it = Lookup(table,name);
     if(it == NULL) {
         Exception("undefined variable: %s\n", name);
     }
     struct var_def_meta* meta = (struct var_def_meta*)it->data;
-
-    ST(meta->scope,meta->position);
-
-    return meta->node->type->type;
+    if(l->index) {
+        // Compute index
+        PrintExpressionCode(l->index,table);       // compute index
+        LDA(meta->scope,meta->position);                // load address
+        ADD();                                          // compute address
+        PrintExpressionCode(r,table);
+        STL();                                          // store
+    } else {
+        PrintExpressionCode(r,table);
+        ST(meta->scope,meta->position);
+    }
 }
 
 Type PrintLoad(struct target* l, struct symtable* table) {
     if(l == NULL) Exception("null pointer: PrintLoad\n");
     char* name = l->name->name;
     struct item* it = Lookup(table,name);
-
     if(it == NULL) {
         Exception("undefined variable: %s\n", name);
     }
     struct var_def_meta* meta = (struct var_def_meta*)it->data;
 
-    LDV(meta->scope,meta->position);
-
-    if(meta->node->type->type == NilType) {
-        Exception("variable cannot have nil type\n");
+    Type t1 = meta->node->type->type;
+    if(l->index) {
+        PrintExpressionCode(l->index,table);       // x[]
+        LDA(meta->scope,meta->position);
+        ADD();
+        IND();
+    } else {
+        LDV(meta->scope,meta->position);
     }
-    return meta->node->type->type;
+
+    return t1;
 }
 
 void PrintAssignmentCode(struct assignment* a, struct symtable* table) {
     if(a == NULL) return;
-    PrintExpressionCode(a->rhs,table);
-    PrintStore(a->lhs, table);
+    //PrintExpressionCode(a->rhs,table);
+    PrintStore(a->lhs, a->rhs, table);
 
     UnimplementedFunction(PrintAssignmentCode);
 }
@@ -610,7 +658,7 @@ void PrintBlockDefinition(struct block_def* b) {
 
 void PrintBlockDefinitionCode(struct block_def* b, struct symtable* table) {
     if(b == NULL) return;
-    UnimplementedFunction(PrintBlockDefinitionCode);
+    PrintNodeListCode(b->defs, table);
 }
 
 // ident
@@ -671,20 +719,28 @@ void PrintBlock(struct block* b) {
 
 void PrintBlockCode(struct block* b, struct symtable* table) {
     if( b == NULL) return;
+
+    int pos = 0;
     for(int i = 0 ; i < Count(b->stmts); i++) {
         if(b->stmts->list[i]->nodetype == VariableDefinitionNode) {
-            b->num_var_def++;
+            struct var_def* vd = (struct var_def*)(b->stmts->list[i]->ptr);
+            vd->pos = pos + offset;
+            if(vd->type != NULL && vd->type->size > 0) {
+                pos += vd->type->size;
+            } else {
+                pos++;
+            }
         }
     }
 
-    if(b->num_var_def > 0) {
-        ALLOC(b->num_var_def);
+    if(pos > 0) {
+        ALLOC(pos);
     }
     
     PrintNodeListCode(b->stmts, table);
     
-    if(b->num_var_def > 0) {
-        ALLOC(-b->num_var_def);
+    if(pos > 0) {
+        ALLOC(-pos);
     }
 }
 
@@ -765,13 +821,42 @@ void PrintFunctionDefinitionCode(struct func_def* f, struct symtable* table) {
     result->label = GenerateLabel(table);
 
     LABEL(result->label);
-    PROC(1);
+
+    int n_params = Count(f->params);
 
     Insert(table, f->name->name, Function, result);
 
     PushScope(table);
+    
+    PROC(1);
+    if(n_params > 0) {
+        ALLOC(n_params);
+        for(int i = 0 ; i < n_params; ++i) {
+            ((struct var_def*)f->params->list[i]->ptr)->pos = i;
+        }
+        
+        PrintNodeListCode(f->params,table);
+
+        for(int i = 0 ; i < n_params; ++i) {
+            
+            // Get address
+            LDV(0,1)
+            LDC(i - n_params + 1)
+            ADD();
+            IND();
+            
+            struct var_def* v_def = (struct var_def*)f->params->list[i]->ptr;
+            struct target* tar = CreateTarget(v_def->name,NULL);
+            PrintStore(tar,NULL, table);
+        }
+    }
 
     PrintBlockCode(f->body, table);
+
+    if(n_params > 0) {
+        ALLOC(-n_params);
+    }
+
     RET(1);
 
     PopScope(table);
@@ -923,7 +1008,12 @@ void PrintConditionalCode(struct conditional* c, struct symtable* table) {
     if(c == NULL) return;
 
     unsigned int after_true = GenerateLabel(table);
-    PrintExpressionCode(c->test, table);
+    Type t = PrintExpressionCode(c->test, table);
+    if( t != BoolType) {
+        PrintExpression(c->test);
+        printf("\n");
+        Exception("expected boolean for condition arguments, found %s\n", TypeAsString(t));
+    }
     JMPF(after_true);
     PrintBlockCode(c->con, table);
     if(c->alt) {
@@ -980,7 +1070,8 @@ Type PrintFunctionCallCode(struct func_call* f, struct symtable* table) {
         Exception("unknown function: %s\n", f->name->name);
     } else {
         struct func_def_meta* meta = (struct func_def_meta*)f_call->data;
-        const int num_arguments = Count(meta->node->params);
+        struct func_def* f_def = meta->node;
+        const int num_arguments = Count(f_def->params);
 
         if(num_params != num_arguments) {
             Exception("number of params does not equal number of arguments for %s: %d and %d\n", n, num_params, num_arguments);
@@ -989,12 +1080,31 @@ Type PrintFunctionCallCode(struct func_call* f, struct symtable* table) {
             if(strcmp(n,"printInt") == 0) {
                 PrintNodeCode(Pop(f->params),table);
                 OUT();
+            } else if(strcmp(n,"newline") == 0) {
+                LDC(10);
+                OUTCH();
             } else {
                 IN();
                 t1 = IntType;
             }
         }else {
+            for(unsigned int i = 0 ; i < num_params;++i) {
+                // Get address
+                LDV(0,1)
+                LDA(0,1)
+                ADD()
+                DUP()
+                PrintNodeCode(f->params->list[i],table);
+                STL()
+                ST(0,1)
+            }
             CALL(meta->label);
+            if(num_params > 0) {
+                LDV(0,1)
+                LDC(num_params)
+                SUB()
+                ST(0,1)
+            }
         }
     }
     return t1;
@@ -1021,6 +1131,7 @@ struct expression* CreateExpression(ExpressionType type, Operator op, void* lhs,
         case VariableReference:
             result->tar = (struct target*)lhs;
         break;
+        case BooleanValue:
         case IntegerValue:
             result->integer = *(int*)lhs;
         break;
@@ -1047,6 +1158,7 @@ void DestroyExpression(struct expression** e) {
             DestroyTarget(&e[0]->tar);
             break;
         case IntegerValue:
+        case BooleanValue:
             break;
     }
 
@@ -1128,6 +1240,7 @@ void PrintExpression(struct expression* e) {
             }
             break;
         case IntegerValue:
+        case BooleanValue:
             printf("%d",e->integer);
             break;
         case FunctionCall:
@@ -1142,8 +1255,6 @@ void PrintExpression(struct expression* e) {
 
 
 Type PrintExpressionCode(struct expression* e, struct symtable* table) {
-
-//    UnimplementedFunction(PrintExpressionCode);
     if( e == NULL ) return NilType;
 
     Type t1 = NilType, t2 = NilType;
@@ -1151,8 +1262,8 @@ Type PrintExpressionCode(struct expression* e, struct symtable* table) {
     switch(e->type) {
         case BinaryOperator:
             if(e->op == AssignmentOp) {
-                t1 = PrintExpressionCode(e->rhs,table);
-                PrintStore(e->lhs->tar,table);
+                //t1 = PrintExpressionCode(e->rhs,table);
+                PrintStore(e->lhs->tar,e->rhs,table);
             } else {
                 t1 = PrintExpressionCode(e->lhs, table);
                 t2 = PrintExpressionCode(e->rhs, table);
@@ -1168,37 +1279,60 @@ Type PrintExpressionCode(struct expression* e, struct symtable* table) {
                 case AssignmentOp:
                     break;
                 case PlusOp:
+                    AssertTrue(t1==IntType,"+ only supports integers\n");
                     ADD();
                     break;
                 case MinusOp:
+                    AssertTrue(t1==IntType,"- only supports integers\n");
                     SUB();
                     break;
                 case MulOp:
+                    AssertTrue(t1==IntType,"* only supports integers\n");
                     MULT();
                     break;
                 case DivOp:
+                    AssertTrue(t1==IntType,"/ only supports integers\n");
                     DIV();
                     break;
                 case ModOp:
+                    AssertTrue(t1==IntType,"% only supports integers\n");
                     MOD();
                     break;
                 case LTOp:
+                    AssertTrue(t1==IntType,"< only supports integers\n");
+                    t1 = BoolType;
                     LT();
                     break;
                 case LTEOp:
+                    AssertTrue(t1==IntType,"<= only supports integers\n");
                     LE();
+                    t1 = BoolType;
                     break;
                 case GTOp:
+                    AssertTrue(t1==IntType,">= only supports integers\n");
+                    t1 = BoolType;
                     GT();
                     break;
                 case GTEOp:
+                    AssertTrue(t1==IntType,">= only supports integers\n");
+                    t1 = BoolType;
                     GE();
                     break;
                 case EqOp:
                     EQ();
+                    t1 = BoolType;
                     break;
                 case NEOp:
                     NE();
+                    t1 = BoolType;
+                    break;
+                case OrOp:
+                    AssertTrue(t1==BoolType,"| only supports booleans\n");
+                    OR();
+                    break;
+                case AndOp:
+                    AssertTrue(t1==BoolType,"& only supports booleans\n");
+                    AND();
                     break;
                 default:
                     printf("Invalid operator: %d\n", e->op);
@@ -1229,6 +1363,10 @@ Type PrintExpressionCode(struct expression* e, struct symtable* table) {
                     exit(1);
                     break;
             }
+            break;
+        case BooleanValue:
+            t1 = BoolType;
+            LDC(e->integer);
             break;
         case IntegerValue:
             t1 = IntType;
@@ -1324,18 +1462,23 @@ void PrintVariableDefinitionCode(struct var_def* v, struct symtable* table) {
     struct scope* s = TopScope(table);
 
     meta->scope = s->id;
-    meta->position = v->pos;
+    meta->position = v->pos + offset + 1;
     meta->node = v;
 
     Insert(table,v->name->name, v->modifier,meta);
 
     if(v->value) {
         v->type = CreateValueType(PrintExpressionCode(v->value, table), Variable,-1);
-        ST(s->id,v->pos);
+        ST(s->id,meta->position);
     } else {
         /* initialize to "0" */
-        printType(v->type->type);
-        LDC(0);
-        ST(s->id,v->pos);
+        int pos = 1;
+        if(v->type->size > 0) {
+            pos = v->type->size;
+        }
+        for(int i = 0; i < pos; ++i) {
+            LDC(0);
+            ST(s->id,meta->position + i);
+        }
     }
 }

@@ -39,8 +39,8 @@
 #define EXIT(I)     printf("\tEXIT %d\n",I);
 #define DUP()       printf("\tDUP\n");
 #define POP()       printf("\tPOP %d\n");
-#define STL()       printf("\tSTL %d\n");
-#define IND()       printf("\tIND %d\n");
+#define STL()       printf("\tSTL\n");
+#define IND()       printf("\tIND\n");
 #define INCH()      printf("\tINCH\n");
 #define OUTCH()     printf("\tOUTCH\n");
 #define OUTSTR(I)   printf("\tALLOC %d\n",I);

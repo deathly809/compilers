@@ -107,6 +107,8 @@ struct item* locate(struct scope* scope, const char* name) {
 int insert(struct scope* scope, struct item* it) {
     
     if(locate(scope,it->ident) != NULL) { 
+        fprintf(stderr,"identifier already exists: %s\n", it->ident);
+        exit(1);
         return 0;
     }
 

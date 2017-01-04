@@ -22,7 +22,7 @@ struct var_def_meta {
 
 
 typedef enum {
-    BinaryOperator, UnaryOperator, IntegerValue, VariableReference, FunctionCall
+    BinaryOperator, UnaryOperator, IntegerValue, VariableReference, FunctionCall, BooleanValue
 } ExpressionType;
 
 typedef enum {

@@ -41,6 +41,7 @@ void parse() {
 
         struct func_def* printInt = CreateFunctionDefinition(CreateIdent("printInt",0,0),printIntN_List,NULL,NULL);
         struct func_def* readInt = CreateFunctionDefinition(CreateIdent("readInt",0,0),NULL,CreateValueType(IntType,Function,-1),NULL);
+        struct func_def* newline = CreateFunctionDefinition(CreateIdent("newline",0,0),NULL,NULL,NULL);
 
         struct func_def_meta printInt_meta = {
             NULL,
@@ -54,10 +55,17 @@ void parse() {
             0
         };
 
+        struct func_def_meta newline_meta = {
+            NULL,
+            newline,
+            0
+        };
+
 //        PrintProgram(root);
         struct symtable* table = CreateTable();
         Insert(table,"printInt",Function,&printInt_meta);
         Insert(table,"readInt",Function,&readInt_meta);
+        Insert(table,"newline",Function,&newline_meta);
         PrintProgramCode(root, table);
 //        printf("worked\n");
     }

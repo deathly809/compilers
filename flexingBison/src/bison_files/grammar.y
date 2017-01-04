@@ -93,7 +93,10 @@
 %token  VAR
 %token  CONST
 %token  SEMI
+%token TRUE
+%token FALSE
 %token EOL
+
 
 %type <string> IDENT
 %type <integer> INTEGER
@@ -109,8 +112,7 @@
 %type <cond> conditional true_cond
 %type <loop> loop
 %type <ret> return
-%type <assign> decl_item
-%type <v_def> declaration
+%type <v_def> declaration decl_item
 %type <l_cond> loop_conditional
 %type <prog> top_level_list input
 
@@ -155,7 +157,7 @@ top_level_list:             top_level_list func_def         {
                         |   EOL                             { $$ = NULL; }
                         ;
 
-decl_block:                 var_attr O_PAREN decl_list_items C_PAREN { P(decl_block); $$ = CreateBlockDefinition($3,$1); }
+decl_block:                 var_attr O_PAREN EOL decl_list_items C_PAREN { P(decl_block); $$ = CreateBlockDefinition($4,$1); }
                         ;
 
 var_attr:                   VAR                                 { P(var_attr); $$ = Variable; }
@@ -164,20 +166,20 @@ var_attr:                   VAR                                 { P(var_attr); $
 
 decl_list_items:            decl_item EOL decl_list_items       {
                                                                     P(decl_list_items); 
-                                                                    Push($3,CreateNode(AssignmentNode,$1)); 
+                                                                    Push($3,CreateNode(VariableDefinitionNode,$1)); 
                                                                     $$ = $3; 
                                                                 } 
                         |   decl_item EOL                       { 
                                                                     P(decl_list_items); 
                                                                     struct node_list* n_list = CreateNodeList(); 
-                                                                    Push(n_list, CreateNode(AssignmentNode,$1)); 
+                                                                    Push(n_list, CreateNode(VariableDefinitionNode,$1)); 
                                                                     $$ = n_list; 
                                                                 } 
                         ;
 
 decl_item:                  IDENT EQUAL expression              { 
                                                                     P(decl_item);
-                                                                    $$ = CreateAssignment( CreateTarget(CreateIdent($1,0,0),NULL), $3);
+                                                                    $$ = CreateVariableDefinition(0,Variable,CreateIdent($1,0,0), $3, NULL);
                                                                 } 
                         ;
 
@@ -209,19 +211,17 @@ param_type:                 O_BRACKET C_BRACKET type                            
 block:                      O_BRACE EOL opt_stmt_list C_BRACE                           { P(block); $$ = CreateBlock($3); }
                         ;
 
-opt_stmt_list:              statement_list eols                 { P(opt_stmt_list); $$ = $1; }
+opt_stmt_list:              EOL opt_stmt_list                   { $$ = $2; }
+                        |   statement_list eols                 { P(opt_stmt_list); $$ = $1; }
                         |   %empty                              { P(opt_stmt_list); $$ = NULL; }
                         ;
 
-eols:                       EOL eols
+eols:                       eols EOL
                         |   %empty
 
 statement_list:             statement_list eols statement EOL    {
                                                                     P(statement_list); 
                                                                     Push($1, $3);
-                                                                    if($3->nodetype == VariableDefinitionNode) {
-                                                                        ((struct var_def*)$3->ptr)->pos = Count($1);
-                                                                    }
                                                                     $$ = $1;
                                                                  }
                         |   statement EOL                        { P(statement_list); struct node_list* tmp = CreateNodeList(); Push(tmp,$1); $$ = tmp; }
@@ -303,14 +303,16 @@ nonlinear_expression:       nonlinear_expression MUL unary_expr     { P(nonlinea
                         |   unary_expr                              { P(nonlinear_expression) $$ = $1; }
                         ;
 
-unary_expr:                 BANG primary_expr                          { P(unary_expr) $$ = CreateExpression(UnaryOperator, NotOp, $2, NULL); }
-//                        |   PLUS primary_expr                          { P(unary_expr) $$ = $2; }
-//                        |   MINUS primary_expr                         { P(unary_expr) $$ = CreateExpression(UnaryOperator, NegationOp, $2,NULL); }
-                        |   primary_expr                               { P(unary_expr) $$ = $1; }
+unary_expr:                 BANG primary_expr                               { P(unary_expr) $$ = CreateExpression(UnaryOperator, NotOp, $2, NULL); }
+//                        |   PLUS primary_expr                             { P(unary_expr) $$ = $2; }
+                        |   MINUS unary_expr                                { P(unary_expr) $$ = CreateExpression(UnaryOperator, NegationOp, $2,NULL); }
+                        |   primary_expr                                    { P(unary_expr) $$ = $1; }
                         ;
 
-primary_expr:               target
-                        |   IDENT O_PAREN opt_expr_list C_PAREN         { P(primary_expr) $$ = CreateExpression(FunctionCall,NOP,CreateFunctionCall(CreateIdent($1,0,0),$3),NULL);}
+primary_expr:               target                                  { P(primary_expr) $$ = $1; }
+                        |   TRUE                                    { P(primary_expr) int tmp = 1; $$ = CreateExpression(BooleanValue,NOP, &tmp, NULL); }
+                        |   FALSE                                   { P(primary_expr) int tmp = 0; $$ = CreateExpression(BooleanValue,NOP, &tmp, NULL); }
+                        |   IDENT O_PAREN opt_expr_list C_PAREN     { P(primary_expr) $$ = CreateExpression(FunctionCall,NOP,CreateFunctionCall(CreateIdent($1,0,0),$3),NULL);}
                         |   INTEGER                                 { P(primary_expr) $$ = CreateExpression(IntegerValue, NOP, &($1), NULL);}
                         |   O_PAREN expression C_PAREN              { P(primary_expr) $$ = $2; }
                         ;
