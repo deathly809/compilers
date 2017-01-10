@@ -1,11 +1,8 @@
 
-func test() {
-    var i int
-    for i = 1; i < 10; i = i + 1 {
-        printInt(i)
-    }
-}
+# hello!
+
 
 func main() {
-    test()
+    var x = 3
+    printInt(-x + 5)
 }

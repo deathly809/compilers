@@ -47,9 +47,6 @@ namespace ast {
 
             ArrayExpression*    array = nullptr;
             Identifier*         ident = nullptr;
-
-            bool                negate = false;
-
             
     };
 

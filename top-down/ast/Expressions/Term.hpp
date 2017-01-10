@@ -13,7 +13,7 @@ namespace hardware {
 namespace ast {
 
     class Operator;
-    class VName;
+    class Unary;
 
     class Term : public Ast {
 
@@ -28,11 +28,9 @@ namespace ast {
             ValueType ResultType() const;
 
         private:
-            VName*      lhs = nullptr;
+            Unary*      lhs = nullptr;
             Operator*   op  = nullptr;
-            Term*       rhs = nullptr;
-            bool        isnot;
-            
+            Term*       rhs = nullptr;            
     };
 
 }

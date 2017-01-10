@@ -98,6 +98,12 @@ namespace ast {
             case Operator::NotEqual:
                 gen.Ne();
                 break;
+            case Operator::NegationOperator:
+                gen.Neg();
+                break;
+            case Operator::NotOperator:
+                gen.Not();
+                break;
             default:
                 break;
         }

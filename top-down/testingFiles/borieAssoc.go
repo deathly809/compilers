@@ -8,4 +8,7 @@ func Main() {
     printInt(a - b - c)
     printInt(a / b - c)
     printInt(a - b / c)
+    printInt(-a)
+    printInt(--a - b)
+    printInt(-a - b)
 }

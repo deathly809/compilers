@@ -119,7 +119,7 @@ namespace symtable {
 
 // VAR
 
-    VariableAttribute::VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type) : Attribute(name,filename, line, column, VariableAttributeType), iKind(kind), iType(type) {
+    VariableAttribute::VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type, size_t size) : Attribute(name,filename, line, column, VariableAttributeType), size(size), iKind(kind), iType(type) {
         /* Empty */
     }
 
@@ -135,8 +135,16 @@ namespace symtable {
         iType = type;
     }
 
+    size_t VariableAttribute::GetSize() const {
+        return size;
+    }
+
+    void VariableAttribute::SetSize(size_t n_size) {
+        size = n_size;
+    }
+
     void VariableAttribute::Write(std::ostream & os) const  {
-        os << "[" << GetName() << ", " << IdentifierKindToString(iKind) << ", " << ast::ValueTypeToString(iType) << "]";
+        os << "[" << GetName() << ", " << IdentifierKindToString(iKind) << ", " << ast::ValueTypeToString(iType) << "," << size << "]";
         if(reg) {
             os << "@REG(" << reg->GetID() << ")";
         } else {

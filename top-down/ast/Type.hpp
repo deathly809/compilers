@@ -28,6 +28,7 @@ namespace ast {
         public:
             Type(lexer::Lexer & lex, symtable::SymbolTable * table);
             ValueType GetType() const;
+            size_t GetSize() const;
             
             virtual void Validate() const;
             virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;

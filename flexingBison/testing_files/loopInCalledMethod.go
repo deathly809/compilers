@@ -1,8 +1,9 @@
 
 func main2() {
-	var i int
-	for i = 0 ; i < 10; i = i + 1 {
+	var i = 1
+	for i < 6000 {
 		printInt(i)
+		i = i * 2
 	}
 }
 

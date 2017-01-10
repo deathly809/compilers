@@ -79,7 +79,11 @@ namespace symtable {
     }
 
     size_t Scope::VariableCount() const {
-        return variables.size();
+        size_t size = 0;
+        for(unsigned int i = 0 ; i < variables.size(); ++i) {    
+            size += variables[i]->GetSize();
+        }
+        return size;
     }
 
     size_t Scope::GetID() const {

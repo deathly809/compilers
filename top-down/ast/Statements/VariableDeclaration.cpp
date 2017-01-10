@@ -56,7 +56,6 @@ namespace ast {
 
     void VariableDeclaration::Validate() const {
         
-        
         ValueType varType = ValueType::NilType;
         
         if(value != nullptr) {
@@ -70,7 +69,7 @@ namespace ast {
             varType = type->GetType();
         }
 
-        auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,varType));
+        auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,varType, type->GetSize()));
         table->Insert(attr);
 
         name->Validate();

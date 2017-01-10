@@ -19,7 +19,11 @@ func main() {
 	N = readInt()
 	low = 0
 	high = N + 1
+    printInt(low)
+    printInt(high)
 	for (high - low) > 1 {
+        printInt(low)
+        printInt(high)
 		Update()
 	}
 	printInt(low)

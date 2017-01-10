@@ -35,13 +35,23 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> Assignment::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        rhs->GenerateCode(codeGen);
-        int scope = lhs->ScopeID();
-        int pos = lhs->ScopePosition();
-        codeGen.St(
-                scope,
-                pos + 1
-            );
+        int scp = lhs->ScopeID();
+        int idx = lhs->ScopePosition();
+        if(index != nullptr) {
+            index->GenerateCode(codeGen);
+            codeGen.LdA(scp,idx+1);
+            codeGen.Add();
+            rhs->GenerateCode(codeGen);
+            codeGen.StL();
+        } else {
+            rhs->GenerateCode(codeGen);
+            int scope = lhs->ScopeID();
+            int pos = lhs->ScopePosition();
+            codeGen.St(
+                    scope,
+                    pos + 1
+                );
+        }
         return nullptr;
     }
 

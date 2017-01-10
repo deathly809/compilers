@@ -34,7 +34,7 @@ $(OBIN)/main: main.c
 	$(CC) $(CFLAGS) $(OBIN)/*.o main.c -o $(OBIN)/main
 
 clean:
-	-@rm -fv $(OBIN)/main $(OBIN)/common.o $(OBIN)/util.o
+	-@rm -fv $(OBIN)/main $(OBIN)/common.o $(OBIN)/util.o $(OBIN)/common.o
 
 nuke: clean
 	make -C bison_files nuke

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-make nuke
+make clean
+make
 
 (
 	cd test

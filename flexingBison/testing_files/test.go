@@ -1,21 +1,12 @@
 
-# this is a test
-
-func one(a int) {
-    printInt(a)
+func other(a int,  b int) {
+    if a < 1 {
+        printInt(b)
+    } else {
+        other(a - 1, b * a)
+    }
 }
-func two(a int, b int) {
-    printInt(a)
-    printInt(b)
-}
-
 
 func main() {
-    var i int
-
-    for i = 2; i < 5; i = i + 1 {
-        one(i)
-        two(i,i*i)
-        newline()
-    }
+    other(5,1)
 }

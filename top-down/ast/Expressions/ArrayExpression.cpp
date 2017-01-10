@@ -22,7 +22,16 @@ namespace ast {
     }
 
     std::unique_ptr<hardware::Register> ArrayExpression::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-        // REG_OUT = REG_NAME[REG_IDX]
+        int scp = name->ScopeID();
+        int idx = name->ScopePosition();
+        if(idx != -1) {
+            index->GenerateCode(codeGen);
+            codeGen.LdA(scp,idx+1);
+            codeGen.Add();
+            codeGen.Ind();
+        } else {
+            throw std::runtime_error("unknown variable " + name->GetName());
+        }
         return nullptr;
 }
 
@@ -31,7 +40,7 @@ namespace ast {
     }
 
     ValueType ArrayExpression::ResultType() const {
-        return NilType;
+        return name->ResultType();
     }
 
 }

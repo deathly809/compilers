@@ -2,8 +2,9 @@
 
 func main() {
 	
-	var a = true
-	var b = false
+	var a = false
+	var b = 5
+
 	if a {
 		printInt(1)
 	}
@@ -28,9 +29,14 @@ func main() {
 		printInt(6)
 	}
 
+	if a | a {
+		printInt(7)
+	}
+
 	if b | b {
 		printInt(8)
 	}
+
 	if a & a {
 		printInt(9)
 	}
@@ -52,12 +58,13 @@ func main() {
     }
 
     if a & !b {
-        printInt(13)
-    }
-    if a & b | !a & !b {
         printInt(14)
-    } else {
+    }
+
+    if a & b | !a & !b {
         printInt(15)
+    } else {
+        printInt(16)
     }
 }
 

@@ -27,21 +27,7 @@ namespace ast {
     VName::VName(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table), expr(nullptr), bLit(nullptr), iLit(nullptr), rLit(nullptr), sLit(nullptr), fCall(nullptr) , ident(nullptr) {
 
         std::unique_ptr<lexer::Lexeme> curr = nullptr;
-        lexer::LexemeType type;
-
-        negate = false;
-        while(NextType(lex) == lexer::MINUS) {
-            negate = !negate;
-            lex.Next();
-            lex.HasNext();
-        }
-
-        while(NextType(lex) == lexer::PLUS) {
-            lex.Next();
-            lex.HasNext();
-        }
-
-        
+        lexer::LexemeType type;        
 
         switch(NextType(lex)) {
             case lexer::O_PAREN:
@@ -75,7 +61,6 @@ namespace ast {
                 } else {
                     ident = new Identifier(lex,table);
                 }
-
                 break;
             case lexer::BOOL:
                 bLit = new BooleanLiteral(lex,table);
@@ -114,14 +99,6 @@ namespace ast {
 
         if(array != nullptr) return array->Validate();
 
-        if(negate) {
-            switch(ResultType()) {
-                case StringType:
-                    throw std::runtime_error("cannot negate a string");
-                default:
-                    break;
-            }            
-        }
     }
 
     std::unique_ptr<hardware::Register> VName::GenerateCode(hardware::InstructionGenerator & codeGen) const {
@@ -137,9 +114,6 @@ namespace ast {
         if(ident != nullptr) return ident->GenerateCode(codeGen);
 
         if(array != nullptr) return array->GenerateCode(codeGen);
-        if(negate) {
-            codeGen.Neg();
-        }
         return nullptr;
     }
 
@@ -163,7 +137,6 @@ namespace ast {
     }
 
     std::ostream & VName::Write(std::ostream & os) const {
-        if(negate) os << "-";
         if(expr != nullptr) os << *expr;
         else if(bLit != nullptr) os << *bLit;
         else if(iLit != nullptr) os << *iLit;

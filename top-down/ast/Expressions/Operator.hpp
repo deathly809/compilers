@@ -20,7 +20,8 @@ namespace ast {
                 AdditionOperator, SubtractionOperator, OrOperator,
                 MultiplicationOperator , DivisionOperator , ModulusOperator, AndOperator,
                 LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual, EqualTo, NotEqual,
-                None  
+                NotOperator, NegationOperator, PositiveOperator,
+                None,  
             };
 
             Operator(OperatorType type);

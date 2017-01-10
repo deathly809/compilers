@@ -10,6 +10,10 @@
 
 namespace ast {
 
+    IntegerLiteral::IntegerLiteral(int value) : Ast(nullptr) {
+        value = value;
+    }
+
     IntegerLiteral::IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table) : Ast(table) {
         auto l = lex.Next();
         lex.HasNext();

@@ -39,6 +39,7 @@ namespace ast {
             if(NextType(lex) != lexer::C_BRACKET) {
                 arrayLength = new IntegerLiteral(lex,table);
             }
+
             consumeLexemeType(lex,lexer::C_BRACKET);
             switch(NextType(lex)) {
                 case lexer::CHARTYPE:
@@ -60,6 +61,7 @@ namespace ast {
                     throw UnexpectedToken(lex.Next(),__FILE__,__LINE__);
             }
         } else {
+            arrayLength = new IntegerLiteral(1);
             switch(NextType(lex)) {
                 case lexer::CHARTYPE:
                     type = CharType;
@@ -89,6 +91,10 @@ namespace ast {
 
     ValueType Type::GetType() const {
         return type;
+    }
+
+    size_t Type::GetSize() const {
+        return arrayLength->GetValue();
     }
 
     std::unique_ptr<hardware::Register> Type::GenerateCode(hardware::InstructionGenerator & codeGen) const {

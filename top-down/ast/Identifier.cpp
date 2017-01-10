@@ -32,8 +32,6 @@ namespace ast {
         }
 
         std::unique_ptr<hardware::Register> Identifier::GenerateCode(hardware::InstructionGenerator & codeGen) const {
-            
-
             int scp = ScopeID();
             int idx = ScopePosition();
             if(idx != -1) {

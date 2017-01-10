@@ -1,8 +1,9 @@
 
-#ifndef INTEGERLITERAL_HPP_
-#define INTEGERLITERAL_HPP_
+#ifndef UNARY_HPP_
+#define UNARY_HPP_
 
 #include <ast/Ast.hpp>
+
 #include <ast/Type.hpp>
 
 namespace hardware {
@@ -11,24 +12,29 @@ namespace hardware {
 
 namespace ast {
 
-    class IntegerLiteral : public Ast {
-        
+    class Operator;
+    class VName;
+
+    class Unary : public Ast {
+
         public:
-            IntegerLiteral(int);
-            IntegerLiteral(lexer::Lexer & lex, symtable::SymbolTable * table);
+            Unary(lexer::Lexer & lex,symtable::SymbolTable * table);
+            ~Unary();
 
             virtual void Validate() const;
             virtual std::unique_ptr<hardware::Register> GenerateCode(hardware::InstructionGenerator & codeGen) const;
             virtual std::ostream& Write(std::ostream & os) const;
 
             ValueType ResultType() const;
-            int  GetValue() const;
 
         private:
-            int value;
-
+            union {
+                VName*      vname;
+                Unary*      unary;
+            } value;
+            Operator*   op  = nullptr;            
     };
-    
+
 }
 
 #endif

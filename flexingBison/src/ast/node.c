@@ -576,6 +576,9 @@ void PrintStore(struct target* l, struct expression* r, struct symtable* table) 
     }
     struct var_def_meta* meta = (struct var_def_meta*)it->data;
     if(l->index) {
+        if(meta->node->type->size < 1) {
+            Exception("cannot use array operations on a scalar\n");
+        }
         // Compute index
         PrintExpressionCode(l->index,table);       // compute index
         LDA(meta->scope,meta->position);                // load address
