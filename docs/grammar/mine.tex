@@ -1,0 +1,180 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{syntax}
+
+\setlength{\grammarindent}{12em} % increase separation between LHS/RHS 
+
+\begin{document}
+
+    \begin{grammar}
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A program begins with a package name followed by 
+    %   top level items
+    %
+
+    % First     = { package }
+    % Follow    = { $ } 
+    <Program>           ::=     "package" ID ";" <TopLevelList>
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   Top level items can either be a function definition, 
+    %   variable declarations, or structs 
+    %
+
+
+    % First     = { \epsilon, func , const , var , type }
+    % Follow    = { func , const , var , type , $ }
+    <TopLevelList>      ::=     <TopLevelItem> <TopLevelList> 
+                        \alt    $\epsilon$
+
+    % First     = { func , const , var , type }
+    % Follow    = { func , const , var , type , $ }
+    <TopLevelItem>      ::=     <FunctionDef> 
+                        \alt    <Declaration> 
+                        \alt    <Struct>
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A declation declares variables as either constant or 
+    %   variable
+    %
+
+    % First     = { const , var }
+    % Follow    = { func , const , var , type , $ }
+    <Declaration>       ::=     ( "const" | "var" ) "(" <AssignmentList> ")"
+                        \alt    ID "=" <Expression>
+
+    % First     = { ID }
+    % Follow    = { ) }
+    <AssignmentList>    ::=     ID = <Expression>, <AssignmentList> 
+                        \alt    ID = <Expression>
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A struct can contain values
+    %
+
+    % First     = { type }
+    % Follow    = { func , const , var , type , $ }
+    <Struct>            ::=     "type" ID "struct" "{" <ParamList> "}"
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A function definition  
+    %
+
+    % First = { func }
+    % Follow    = { func , const , var , type , $ }
+    <FunctionDef>       ::=     "func" ID "(" ( $\epsilon$ | <ParamList> ) ")" (<Type> | $\epsilon$) <Block>
+
+    % First     = { ID }
+    % Follow    = { ) }
+    <ParamList>         ::=     ID <Type>, <ParamList> 
+                        \alt    ID <Type>
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A block is a list of statements surrounded by braces
+    %
+    % First     = { { }
+    % Follow    = { func , const , var , type , $ }
+    <Block>             ::=     "{" <StatementList> "}"
+
+    % First     = { if , for , return , ID , \epsilon }
+    % Follow    = { } }
+    <StatementList>     ::=     <Statement> <StatementList> 
+                        \alt    $\epsilon$
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A statement can be either a conditional, loop, return, 
+    %   assignment, or declaration.
+    %
+    % First     = { if , for , return , ID }
+    % Follow    = { if , for , return , ID , \epsilon , } }
+    <Statement>         ::=     <Declaration> 
+                        \alt    <IfStmt> 
+                        \alt    <Loop> 
+                        \alt    <Expression>
+                        \alt    "return" <Expression>  
+                        \alt    ID "(" [ <ExpressionList> ] ")"
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   An If statement 
+    %
+    
+    % First     = { if }
+    % Follow    = { ID , return }
+    <IfStmt>            ::=     "if" <Expression> <Block> [ "else" <Block> ]
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   An expression computes a value
+    %
+
+    % First     = { ID , NUM , STRING , ( , U_OP }
+    % Follow    = { } , ) }
+    <Expression>        ::=     <ExpressionTwo> <ExpRemOne>
+
+    % First     = { ID , NUM , STRING , ( , U_OP }
+    % Follow    = { } , ) }
+    <ExpRemOne>         ::=     ( "+" | "-" ) <ExpressionTwo> <ExpRemOne> | $\epsilon$
+
+    % First     = { ID , NUM , STRING , ( , U_OP }
+    % Follow    = { } , ) }
+    <ExpressionTwo>     ::=     <UnaryExpr> <ExpRemTwo>
+
+    % First     = { * , / , epsilon }
+    % Follow    = { * , / ,  }
+    <ExpRemTwo>         ::=     ( "*" | "/" ) <UnaryExpr> <ExpRemTwo> | $\epsilon$     
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %   A unary expression 
+    %
+
+    % First     = { ID , NUM , STRING , ( , U_OP }
+    % Follow    = { BIN_OP , } , ) }
+    <UnaryExpr>         ::=     <PrimaryExpr> 
+                        \alt    U_OP <UnaryExpr>    % U_OP U_IP ... <PrimaryExpr>
+
+    % First     = { ID , NUM , STRING , ( }
+    % Follow    = { BIN_OP , } , ) }
+    <PrimaryExpr>       ::=     <Operand> <PrimaryRem>
+
+    % First     = { [ , ( }
+    % Follow    = { BIN_OP , } , ) }
+    <PrimaryRem>        ::=     <PrimaryOp> <PrimaryRem> 
+                        \alt    <PrimaryOp> 
+
+    % First     = { [ , ( }
+    % Follow    = { BIN_OP , } , ), [ , ( }
+    <PrimaryOp>         ::=     "[" <Expression> "]"
+                        \alt    ( "++" | "--" ) 
+                        \alt    "(" [ <ExpressionList> ] ")"
+
+    % First     = { ID , NUM , STRING , ( , U_OP }
+    % Follow     = { ID , NUM , STRING , ( , U_OP , ) }
+    <ExpressionList>    ::=     <Expression> , <ExpressionList> 
+                        \alt    <Expression>
+
+    % First     = { ID , NUM , STRING , BOOl , ( }
+    % Follow    = { [ , ( }
+    <Operand>           ::=     ID 
+                        \alt    NUM 
+                        \alt    STRING 
+                        \alt    BOOL 
+                        \alt    "(" <Expression> ")" 
+
+
+
+    % First = { for }
+    % Follow    = { }
+    <Loop>              ::=     "for" <Init> ";" <Expression> ";" <Expression> <Block>
+
+    % First = { ID }
+    <Init>              ::=     ID [ "=" | ":=" ] <Expression>
+
+    % First     = { int , string , bool }
+    % Follow    = { }
+    <Type>              ::=     "int"
+                        \alt    "string"
+                        \alt    "bool"
+
+    \end{grammar}
+\end{document}

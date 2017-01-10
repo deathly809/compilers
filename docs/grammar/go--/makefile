@@ -1,8 +1,8 @@
 
-OUTPUT=../../../output/
-
-${OUTPUT}/go--.pdf: go--.tex
+go--.pdf: go--.tex
 	pdflatex go--.tex
 
 clean:
-	rm *.log *.aux
+	-@rm -fv *.log *.aux *.pdf
+
+nuke: clean
