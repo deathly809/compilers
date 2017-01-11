@@ -69,7 +69,9 @@ namespace ast {
             varType = type->GetType();
         }
 
-        auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,varType, type->GetSize()));
+        int size = 1;
+        if(type != nullptr) size = type->GetSize();
+        auto attr = std::shared_ptr<symtable::Attribute>(new symtable::VariableAttribute(name->GetName(), name->GetFilename(), name->GetLine(), name->GetColumn(),kind,varType, size));
         table->Insert(attr);
 
         name->Validate();

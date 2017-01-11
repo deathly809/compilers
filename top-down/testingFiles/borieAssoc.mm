@@ -1,0 +1,53 @@
+		INIT
+		JMP L1
+L2		NOP
+		PROC 1
+		ALLOC 3
+		IN
+		ST 1 1
+		IN
+		ST 1 2
+		IN
+		ST 1 3
+		LDV 1 1
+		LDV 1 2
+		DIV
+		LDV 1 3
+		DIV
+		OUT
+		LDV 1 1
+		LDV 1 2
+		SUB
+		LDV 1 3
+		SUB
+		OUT
+		LDV 1 1
+		LDV 1 2
+		DIV
+		LDV 1 3
+		SUB
+		OUT
+		LDV 1 1
+		LDV 1 2
+		LDV 1 3
+		DIV
+		SUB
+		OUT
+		LDV 1 1
+		NEG
+		OUT
+		LDV 1 1
+		NEG
+		NEG
+		LDV 1 2
+		SUB
+		OUT
+		LDV 1 1
+		NEG
+		LDV 1 2
+		SUB
+		OUT
+		ALLOC -3
+		RET 1
+L1		CALL L2
+		HALT

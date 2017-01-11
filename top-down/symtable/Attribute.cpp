@@ -119,7 +119,7 @@ namespace symtable {
 
 // VAR
 
-    VariableAttribute::VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type, size_t size) : Attribute(name,filename, line, column, VariableAttributeType), size(size), iKind(kind), iType(type) {
+    VariableAttribute::VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type, int size) : Attribute(name,filename, line, column, VariableAttributeType), size(size), iKind(kind), iType(type) {
         /* Empty */
     }
 
@@ -135,11 +135,11 @@ namespace symtable {
         iType = type;
     }
 
-    size_t VariableAttribute::GetSize() const {
+    int VariableAttribute::GetSize() const {
         return size;
     }
 
-    void VariableAttribute::SetSize(size_t n_size) {
+    void VariableAttribute::SetSize(int n_size) {
         size = n_size;
     }
 

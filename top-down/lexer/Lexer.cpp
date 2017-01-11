@@ -55,14 +55,22 @@ namespace lexer {
     bool Lexer::HasNext() {
         if(pushedBack.size() > 0) return true;
 
-        while(scan->HasNext() && std::isspace(scan->Next())) {
-            if(scan->Next() == '\n') {
-                line++;
-                column = 0;
-            } else {
-                column++;
+        do {
+            while(scan->HasNext() && std::isspace(scan->Next())) {
+                if(scan->Next() == '\n') {
+                    line++;
+                    column = 0;
+                } else {
+                    column++;
+                }
             }
-        }
+            if(scan->Next() == '#') {
+                while(scan->HasNext() && scan->Next() != '\n');
+            } else {
+                break;
+            }
+        } while(true);
+
         return scan->Next() != 0;
     }
 

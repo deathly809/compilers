@@ -5,8 +5,10 @@ var (
 )
 
 func Main() {
-    for i < j {
+    for i <= j {
         printInt(i)
+        printInt(j)
         i = i + 1
+        j = j - 1
     }
 }

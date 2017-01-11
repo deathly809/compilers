@@ -115,12 +115,12 @@ namespace symtable {
     class VariableAttribute : public Attribute {
 
         public:
-            VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type,size_t size = 1);
+            VariableAttribute(std::string name, std::string filename, int line, int column, IdentifierKind kind, ast::ValueType type,int size = 1);
             IdentifierKind GetKind() const;
             ast::ValueType GetVariableType() const;
 
-            size_t GetSize() const;
-            void SetSize(size_t);
+            int GetSize() const;
+            void SetSize(int);
 
             void SetVariableType(ast::ValueType type);
 
@@ -128,7 +128,7 @@ namespace symtable {
             void SetRegister(std::unique_ptr<hardware::Register> reg);
 
         private:
-            size_t size;
+            int size;
             IdentifierKind iKind;
             ast::ValueType iType;
             std::unique_ptr<hardware::Register> reg;

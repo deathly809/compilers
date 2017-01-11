@@ -62,6 +62,8 @@ namespace ast {
             }
         } else {
             arrayLength = new IntegerLiteral(1);
+            std::cout << "array length is set: " << arrayLength->GetValue() << std::endl;
+
             switch(NextType(lex)) {
                 case lexer::CHARTYPE:
                     type = CharType;
@@ -94,6 +96,7 @@ namespace ast {
     }
 
     size_t Type::GetSize() const {
+        if(arrayLength == nullptr) return 1;
         return arrayLength->GetValue();
     }
 
